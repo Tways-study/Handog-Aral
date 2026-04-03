@@ -5,6 +5,7 @@ import { explainWord } from "../services/geminiService";
 import { extractTextFromImage } from "../services/ocrService";
 import { sightWords } from "../data/sightWords";
 import WordPopup from "../components/WordPopup";
+import CameraScanner from "../components/CameraScanner";
 import Mascot from "../components/Mascot";
 
 export default function ScanScreen() {
@@ -16,6 +17,7 @@ export default function ScanScreen() {
   const [selectedWord, setSelectedWord] = useState(null);
   const [wordLoading, setWordLoading] = useState(false);
   const [recentWords, setRecentWords] = useState([]);
+  const [showCamera, setShowCamera] = useState(false);
   const debounceRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -34,9 +36,9 @@ export default function ScanScreen() {
     return clean.length > 5;
   };
 
-  const handleImageCapture = async (e) => {
-    const file = e.target.files?.[0];
+  const handleImageCapture = async (file) => {
     if (!file) return;
+    setShowCamera(false);
     setIsOCRing(true);
     setOcrProgress(0);
     try {
@@ -219,20 +221,12 @@ export default function ScanScreen() {
                   Kuhai sang retrato ang libro
                 </p>
                 <button
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => setShowCamera(true)}
                   className="bg-teal text-white font-bold text-sm px-6 py-3 rounded-xl flex items-center gap-2"
                 >
                   <Camera size={18} />
                   Buksa ang Camera
                 </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  className="hidden"
-                  onChange={handleImageCapture}
-                />
               </div>
             )}
 
@@ -298,21 +292,13 @@ export default function ScanScreen() {
             onClick={() => {
               setRawText("");
               dispatch({ type: "SET_CURRENT_BOOK", payload: null });
-              fileInputRef.current?.click();
+              setShowCamera(true);
             }}
             className="w-full bg-teal/20 text-teal text-sm font-bold py-3 rounded-xl flex items-center justify-center gap-2"
           >
             <Camera size={16} />
             I-scan Liwat
           </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={handleImageCapture}
-          />
         </div>
       )}
 
@@ -348,6 +334,14 @@ export default function ScanScreen() {
           wordData={selectedWord}
           onClose={() => setSelectedWord(null)}
           onSave={() => setSelectedWord(null)}
+        />
+      )}
+
+      {/* Live Camera Scanner */}
+      {showCamera && (
+        <CameraScanner
+          onCapture={handleImageCapture}
+          onClose={() => setShowCamera(false)}
         />
       )}
     </div>
