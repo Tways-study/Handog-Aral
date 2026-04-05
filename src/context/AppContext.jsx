@@ -97,7 +97,8 @@ export function AppProvider({ children }) {
   useEffect(() => {
     document.body.className = "";
     if (state.dyslexiaFont) document.body.classList.add("dyslexia-font");
-    document.body.classList.add(`font-${state.fontSize}`);
+    document.documentElement.classList.remove("font-small", "font-medium", "font-large");
+    document.documentElement.classList.add(`font-${state.fontSize}`);
   }, [state.dyslexiaFont, state.fontSize]);
 
   return (

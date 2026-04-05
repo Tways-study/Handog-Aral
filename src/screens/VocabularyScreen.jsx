@@ -56,12 +56,12 @@ export default function VocabularyScreen() {
   const hardCount = words.filter((w) => w.difficulty === "hard").length;
 
   return (
-    <div className="min-h-screen bg-cream pb-24">
+    <div className="min-h-screen bg-cream pb-nav">
       {/* Header */}
       <div
         className="px-5 pt-10 pb-7 rounded-b-[36px]"
         style={{
-          background: "linear-gradient(135deg, #A29BFE 0%, #73C2FB 100%)",
+          background: "linear-gradient(135deg, #38BDF8 0%, #0EA5A0 100%)",
         }}
       >
         <h1 className="font-heading text-2xl font-bold text-white mb-1">

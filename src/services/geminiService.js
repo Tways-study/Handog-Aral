@@ -24,6 +24,56 @@ export function setApiKey(key) {
   genAI = new GoogleGenerativeAI(key);
 }
 
+export function clearApiKey() {
+  localStorage.removeItem("handog-gemini-key");
+  genAI = null;
+}
+
+const PART_OF_SPEECH_EMOJI = {
+  noun: "📦",
+  verb: "⚡",
+  adjective: "🎨",
+  adverb: "💨",
+  preposition: "🔗",
+  conjunction: "🔄",
+  pronoun: "👤",
+  interjection: "❗",
+  exclamation: "❗",
+};
+
+async function lookupDictionaryAPI(word, targetLanguage) {
+  try {
+    const res = await fetch(
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word.toLowerCase())}`
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data) || !data[0]) return null;
+
+    const entry = data[0];
+    const meaning = entry.meanings?.[0];
+    const def = meaning?.definitions?.[0];
+    const phonetic =
+      entry.phonetics?.find((p) => p.text)?.text || `/${word}/`;
+    const english = def?.definition
+      ? def.definition.charAt(0).toUpperCase() + def.definition.slice(1)
+      : "An English word.";
+    const example = def?.example || null;
+    const pos = meaning?.partOfSpeech || "";
+    const emoji = PART_OF_SPEECH_EMOJI[pos] || "📖";
+    const wordLen = word.length;
+    const difficulty = wordLen <= 4 ? "easy" : wordLen <= 7 ? "medium" : "hard";
+    const noKeyNote =
+      targetLanguage === "hiligaynon"
+        ? "I-set ang Gemini API key para sa paliwanag sa Hiligaynon."
+        : "I-set ang Gemini API key para sa paliwanag sa Filipino.";
+
+    return { word, phonetic, english, translation: noKeyNote, emoji, difficulty, example };
+  } catch {
+    return null;
+  }
+}
+
 export async function explainWord({ word, sentence, targetLanguage }) {
   const lower = word.toLowerCase();
   const fallback = fallbackWords[lower];
@@ -31,6 +81,8 @@ export async function explainWord({ word, sentence, targetLanguage }) {
   const ai = getGenAI();
   if (!ai) {
     if (fallback) return fallback;
+    const dictResult = await lookupDictionaryAPI(word, targetLanguage);
+    if (dictResult) return dictResult;
     return {
       word,
       phonetic: `/${word}/`,
@@ -79,9 +131,15 @@ Respond ONLY in this exact JSON format, no markdown, no backticks:
     const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
     const result = await model.generateContent(prompt);
     const text = result.response.text();
-    return JSON.parse(text.replace(/```json|```/g, "").trim());
+    // Strip all markdown fences and find the JSON object
+    const cleaned = text.replace(/```[a-z]*\n?/gi, "").trim();
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("No JSON in response");
+    return JSON.parse(jsonMatch[0]);
   } catch {
     if (fallback) return fallback;
+    const dictResult = await lookupDictionaryAPI(word, targetLanguage);
+    if (dictResult) return dictResult;
     return {
       word,
       phonetic: `/${word}/`,

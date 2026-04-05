@@ -22,12 +22,12 @@ export default function HomeScreen({ onNavigate }) {
   };
 
   return (
-    <div className="min-h-screen bg-cream pb-24">
+    <div className="min-h-screen bg-cream pb-nav">
       {/* Header */}
       <div
         className="px-5 pt-10 pb-7 rounded-b-[36px]"
         style={{
-          background: "linear-gradient(150deg, #1A3C40 0%, #2EC4B6 65%, #56C596 100%)",
+          background: "linear-gradient(150deg, #0D3D56 0%, #0EA5A0 65%, #34D399 100%)",
         }}
       >
         <div className="flex items-start justify-between mb-5">
@@ -71,8 +71,8 @@ export default function HomeScreen({ onNavigate }) {
           onClick={() => onNavigate("scan")}
           className="w-full text-white rounded-2xl py-4 px-5 flex items-center gap-4 shadow-lg"
           style={{
-            background: "linear-gradient(135deg, #FF6B6B 0%, #FF9F43 100%)",
-            boxShadow: "0 8px 24px rgba(255,107,107,0.25)",
+            background: "linear-gradient(135deg, #F4614A 0%, #F97316 100%)",
+            boxShadow: "0 8px 24px rgba(244,97,74,0.25)",
           }}
         >
           <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -92,7 +92,7 @@ export default function HomeScreen({ onNavigate }) {
           <button
             onClick={() => onNavigate("books")}
             className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-left tappable"
-            style={{ borderTop: "3px solid #FF9F43" }}
+            style={{ borderTop: "3px solid #F97316" }}
           >
             <BookOpen size={22} className="text-soft-orange mb-2" />
             <p className="font-heading font-bold text-sm text-dark-text">Mga Libro</p>
@@ -110,7 +110,7 @@ export default function HomeScreen({ onNavigate }) {
                 ? "bg-lavender/10 border border-lavender/30"
                 : "bg-white border border-gray-100"
             }`}
-            style={{ borderTop: `3px solid ${canQuiz ? "#A29BFE" : "#2EC4B6"}` }}
+            style={{ borderTop: `3px solid ${canQuiz ? "#38BDF8" : "#0EA5A0"}` }}
           >
             <Brain
               size={22}
@@ -137,31 +137,65 @@ export default function HomeScreen({ onNavigate }) {
               </p>
               <p className="text-muted-text text-xs leading-relaxed">
                 I-scan ang libro gamit ang camera o i-type ang teksto. Tap-a ang
-                bisan ano nga pulong para mahibal-an ang kahulugan sa Hiligaynon!
+                bisan ano nga pulong para mahibal-an ang kahulugan!
               </p>
             </div>
           </div>
         ) : (
-          <div
-            className="rounded-2xl p-4 flex items-center gap-3"
-            style={{ background: "linear-gradient(135deg, #56C596/15, #2EC4B6/10)" }}
-          >
-            <div className="bg-leaf-green/15 rounded-2xl p-4 flex items-center gap-3 w-full">
-              <span className="text-3xl">🎉</span>
-              <div>
-                <p className="font-heading font-bold text-sm text-leaf-green">
-                  Maayo gid, {name}!
-                </p>
-                <p className="text-muted-text text-xs mt-0.5">
-                  {learnedCount} pulong natuon na. {canQuiz ? "Subukan ang quiz!" : "Padayon lang!"}
-                </p>
-              </div>
+          <div className="bg-leaf-green/15 rounded-2xl p-4 flex items-center gap-3 border border-leaf-green/20">
+            <span className="text-3xl flex-shrink-0">🎉</span>
+            <div className="flex-1 min-w-0">
+              <p className="font-heading font-bold text-sm text-leaf-green">
+                Maayo gid, {name}!
+              </p>
+              <p className="text-muted-text text-xs mt-0.5">
+                {learnedCount} pulong natuon na. {canQuiz ? "Subukan ang quiz!" : "Padayon lang!"}
+              </p>
+            </div>
+            {canQuiz && (
+              <button
+                onClick={() => onNavigate("quiz")}
+                className="bg-leaf-green text-white text-xs font-bold px-3 py-1.5 rounded-xl flex-shrink-0"
+              >
+                Quiz! 🧠
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Recently learned words */}
+        {learnedCount > 0 && (
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <div className="flex items-center justify-between mb-3">
+              <p className="font-heading font-bold text-sm text-dark-text">
+                Bag-o nga Natuon 📖
+              </p>
+              <button
+                onClick={() => onNavigate("vocabulary")}
+                className="text-teal text-xs font-bold"
+              >
+                Tan-awa Tanan →
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {state.wordsLearned.slice(-4).reverse().map((w) => (
+                <div
+                  key={w.word}
+                  className="flex items-center gap-2 bg-cream rounded-xl px-3 py-2"
+                >
+                  <span className="text-lg leading-none">{w.emoji}</span>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-xs text-dark-text truncate capitalize">{w.word}</p>
+                    <p className="text-muted-text truncate" style={{ fontSize: "0.6rem" }}>{w.english}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
         {/* Mascot footer quote */}
-        <div className="flex items-center justify-center gap-2 pt-1">
+        <div className="flex items-center justify-center gap-2 pt-1 pb-1">
           <Mascot size={22} />
           <p className="text-muted-text text-xs italic">
             "Padayon lang sa pagtuon, {name}!"

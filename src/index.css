@@ -1,41 +1,54 @@
 @import "tailwindcss";
 
 @theme {
-  --color-sun-yellow: #FFD166;
-  --color-coral: #FF6B6B;
-  --color-teal: #2EC4B6;
-  --color-deep-teal: #1A3C40;
-  --color-sky-blue: #73C2FB;
-  --color-leaf-green: #56C596;
-  --color-cream: #FFFBF0;
-  --color-soft-orange: #FF9F43;
-  --color-lavender: #A29BFE;
-  --color-dark-text: #2D3436;
-  --color-muted-text: #636E72;
+  --color-sun-yellow: #F59E0B;
+  --color-coral: #F4614A;
+  --color-teal: #0EA5A0;
+  --color-deep-teal: #0D3D56;
+  --color-sky-blue: #38BDF8;
+  --color-leaf-green: #34D399;
+  --color-cream: #FAFAF7;
+  --color-soft-orange: #F97316;
+  --color-lavender: #38BDF8;
+  --color-dark-text: #1E293B;
+  --color-muted-text: #64748B;
   --font-heading: "Baloo 2", cursive;
   --font-body: "Nunito", sans-serif;
 }
 
 :root {
-  --sun-yellow: #FFD166;
-  --coral: #FF6B6B;
-  --teal: #2EC4B6;
-  --deep-teal: #1A3C40;
-  --sky-blue: #73C2FB;
-  --leaf-green: #56C596;
-  --cream: #FFFBF0;
-  --soft-orange: #FF9F43;
-  --lavender: #A29BFE;
-  --dark-text: #2D3436;
-  --muted-text: #636E72;
+  --sun-yellow: #F59E0B;
+  --coral: #F4614A;
+  --teal: #0EA5A0;
+  --deep-teal: #0D3D56;
+  --sky-blue: #38BDF8;
+  --leaf-green: #34D399;
+  --cream: #FAFAF7;
+  --soft-orange: #F97316;
+  --lavender: #38BDF8;
+  --dark-text: #1E293B;
+  --muted-text: #64748B;
 }
 
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Nav height (tab-area only, safe-area added separately in .pb-nav) */
+:root { --nav-h: 58px; }
+
 html {
   font-size: 16px;
+}
+
+/* Per-font-size nav heights (calibrated to actual rendered nav bar at each size) */
+html.font-small  { font-size: 14px; --nav-h: 52px; }
+html.font-medium { font-size: 16px; --nav-h: 58px; }
+html.font-large  { font-size: 20px; --nav-h: 70px; }
+
+/* Replace pb-24 on all screens with this class for correct clearance at any font */
+.pb-nav {
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 12px);
 }
 
 body {
@@ -53,9 +66,9 @@ body.dyslexia-font {
   letter-spacing: 0.05em;
 }
 
-body.font-small { font-size: 14px; }
-body.font-medium { font-size: 16px; }
-body.font-large { font-size: 20px; }
+html.font-small { font-size: 14px; }
+html.font-medium { font-size: 16px; }
+html.font-large { font-size: 20px; }
 
 .font-heading {
   font-family: "Baloo 2", cursive;

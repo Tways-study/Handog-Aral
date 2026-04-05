@@ -61,7 +61,7 @@ export default function QuizScreen({ onNavigate }) {
   // Not enough words
   if (words.length < 4) {
     return (
-      <div className="min-h-screen bg-cream pb-24 flex flex-col items-center justify-center px-6 text-center">
+      <div className="min-h-screen bg-cream pb-nav flex flex-col items-center justify-center px-6 text-center">
         <Mascot size={72} />
         <h2 className="font-heading text-xl font-bold text-dark-text mt-5 mb-2">
           Kulang pa ang mga pulong!
@@ -104,11 +104,11 @@ export default function QuizScreen({ onNavigate }) {
         : "Sige pa, you can do it!";
 
     return (
-      <div className="min-h-screen bg-cream pb-24">
+      <div className="min-h-screen bg-cream pb-nav">
         <div
           className="px-5 pt-10 pb-8 rounded-b-[36px] text-center"
           style={{
-            background: "linear-gradient(135deg, #A29BFE 0%, #6C63FF 100%)",
+            background: "linear-gradient(135deg, #38BDF8 0%, #0369A1 100%)",
           }}
         >
           <span className="text-6xl block mb-3">{resultEmoji}</span>
@@ -171,7 +171,7 @@ export default function QuizScreen({ onNavigate }) {
             <button
               onClick={() => onNavigate("vocabulary")}
               className="flex-1 py-3.5 rounded-2xl text-white font-bold text-sm"
-              style={{ background: "linear-gradient(135deg, #2EC4B6, #1A3C40)" }}
+              style={{ background: "linear-gradient(135deg, #0EA5A0, #0D3D56)" }}
             >
               Tan-awa ang Pulong
             </button>
@@ -187,12 +187,12 @@ export default function QuizScreen({ onNavigate }) {
   const progress = ((currentQ + (isAnswered ? 1 : 0)) / questions.length) * 100;
 
   return (
-    <div className="min-h-screen bg-cream pb-24">
+    <div className="min-h-screen bg-cream pb-nav">
       {/* Header */}
       <div
         className="px-5 pt-10 pb-6 rounded-b-[36px]"
         style={{
-          background: "linear-gradient(135deg, #A29BFE 0%, #6C63FF 100%)",
+          background: "linear-gradient(135deg, #38BDF8 0%, #0369A1 100%)",
         }}
       >
         <div className="flex items-center justify-between mb-4">
@@ -280,8 +280,8 @@ export default function QuizScreen({ onNavigate }) {
             onClick={handleNext}
             className="w-full mt-5 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 animate-fadeUp"
             style={{
-              background: "linear-gradient(135deg, #2EC4B6, #1A3C40)",
-              boxShadow: "0 4px 16px rgba(46,196,182,0.25)",
+              background: "linear-gradient(135deg, #0EA5A0, #0D3D56)",
+              boxShadow: "0 4px 16px rgba(14,165,160,0.25)",
             }}
           >
             {currentQ + 1 >= questions.length

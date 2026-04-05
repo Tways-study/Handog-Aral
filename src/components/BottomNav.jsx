@@ -22,7 +22,8 @@ export default function BottomNav({ current, onNavigate }) {
                 <button
                   key={tab.id}
                   onClick={() => onNavigate(tab.id)}
-                  className="flex-1 flex flex-col items-center pb-2"
+                  className="flex-1 flex flex-col items-center"
+                  style={{ paddingBottom: '8px' }}
                 >
                   <div
                     className={`-translate-y-4 w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-all ${
@@ -30,17 +31,18 @@ export default function BottomNav({ current, onNavigate }) {
                     }`}
                     style={{
                       background: active
-                        ? "linear-gradient(135deg, #1A3C40, #2EC4B6)"
-                        : "linear-gradient(135deg, #2EC4B6, #56C596)",
-                      boxShadow: "0 4px 16px rgba(46,196,182,0.35)",
+                        ? "linear-gradient(135deg, #0D3D56, #0EA5A0)"
+                        : "linear-gradient(135deg, #0EA5A0, #34D399)",
+                      boxShadow: "0 4px 16px rgba(14,165,160,0.35)",
                     }}
                   >
                     <Icon size={26} className="text-white" strokeWidth={2.5} />
                   </div>
                   <span
-                    className={`text-[10px] -mt-3 font-semibold ${
+                    className={`-mt-3 font-semibold ${
                       active ? "text-teal" : "text-muted-text"
                     }`}
+                    style={{ fontSize: '0.625rem' }}
                   >
                     {tab.label}
                   </span>
@@ -52,9 +54,10 @@ export default function BottomNav({ current, onNavigate }) {
               <button
                 key={tab.id}
                 onClick={() => onNavigate(tab.id)}
-                className={`flex-1 flex flex-col items-center py-2 pt-3 gap-0.5 transition-colors ${
+                className={`flex-1 flex flex-col items-center transition-colors ${
                   active ? "text-teal" : "text-muted-text"
                 }`}
+                style={{ paddingTop: '10px', paddingBottom: '8px', gap: '2px' }}
               >
                 <div className="relative">
                   <Icon size={21} strokeWidth={active ? 2.5 : 1.8} />
@@ -62,7 +65,7 @@ export default function BottomNav({ current, onNavigate }) {
                     <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-teal block" />
                   )}
                 </div>
-                <span className="text-[10px] font-semibold">{tab.label}</span>
+                <span className="font-semibold" style={{ fontSize: '0.625rem' }}>{tab.label}</span>
               </button>
             );
           })}

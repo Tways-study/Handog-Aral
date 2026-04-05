@@ -19,6 +19,7 @@ export default function ScanScreen() {
   const [showCamera, setShowCamera] = useState(false);
   const debounceRef = useRef(null);
   const fileInputRef = useRef(null);
+  const textareaRef = useRef(null);
 
   // When arriving from a book, pre-load its text
   const bookText = state.currentBook?.text;
@@ -69,10 +70,11 @@ export default function ScanScreen() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(async () => {
         const lower = clean.toLowerCase();
+        const cacheKey = `${lower}_${state.language}`;
 
-        // Check cache
-        if (state.wordCache[lower]) {
-          setSelectedWord(state.wordCache[lower]);
+        // Check cache (language-specific)
+        if (state.wordCache[cacheKey]) {
+          setSelectedWord(state.wordCache[cacheKey]);
           return;
         }
 
@@ -86,7 +88,7 @@ export default function ScanScreen() {
           });
           dispatch({
             type: "CACHE_WORD",
-            payload: { word: lower, data: result },
+            payload: { word: cacheKey, data: result },
           });
           setSelectedWord(result);
           setRecentWords((prev) => {
@@ -94,7 +96,15 @@ export default function ScanScreen() {
             return [clean, ...filtered].slice(0, 8);
           });
         } catch {
-          // fallback handled in service
+          setSelectedWord({
+            word: clean,
+            phonetic: `/${clean}/`,
+            english: "A word found in your reading.",
+            translation: "Tan-awa sa diksyunaryo ang buot silingon sini.",
+            emoji: "📖",
+            difficulty: "easy",
+            example: null,
+          });
         } finally {
           setWordLoading(false);
         }
@@ -106,7 +116,7 @@ export default function ScanScreen() {
   const tokens = tokenize(displayText);
 
   return (
-    <div className="min-h-screen bg-[#111] pb-24">
+    <div className="min-h-screen bg-[#111] pb-nav">
       {/* Top bar */}
       <div className="px-4 pt-5 pb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -198,9 +208,9 @@ export default function ScanScreen() {
             {/* Text mode input */}
             {mode === "text" && !displayText && (
               <textarea
+                ref={textareaRef}
                 className="w-full h-[280px] resize-none bg-transparent text-dark-text text-sm leading-relaxed outline-none placeholder:text-muted-text/50"
                 placeholder="I-paste o i-type diri ang teksto sang libro..."
-                onBlur={(e) => setRawText(e.target.value)}
                 defaultValue=""
               />
             )}
@@ -299,8 +309,8 @@ export default function ScanScreen() {
         <div className="px-4 mt-3">
           <button
             onClick={() => {
-              const textarea = document.querySelector("textarea");
-              if (textarea?.value) setRawText(textarea.value);
+              const val = textareaRef.current?.value;
+              if (val?.trim()) setRawText(val.trim());
             }}
             className="w-full bg-teal text-white text-sm font-bold py-3 rounded-xl"
           >

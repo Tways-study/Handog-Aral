@@ -17,12 +17,12 @@ export default function BooksScreen({ onNavigate }) {
   };
 
   return (
-    <div className="min-h-screen bg-cream pb-24">
+    <div className="min-h-screen bg-cream pb-nav">
       {/* Header */}
       <div
         className="px-5 pt-10 pb-7 rounded-b-[36px]"
         style={{
-          background: "linear-gradient(135deg, #FF9F43 0%, #FFD166 100%)",
+          background: "linear-gradient(135deg, #F97316 0%, #F59E0B 100%)",
         }}
       >
         <h1 className="font-heading text-2xl font-bold text-white mb-1">

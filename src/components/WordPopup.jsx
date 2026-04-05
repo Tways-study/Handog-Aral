@@ -60,7 +60,7 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
           <div className="flex items-center gap-4 mb-4">
             <div
               className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
-              style={{ background: "linear-gradient(135deg, #f0f9ff, #e0f2fe)" }}
+              style={{ background: "linear-gradient(135deg, #f0f9ff, #e0f7fa)" }}
             >
               <span className="text-4xl">{wordData.emoji}</span>
             </div>
@@ -114,7 +114,7 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
               onClick={handleSpeak}
               className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm"
               style={{
-                background: "linear-gradient(135deg, #A29BFE, #73C2FB)",
+                background: "linear-gradient(135deg, #38BDF8, #0EA5A0)",
                 color: "white",
               }}
             >

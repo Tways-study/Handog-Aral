@@ -1,22 +1,31 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
-import { hasApiKey, setApiKey } from "../services/geminiService";
+import { hasApiKey, setApiKey, clearApiKey } from "../services/geminiService";
 import Mascot from "../components/Mascot";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Eye, EyeOff, X } from "lucide-react";
 
 export default function SettingsScreen() {
   const { state, dispatch } = useApp();
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [showReset, setShowReset] = useState(false);
   const [keySaved, setKeySaved] = useState(false);
+  const [keyIsSet, setKeyIsSet] = useState(() => hasApiKey());
+  const [showKey, setShowKey] = useState(false);
 
   const handleSaveKey = () => {
     if (apiKeyInput.trim()) {
       setApiKey(apiKeyInput.trim());
       setApiKeyInput("");
       setKeySaved(true);
+      setKeyIsSet(true);
       setTimeout(() => setKeySaved(false), 2000);
     }
+  };
+
+  const handleClearKey = () => {
+    clearApiKey();
+    setKeyIsSet(false);
+    setApiKeyInput("");
   };
 
   const handleReset = () => {
@@ -25,7 +34,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-cream pb-24">
+    <div className="min-h-screen bg-cream pb-nav">
       {/* Header */}
       <div className="px-5 pt-8 pb-4 flex items-center gap-3">
         <Mascot size={32} />
@@ -200,26 +209,47 @@ export default function SettingsScreen() {
           <label className="font-heading font-bold text-sm text-dark-text block mb-1">
             Gemini API Key
           </label>
-          <p className="text-muted-text text-xs mb-2">
-            {hasApiKey()
-              ? "✅ API key is set"
+          <p className={`text-xs mb-3 font-semibold ${keyIsSet ? "text-leaf-green" : "text-muted-text"}`}>
+            {keyIsSet
+              ? "✅ API key is set — AI definitions active"
               : "Kuha-a ang free key sa aistudio.google.com"}
           </p>
-          <div className="flex gap-2">
-            <input
-              type="password"
-              value={apiKeyInput}
-              onChange={(e) => setApiKeyInput(e.target.value)}
-              placeholder="Paste API key here..."
-              className="flex-1 bg-cream rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-teal/30"
-            />
+          {keyIsSet ? (
             <button
-              onClick={handleSaveKey}
-              className="bg-teal text-white text-sm font-bold px-4 rounded-xl"
+              onClick={handleClearKey}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-coral/10 text-coral text-sm font-semibold border border-coral/20"
             >
-              {keySaved ? "✓" : "Save"}
+              <X size={14} />
+              Remove API Key
             </button>
-          </div>
+          ) : (
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <input
+                  type={showKey ? "text" : "password"}
+                  value={apiKeyInput}
+                  onChange={(e) => setApiKeyInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSaveKey()}
+                  placeholder="Paste API key here..."
+                  className="w-full bg-cream rounded-xl px-3 py-2.5 pr-10 text-sm outline-none focus:ring-2 focus:ring-teal/30"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowKey((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-text"
+                >
+                  {showKey ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
+              </div>
+              <button
+                onClick={handleSaveKey}
+                disabled={!apiKeyInput.trim()}
+                className="bg-teal text-white text-sm font-bold px-4 rounded-xl disabled:opacity-40"
+              >
+                {keySaved ? "✓" : "Save"}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Reset */}

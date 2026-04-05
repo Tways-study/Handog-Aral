@@ -11,7 +11,7 @@ export default function SplashScreen({ onFinish }) {
     <div
       className="fixed inset-0 flex flex-col items-center justify-center"
       style={{
-        background: "linear-gradient(160deg, #1A3C40 0%, #2EC4B6 50%, #FFD166 100%)",
+        background: "linear-gradient(160deg, #0D3D56 0%, #0EA5A0 50%, #F59E0B 100%)",
       }}
     >
       <div className="animate-bounce mb-6">

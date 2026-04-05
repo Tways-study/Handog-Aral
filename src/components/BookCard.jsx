@@ -6,7 +6,7 @@ const BookCard = memo(function BookCard({ book, progress, onClick }) {
   const levelLabel =
     pct === 0 ? "Bag-o" : pct < 50 ? "Ginapadayon" : pct < 100 ? "Malapit na!" : "Natapos! 🎉";
   const levelColor =
-    pct === 0 ? "#636E72" : pct < 50 ? "#FF9F43" : pct < 100 ? "#2EC4B6" : "#56C596";
+    pct === 0 ? "#64748B" : pct < 50 ? "#F97316" : pct < 100 ? "#0EA5A0" : "#34D399";
 
   return (
     <button
