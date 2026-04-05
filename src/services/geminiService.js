@@ -25,7 +25,6 @@ export function setApiKey(key) {
 }
 
 export async function explainWord({ word, sentence, targetLanguage }) {
-  // Check fallback first
   const lower = word.toLowerCase();
   const fallback = fallbackWords[lower];
 
@@ -38,7 +37,8 @@ export async function explainWord({ word, sentence, targetLanguage }) {
       english: "A word found in your reading.",
       translation: "Tan-awa sa diksyunaryo ang buot silingon sini.",
       emoji: "📖",
-      difficulty: "medium",
+      difficulty: "easy",
+      example: null,
     };
   }
 
@@ -53,12 +53,15 @@ You are a friendly literacy tutor helping a Filipino child aged 6-12 understand 
 The child tapped the word: "${word}"
 It appeared in this sentence: "${sentence}"
 
+IMPORTANT: Explain ANY type of word — including common/short words like articles (a, an, the), pronouns (I, he, she, it, we, they), prepositions (in, on, at, to, for, of, with), conjunctions (and, but, or, so), verbs (is, are, was, has, can, go), adverbs (very, just, only, also), and nouns/adjectives. Every word has a meaning worth learning.
+
 Your task:
-1. Give a simple, one-sentence English definition (Grade 2 reading level, max 15 words).
-2. ${languageInstruction} Give a fun, relatable explanation using local Filipino context (carabao, rice fields, jeepney, palengke, etc.) — max 20 words.
-3. Give the phonetic pronunciation in simple syllables (e.g., /SNOH/ for "snow").
+1. Give a simple, one-sentence English definition appropriate to how the word is used in the sentence (Grade 2 reading level, max 15 words).
+2. ${languageInstruction} Give a fun, relatable explanation using local Filipino context (carabao, rice fields, jeepney, palengke, baryo, etc.) — max 20 words.
+3. Give the phonetic pronunciation in simple syllables (e.g., /SNOH/ for "snow", /duh/ for "the").
 4. Suggest one relevant emoji that represents the word visually.
 5. Classify the word difficulty: easy / medium / hard.
+6. Write one short example sentence (max 10 words) using the word in a simple, child-friendly context.
 
 Respond ONLY in this exact JSON format, no markdown, no backticks:
 {
@@ -67,7 +70,8 @@ Respond ONLY in this exact JSON format, no markdown, no backticks:
   "english": "Simple English definition here.",
   "translation": "Hiligaynon or Filipino explanation here.",
   "emoji": "🎯",
-  "difficulty": "medium"
+  "difficulty": "easy",
+  "example": "The dog ran fast."
 }
 `;
 
@@ -84,7 +88,8 @@ Respond ONLY in this exact JSON format, no markdown, no backticks:
       english: "A word found in your reading.",
       translation: "Tan-awa sa diksyunaryo ang buot silingon sini.",
       emoji: "📖",
-      difficulty: "medium",
+      difficulty: "easy",
+      example: null,
     };
   }
 }

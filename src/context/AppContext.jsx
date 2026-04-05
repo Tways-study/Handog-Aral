@@ -14,6 +14,9 @@ const initialState = {
   currentBook: null,
   wordCache: {},
   bookProgress: {},
+  streak: 0,
+  lastActiveDate: null,
+  quizHighScore: 0,
 };
 
 function loadState() {
@@ -64,6 +67,15 @@ function reducer(state, action) {
         ...state,
         bookProgress: { ...state.bookProgress, [action.payload.id]: action.payload.progress },
       };
+    case "UPDATE_STREAK": {
+      const today = new Date().toISOString().split("T")[0];
+      if (state.lastActiveDate === today) return state;
+      const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
+      const newStreak = state.lastActiveDate === yesterday ? state.streak + 1 : 1;
+      return { ...state, streak: newStreak, lastActiveDate: today };
+    }
+    case "SET_QUIZ_HIGH_SCORE":
+      return { ...state, quizHighScore: Math.max(state.quizHighScore || 0, action.payload) };
     case "RESET_PROGRESS":
       return { ...initialState, childName: state.childName, language: state.language };
     default:

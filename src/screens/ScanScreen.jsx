@@ -3,7 +3,6 @@ import { Camera, Type, Loader2 } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { explainWord } from "../services/geminiService";
 import { extractTextFromImage } from "../services/ocrService";
-import { sightWords } from "../data/sightWords";
 import WordPopup from "../components/WordPopup";
 import CameraScanner from "../components/CameraScanner";
 import Mascot from "../components/Mascot";
@@ -27,13 +26,6 @@ export default function ScanScreen() {
 
   const tokenize = (text) => {
     return text.split(/(\s+|[.,!?;:"""''()\[\]])/).filter(Boolean);
-  };
-
-  const isComplexWord = (w) => {
-    const clean = w.replace(/[^a-zA-Z]/g, "");
-    if (!clean || clean.length < 2) return false;
-    if (sightWords.has(clean.toLowerCase())) return false;
-    return clean.length > 5;
   };
 
   const handleImageCapture = async (file) => {
@@ -71,7 +63,7 @@ export default function ScanScreen() {
   const handleWordTap = useCallback(
     (word, tokens, index) => {
       const clean = word.replace(/[^a-zA-Z]/g, "");
-      if (!clean || clean.length < 2) return;
+      if (!clean) return;
 
       // Debounce
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -232,30 +224,30 @@ export default function ScanScreen() {
 
             {/* Rendered words */}
             {displayText && !isOCRing && (
-              <div className="leading-loose">
-                {tokens.map((token, i) => {
-                  const isWord = /[a-zA-Z]{2,}/.test(token);
-                  const complex = isComplexWord(token);
-                  if (!isWord) {
-                    return <span key={i}>{token}</span>;
-                  }
-                  return (
-                    <span
-                      key={i}
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => handleWordTap(token, tokens, i)}
-                      className={`tappable inline-block px-0.5 py-1 min-h-[44px] min-w-[44px] text-center rounded cursor-pointer transition-colors line-highlight ${
-                        complex
-                          ? "underline decoration-teal decoration-2 underline-offset-4 font-semibold"
-                          : ""
-                      } hover:bg-sun-yellow/20 active:bg-sun-yellow/30`}
-                    >
-                      {token}
-                    </span>
-                  );
-                })}
-              </div>
+              <>
+                <p className="text-muted-text/50 text-[10px] text-right mb-1 font-semibold">
+                  Tap any word to learn its meaning 👆
+                </p>
+                <div className="leading-loose">
+                  {tokens.map((token, i) => {
+                    const isWord = /[a-zA-Z]/.test(token);
+                    if (!isWord) {
+                      return <span key={i}>{token}</span>;
+                    }
+                    return (
+                      <span
+                        key={i}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => handleWordTap(token, tokens, i)}
+                        className="tappable inline-block px-0.5 rounded cursor-pointer transition-all underline decoration-teal/40 decoration-dotted underline-offset-4 hover:decoration-teal hover:decoration-solid hover:decoration-2 hover:bg-sun-yellow/20 active:bg-sun-yellow/30 active:decoration-teal active:decoration-2"
+                      >
+                        {token}
+                      </span>
+                    );
+                  })}
+                </div>
+              </>
             )}
           </div>
         </div>

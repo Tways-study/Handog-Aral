@@ -1,7 +1,13 @@
 import { memo } from "react";
-import { X, Volume2, Check } from "lucide-react";
+import { X, Volume2, Check, BookOpen } from "lucide-react";
 import { useTextToSpeech } from "../hooks/useTextToSpeech";
 import { useApp } from "../context/AppContext";
+
+const difficultyConfig = {
+  easy: { color: "bg-leaf-green", label: "Dali" },
+  medium: { color: "bg-sun-yellow", label: "Medyo" },
+  hard: { color: "bg-coral", label: "Budlay" },
+};
 
 const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
   const { speak } = useTextToSpeech();
@@ -12,6 +18,11 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
     (w) => w.word.toLowerCase() === wordData.word.toLowerCase()
   );
 
+  const config = difficultyConfig[wordData.difficulty] || {
+    color: "bg-gray-400",
+    label: wordData.difficulty,
+  };
+
   const handleSpeak = () => {
     speak(wordData.word, state.ttsSpeed);
   };
@@ -21,89 +32,106 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
     onSave?.(wordData);
   };
 
-  const difficultyColor = {
-    easy: "bg-leaf-green",
-    medium: "bg-sun-yellow",
-    hard: "bg-coral",
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
 
       {/* Sheet */}
-      <div className="relative w-full max-w-[390px] bg-white rounded-t-3xl animate-slideUp">
+      <div className="relative w-full max-w-[390px] bg-white rounded-t-[28px] animate-slideUp shadow-2xl">
         {/* Handle */}
-        <div className="flex justify-center pt-3">
+        <div className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 bg-gray-200 rounded-full" />
         </div>
 
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-4 p-2 rounded-full bg-gray-100"
+          className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 text-muted-text"
         >
-          <X size={18} />
+          <X size={16} />
         </button>
 
-        <div className="px-6 pt-4 pb-8">
+        <div className="px-6 pt-2 pb-8">
           {/* Word header */}
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-4xl">{wordData.emoji}</span>
-            <div>
-              <h2 className="font-heading text-2xl font-bold text-dark-text">
+          <div className="flex items-center gap-4 mb-4">
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+              style={{ background: "linear-gradient(135deg, #f0f9ff, #e0f2fe)" }}
+            >
+              <span className="text-4xl">{wordData.emoji}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="font-heading text-2xl font-bold text-dark-text leading-tight">
                 {wordData.word}
               </h2>
-              <span
-                className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold text-white ${
-                  difficultyColor[wordData.difficulty] || "bg-gray-400"
-                }`}
-              >
-                {wordData.difficulty}
-              </span>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="font-semibold text-lavender text-sm">
+                  {wordData.phonetic}
+                </span>
+                <span
+                  className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold text-white ${config.color}`}
+                >
+                  {config.label}
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* Phonetic */}
-          <div className="inline-block px-3 py-1 rounded-full bg-lavender/20 text-lavender font-semibold text-sm mb-4">
-            {wordData.phonetic}
-          </div>
-
           {/* English definition */}
-          <div className="bg-sky-blue/10 rounded-xl p-3 mb-3">
-            <p className="text-sm font-semibold text-sky-blue mb-1">English</p>
-            <p className="text-dark-text text-sm">{wordData.english}</p>
+          <div className="bg-sky-blue/10 rounded-2xl p-3.5 mb-2.5 border border-sky-blue/15">
+            <div className="flex items-center gap-1.5 mb-1">
+              <BookOpen size={13} className="text-sky-blue" />
+              <p className="text-xs font-bold text-sky-blue">English</p>
+            </div>
+            <p className="text-dark-text text-sm leading-relaxed">{wordData.english}</p>
           </div>
 
           {/* Translation */}
-          <div className="bg-teal/10 rounded-xl p-3 mb-4">
-            <p className="text-sm font-semibold text-teal mb-1">
+          <div className="bg-teal/10 rounded-2xl p-3.5 mb-2.5 border border-teal/15">
+            <p className="text-xs font-bold text-teal mb-1">
               {state.language === "hiligaynon" ? "🗣 Hiligaynon" : "🇵🇭 Filipino"}
             </p>
-            <p className="text-dark-text text-sm">{wordData.translation}</p>
+            <p className="text-dark-text text-sm leading-relaxed">{wordData.translation}</p>
           </div>
 
+          {/* Example sentence — shown if provided by Gemini */}
+          {wordData.example && (
+            <div className="bg-lavender/10 rounded-2xl p-3.5 mb-2.5 border border-lavender/15">
+              <p className="text-xs font-bold text-lavender mb-1">✏️ Halimbawa</p>
+              <p className="text-dark-text text-sm leading-relaxed italic">
+                "{wordData.example}"
+              </p>
+            </div>
+          )}
+
           {/* Actions */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 mt-4">
             <button
               onClick={handleSpeak}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-lavender text-white font-bold text-sm"
+              className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm"
+              style={{
+                background: "linear-gradient(135deg, #A29BFE, #73C2FB)",
+                color: "white",
+              }}
             >
-              <Volume2 size={18} />
+              <Volume2 size={17} />
               Paminawa
             </button>
             <button
               onClick={handleSave}
               disabled={isLearned}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm ${
+              className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm transition-all ${
                 isLearned
-                  ? "bg-leaf-green/20 text-leaf-green"
+                  ? "bg-leaf-green/15 text-leaf-green border border-leaf-green/30"
                   : "bg-leaf-green text-white"
               }`}
             >
-              <Check size={18} />
-              {isLearned ? "Natuon Na!" : "Natuon Na!"}
+              <Check size={17} />
+              {isLearned ? "Natuon Na! ✓" : "I-save"}
             </button>
           </div>
         </div>

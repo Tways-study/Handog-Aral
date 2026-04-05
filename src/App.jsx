@@ -6,6 +6,7 @@ import ScanScreen from "./screens/ScanScreen";
 import BooksScreen from "./screens/BooksScreen";
 import VocabularyScreen from "./screens/VocabularyScreen";
 import SettingsScreen from "./screens/SettingsScreen";
+import QuizScreen from "./screens/QuizScreen";
 import BottomNav from "./components/BottomNav";
 
 function AppContent() {
@@ -23,6 +24,7 @@ function AppContent() {
     scan: <ScanScreen />,
     books: <BooksScreen onNavigate={navigate} />,
     vocabulary: <VocabularyScreen />,
+    quiz: <QuizScreen onNavigate={navigate} />,
     settings: <SettingsScreen />,
   };
 
