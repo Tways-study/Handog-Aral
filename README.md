@@ -40,6 +40,24 @@
 
 ---
 
+## What's New (v2.4)
+
+### All-English Book Library
+
+- **6 fully English books** — All stories were rewritten or replaced to support English literacy. Previously 2 of 3 books used Tagalog text. New titles: _The Brave Little Fox_, _Maria and the Shining Star_, _Pedro and the Rice Field_, _The Rainbow After the Rain_, _The Slow and Steady Turtle_, _A Day at the Market_.
+- **Vocabulary aligned to offline dictionary** — Every story was rewritten so key "tap-worthy" words (`enormous`, `wilderness`, `whispered`, `determined`, `patient`, `peculiar`, `rainbow`, `magnificent`, `protect`, `careful`, etc.) exist as keys in `fallbackWords.js`. Children get instant offline definitions for the most important words in each story without needing Gemini or a network connection.
+
+### Language-Aware Definitions
+
+- **Dual translation fields in `fallbackWords.js`** — Every entry now has separate `hiligaynon:` and `tagalog:` fields instead of a single `translation:` field. `geminiService.js` picks the correct field based on `targetLanguage`.
+- **Last-resort placeholders are language-specific** — Even the final fallback text in `explainWord()` now returns the correct language instead of always showing a Hiligaynon string.
+
+### Home Screen Book Count
+
+- **Book count is now dynamic** — The home screen card previously displayed a hardcoded `"3 na libro"` / `"3 ka libro"`. It now reads `sampleBooks.length` at runtime, so adding or removing books from `books.js` is automatically reflected.
+
+---
+
 ## What's New (v2.1)
 
 - **Vocabulary Quiz** (`QuizScreen`) — Test knowledge of saved words with 4-choice questions, per-question feedback, score recap, and high-score badge. Unlocks after saving 4+ words.

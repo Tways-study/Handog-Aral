@@ -4,6 +4,7 @@ import { useTranslations } from "../hooks/useTranslations";
 import Mascot from "../components/Mascot";
 import StarProgress from "../components/StarProgress";
 import { Camera, Lightbulb, Brain, BookOpen } from "lucide-react";
+import { sampleBooks } from "../data/books";
 
 export default function HomeScreen({ onNavigate }) {
   const { state, dispatch } = useApp();
@@ -101,7 +102,7 @@ export default function HomeScreen({ onNavigate }) {
             <p className="text-muted-text text-xs mt-0.5">
               {Object.values(state.bookProgress).filter((p) => p >= 100).length > 0
                 ? t.home.quickBooksSubContinue
-                : t.home.quickBooksSubNew}
+                : t.home.quickBooksSubNew(sampleBooks.length)}
             </p>
           </button>
 
