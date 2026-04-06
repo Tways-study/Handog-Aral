@@ -1,5 +1,5 @@
 export default function StarProgress({ stars = 0, max = 5, compact = false }) {
-  const size = compact ? "text-base" : "text-xl";
+  const size = compact ? "text-sm" : "text-xl";
   return (
     <div className={`flex items-center ${compact ? "gap-0.5" : "gap-1"}`}>
       {Array.from({ length: max }).map((_, i) => (

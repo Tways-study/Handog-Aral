@@ -1,10 +1,12 @@
 import { memo } from "react";
 import { ChevronRight } from "lucide-react";
+import { useTranslations } from "../hooks/useTranslations";
 
 const BookCard = memo(function BookCard({ book, progress, onClick }) {
+  const t = useTranslations();
   const pct = progress ?? book.progress ?? 0;
   const levelLabel =
-    pct === 0 ? "Bag-o" : pct < 50 ? "Ginapadayon" : pct < 100 ? "Malapit na!" : "Natapos! 🎉";
+    pct === 0 ? t.bookCard.statusNew : pct < 50 ? t.bookCard.statusInProgress : pct < 100 ? t.bookCard.statusAlmost : t.bookCard.statusDone;
   const levelColor =
     pct === 0 ? "#64748B" : pct < 50 ? "#F97316" : pct < 100 ? "#0EA5A0" : "#34D399";
 
@@ -33,7 +35,7 @@ const BookCard = memo(function BookCard({ book, progress, onClick }) {
             {book.title}
           </h3>
           <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full inline-block mb-2"
+            className="text-xs font-bold px-2 py-0.5 rounded-full inline-block mb-2"
             style={{ backgroundColor: levelColor + "22", color: levelColor }}
           >
             {levelLabel}
@@ -44,7 +46,7 @@ const BookCard = memo(function BookCard({ book, progress, onClick }) {
               style={{ width: `${Math.max(pct, pct > 0 ? 4 : 0)}%`, backgroundColor: book.color }}
             />
           </div>
-          <p className="text-[11px] text-muted-text mt-1">{pct}% natapos na</p>
+          <p className="text-xs text-muted-text mt-1">{t.bookCard.progressText(pct)}</p>
         </div>
 
         <ChevronRight size={16} className="text-muted-text flex-shrink-0" />

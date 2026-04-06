@@ -1,14 +1,17 @@
 import { Home, Camera, Star, Settings, BookOpen } from "lucide-react";
-
-const tabs = [
-  { id: "home", label: "Balay", icon: Home },
-  { id: "books", label: "Mga Libro", icon: BookOpen },
-  { id: "scan", label: "I-Scan", icon: Camera, isFab: true },
-  { id: "vocabulary", label: "Bituon", icon: Star },
-  { id: "settings", label: "Opsyon", icon: Settings },
-];
+import { useTranslations } from "../hooks/useTranslations";
 
 export default function BottomNav({ current, onNavigate }) {
+  const t = useTranslations();
+
+  const tabs = [
+    { id: "home", labelKey: "home", icon: Home },
+    { id: "books", labelKey: "books", icon: BookOpen },
+    { id: "scan", labelKey: "scan", icon: Camera, isFab: true },
+    { id: "vocabulary", labelKey: "vocabulary", icon: Star },
+    { id: "settings", labelKey: "settings", icon: Settings },
+  ];
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40">
       <div className="max-w-[390px] mx-auto bg-white border-t border-gray-100 safe-bottom">
@@ -44,7 +47,7 @@ export default function BottomNav({ current, onNavigate }) {
                     }`}
                     style={{ fontSize: '0.625rem' }}
                   >
-                    {tab.label}
+                    {t.nav[tab.labelKey]}
                   </span>
                 </button>
               );
@@ -65,7 +68,7 @@ export default function BottomNav({ current, onNavigate }) {
                     <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-teal block" />
                   )}
                 </div>
-                <span className="font-semibold" style={{ fontSize: '0.625rem' }}>{tab.label}</span>
+                <span className="font-semibold" style={{ fontSize: '0.625rem' }}>{t.nav[tab.labelKey]}</span>
               </button>
             );
           })}

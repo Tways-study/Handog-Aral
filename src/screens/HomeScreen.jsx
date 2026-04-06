@@ -1,11 +1,13 @@
 import { useEffect } from "react";
 import { useApp } from "../context/AppContext";
+import { useTranslations } from "../hooks/useTranslations";
 import Mascot from "../components/Mascot";
 import StarProgress from "../components/StarProgress";
 import { Camera, Lightbulb, Brain, BookOpen } from "lucide-react";
 
 export default function HomeScreen({ onNavigate }) {
   const { state, dispatch } = useApp();
+  const t = useTranslations();
   const name = state.childName || "Abyan";
   const learnedCount = state.wordsLearned.length;
   const canQuiz = learnedCount >= 4;
@@ -16,9 +18,9 @@ export default function HomeScreen({ onNavigate }) {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Maayong Aga! ☀️";
-    if (hour < 18) return "Maayong Hapon! 🌤️";
-    return "Maayong Gab-i! 🌙";
+    if (hour < 12) return t.home.greetingMorning;
+    if (hour < 18) return t.home.greetingAfternoon;
+    return t.home.greetingEvening;
   };
 
   return (
@@ -34,7 +36,7 @@ export default function HomeScreen({ onNavigate }) {
           <div>
             <p className="text-white/70 text-sm font-medium">{getGreeting()}</p>
             <h1 className="font-heading text-2xl font-bold text-white mt-0.5 leading-tight">
-              Handa ka na,<br />{name}?
+              {t.home.readyPrompt}<br />{name}?
             </h1>
           </div>
           <div className="flex flex-col items-center gap-1.5">
@@ -51,16 +53,16 @@ export default function HomeScreen({ onNavigate }) {
         {/* Stats row */}
         <div className="grid grid-cols-3 gap-2">
           <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 text-center">
-            <p className="text-white font-extrabold text-2xl font-heading leading-none">{learnedCount}</p>
-            <p className="text-white/70 text-[10px] font-semibold mt-0.5">Mga Pulong</p>
+            <p className="text-white font-extrabold text-xl font-heading leading-none">{learnedCount}</p>
+            <p className="text-white/70 text-xs font-semibold mt-0.5">{t.home.statWords}</p>
           </div>
           <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 text-center">
-            <p className="text-white font-extrabold text-2xl font-heading leading-none">{state.streak || 0}</p>
-            <p className="text-white/70 text-[10px] font-semibold mt-0.5">Araw Streak</p>
+            <p className="text-white font-extrabold text-xl font-heading leading-none">{state.streak || 0}</p>
+            <p className="text-white/70 text-xs font-semibold mt-0.5">{t.home.statStreak}</p>
           </div>
           <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 flex flex-col items-center justify-center">
             <StarProgress stars={state.stars} max={5} compact />
-            <p className="text-white/70 text-[10px] font-semibold mt-1">Mga Bitoon</p>
+            <p className="text-white/70 text-xs font-semibold mt-1">{t.home.statStars}</p>
           </div>
         </div>
       </div>
@@ -79,8 +81,8 @@ export default function HomeScreen({ onNavigate }) {
             <Camera size={24} />
           </div>
           <div className="text-left flex-1">
-            <p className="font-heading font-bold text-lg leading-tight">I-scan ang Libro</p>
-            <p className="text-white/80 text-xs">Tap-a ang bisan ano nga pulong!</p>
+            <p className="font-heading font-bold text-lg leading-tight">{t.home.ctaScanTitle}</p>
+            <p className="text-white/80 text-xs">{t.home.ctaScanSubtitle}</p>
           </div>
           <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
             <span className="text-white font-bold text-base">›</span>
@@ -95,11 +97,11 @@ export default function HomeScreen({ onNavigate }) {
             style={{ borderTop: "3px solid #F97316" }}
           >
             <BookOpen size={22} className="text-soft-orange mb-2" />
-            <p className="font-heading font-bold text-sm text-dark-text">Mga Libro</p>
+            <p className="font-heading font-bold text-sm text-dark-text">{t.home.quickBooks}</p>
             <p className="text-muted-text text-xs mt-0.5">
               {Object.values(state.bookProgress).filter((p) => p >= 100).length > 0
-                ? "Ipagpadayon!"
-                : "3 ka libro"}
+                ? t.home.quickBooksSubContinue
+                : t.home.quickBooksSubNew}
             </p>
           </button>
 
@@ -117,10 +119,10 @@ export default function HomeScreen({ onNavigate }) {
               className={`mb-2 ${canQuiz ? "text-lavender" : "text-teal"}`}
             />
             <p className="font-heading font-bold text-sm text-dark-text">
-              {canQuiz ? "Mag-Quiz!" : "Mga Pulong"}
+              {canQuiz ? t.home.quickQuiz : t.home.quickVocab}
             </p>
             <p className="text-muted-text text-xs mt-0.5">
-              {canQuiz ? `${learnedCount} pulong na!` : `${learnedCount} ka natuon`}
+              {canQuiz ? t.home.quickQuizSub(learnedCount) : t.home.quickVocabSub(learnedCount)}
             </p>
           </button>
         </div>
@@ -133,11 +135,10 @@ export default function HomeScreen({ onNavigate }) {
             </div>
             <div>
               <p className="font-heading font-bold text-sm text-dark-text mb-1">
-                Paano gamiton? 💡
+                {t.home.tipTitle}
               </p>
               <p className="text-muted-text text-xs leading-relaxed">
-                I-scan ang libro gamit ang camera o i-type ang teksto. Tap-a ang
-                bisan ano nga pulong para mahibal-an ang kahulugan!
+                {t.home.tipBody}
               </p>
             </div>
           </div>
@@ -146,10 +147,10 @@ export default function HomeScreen({ onNavigate }) {
             <span className="text-3xl flex-shrink-0">🎉</span>
             <div className="flex-1 min-w-0">
               <p className="font-heading font-bold text-sm text-leaf-green">
-                Maayo gid, {name}!
+                {t.home.praiseTitle(name)}
               </p>
               <p className="text-muted-text text-xs mt-0.5">
-                {learnedCount} pulong natuon na. {canQuiz ? "Subukan ang quiz!" : "Padayon lang!"}
+                {t.home.praiseSub(learnedCount)} {canQuiz ? t.home.praiseQuiz : t.home.praiseContinue}
               </p>
             </div>
             {canQuiz && (
@@ -157,7 +158,7 @@ export default function HomeScreen({ onNavigate }) {
                 onClick={() => onNavigate("quiz")}
                 className="bg-leaf-green text-white text-xs font-bold px-3 py-1.5 rounded-xl flex-shrink-0"
               >
-                Quiz! 🧠
+                {t.home.praiseQuizBtn}
               </button>
             )}
           </div>
@@ -168,13 +169,13 @@ export default function HomeScreen({ onNavigate }) {
           <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-3">
               <p className="font-heading font-bold text-sm text-dark-text">
-                Bag-o nga Natuon 📖
+                {t.home.recentTitle}
               </p>
               <button
                 onClick={() => onNavigate("vocabulary")}
                 className="text-teal text-xs font-bold"
               >
-                Tan-awa Tanan →
+                {t.home.recentViewAll}
               </button>
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -186,7 +187,7 @@ export default function HomeScreen({ onNavigate }) {
                   <span className="text-lg leading-none">{w.emoji}</span>
                   <div className="min-w-0">
                     <p className="font-semibold text-xs text-dark-text truncate capitalize">{w.word}</p>
-                    <p className="text-muted-text truncate" style={{ fontSize: "0.6rem" }}>{w.english}</p>
+                    <p className="text-muted-text text-[0.65rem] truncate leading-tight">{w.english}</p>
                   </div>
                 </div>
               ))}
@@ -198,7 +199,7 @@ export default function HomeScreen({ onNavigate }) {
         <div className="flex items-center justify-center gap-2 pt-1 pb-1">
           <Mascot size={22} />
           <p className="text-muted-text text-xs italic">
-            "Padayon lang sa pagtuon, {name}!"
+            "{t.home.mascotQuote(name)}"
           </p>
         </div>
       </div>

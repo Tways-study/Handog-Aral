@@ -2,6 +2,7 @@ import { memo } from "react";
 import { X, Volume2, Check, BookOpen } from "lucide-react";
 import { useTextToSpeech } from "../hooks/useTextToSpeech";
 import { useApp } from "../context/AppContext";
+import { useTranslations } from "../hooks/useTranslations";
 
 const difficultyConfig = {
   easy: { color: "bg-leaf-green", label: "Dali" },
@@ -12,6 +13,7 @@ const difficultyConfig = {
 const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
   const { speak } = useTextToSpeech();
   const { state, dispatch } = useApp();
+  const t = useTranslations();
   if (!wordData) return null;
 
   const isLearned = state.wordsLearned.some(
@@ -73,7 +75,7 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
                   {wordData.phonetic}
                 </span>
                 <span
-                  className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold text-white ${config.color}`}
+                  className={`inline-block px-2 py-0.5 rounded-full text-xs font-bold text-white ${config.color}`}
                 >
                   {config.label}
                 </span>
@@ -85,7 +87,7 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
           <div className="bg-sky-blue/10 rounded-2xl p-3.5 mb-2.5 border border-sky-blue/15">
             <div className="flex items-center gap-1.5 mb-1">
               <BookOpen size={13} className="text-sky-blue" />
-              <p className="text-xs font-bold text-sky-blue">English</p>
+              <p className="text-xs font-bold text-sky-blue">{t.popup.englishLabel}</p>
             </div>
             <p className="text-dark-text text-sm leading-relaxed">{wordData.english}</p>
           </div>
@@ -93,7 +95,7 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
           {/* Translation */}
           <div className="bg-teal/10 rounded-2xl p-3.5 mb-2.5 border border-teal/15">
             <p className="text-xs font-bold text-teal mb-1">
-              {state.language === "hiligaynon" ? "🗣 Hiligaynon" : "🇵🇭 Filipino"}
+              {t.popup.translationLabel}
             </p>
             <p className="text-dark-text text-sm leading-relaxed">{wordData.translation}</p>
           </div>
@@ -101,7 +103,7 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
           {/* Example sentence — shown if provided by Gemini */}
           {wordData.example && (
             <div className="bg-lavender/10 rounded-2xl p-3.5 mb-2.5 border border-lavender/15">
-              <p className="text-xs font-bold text-lavender mb-1">✏️ Halimbawa</p>
+              <p className="text-xs font-bold text-lavender mb-1">{t.popup.exampleLabel}</p>
               <p className="text-dark-text text-sm leading-relaxed italic">
                 "{wordData.example}"
               </p>
@@ -119,7 +121,7 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
               }}
             >
               <Volume2 size={17} />
-              Paminawa
+              {t.popup.speakBtn}
             </button>
             <button
               onClick={handleSave}
@@ -131,7 +133,7 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
               }`}
             >
               <Check size={17} />
-              {isLearned ? "Natuon Na! ✓" : "I-save"}
+              {isLearned ? t.popup.savedBtn : t.popup.saveBtn}
             </button>
           </div>
         </div>

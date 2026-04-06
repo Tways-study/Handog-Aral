@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
+import { useTranslations } from "../hooks/useTranslations";
 import { hasApiKey, setApiKey, clearApiKey } from "../services/geminiService";
 import Mascot from "../components/Mascot";
 import { AlertTriangle, Eye, EyeOff, X } from "lucide-react";
 
 export default function SettingsScreen() {
   const { state, dispatch } = useApp();
+  const t = useTranslations();
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [showReset, setShowReset] = useState(false);
   const [keySaved, setKeySaved] = useState(false);
@@ -40,9 +42,9 @@ export default function SettingsScreen() {
         <Mascot size={32} />
         <div>
           <h1 className="font-heading text-2xl font-bold text-dark-text">
-            Opsyon ⚙️
+            {t.settings.title}
           </h1>
-          <p className="text-muted-text text-xs">Settings & Preferences</p>
+          <p className="text-muted-text text-xs">{t.settings.subtitle}</p>
         </div>
       </div>
 
@@ -50,7 +52,7 @@ export default function SettingsScreen() {
         {/* Child's name */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           <label className="font-heading font-bold text-sm text-dark-text block mb-2">
-            Ngalan sang Bata
+            {t.settings.nameLabel}
           </label>
           <input
             type="text"
@@ -58,7 +60,7 @@ export default function SettingsScreen() {
             onChange={(e) =>
               dispatch({ type: "SET_NAME", payload: e.target.value })
             }
-            placeholder="I-type ang ngalan..."
+            placeholder={t.settings.namePlaceholder}
             className="w-full bg-cream rounded-xl px-4 py-3 text-sm text-dark-text outline-none focus:ring-2 focus:ring-teal/30"
           />
         </div>
@@ -66,7 +68,7 @@ export default function SettingsScreen() {
         {/* Language */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           <label className="font-heading font-bold text-sm text-dark-text block mb-2">
-            Lengguahe
+            {t.settings.languageLabel}
           </label>
           <div className="flex gap-2">
             {[
@@ -93,22 +95,29 @@ export default function SettingsScreen() {
         {/* Font size */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           <label className="font-heading font-bold text-sm text-dark-text block mb-2">
-            Font Size
+            {t.settings.fontSizeLabel}
           </label>
           <div className="flex gap-2">
-            {["small", "medium", "large"].map((size) => (
+            {[
+              { id: "small", previewClass: "text-sm" },
+              { id: "medium", previewClass: "text-base" },
+              { id: "large", previewClass: "text-xl" },
+            ].map((size) => (
               <button
-                key={size}
+                key={size.id}
                 onClick={() =>
-                  dispatch({ type: "SET_FONT_SIZE", payload: size })
+                  dispatch({ type: "SET_FONT_SIZE", payload: size.id })
                 }
-                className={`flex-1 py-2.5 rounded-xl text-sm font-semibold capitalize transition-colors ${
-                  state.fontSize === size
+                className={`flex-1 py-2.5 rounded-xl font-semibold transition-colors flex flex-col items-center gap-0.5 ${
+                  state.fontSize === size.id
                     ? "bg-teal text-white"
                     : "bg-gray-100 text-muted-text"
                 }`}
               >
-                {size}
+                <span className={`${size.previewClass} font-bold leading-none`}>A</span>
+                <span className="text-xs">
+                  {size.id === "small" ? t.settings.fontSmall : size.id === "medium" ? t.settings.fontMedium : t.settings.fontLarge}
+                </span>
               </button>
             ))}
           </div>
@@ -119,10 +128,10 @@ export default function SettingsScreen() {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-heading font-bold text-sm text-dark-text">
-                Dyslexia-Friendly Font
+                {t.settings.dyslexiaLabel}
               </p>
               <p className="text-muted-text text-xs">
-                OpenDyslexic para mas mahapos basahon
+                {t.settings.dyslexiaSub}
               </p>
             </div>
             <button
@@ -148,13 +157,13 @@ export default function SettingsScreen() {
         {/* TTS Speed */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           <label className="font-heading font-bold text-sm text-dark-text block mb-2">
-            TTS Speed: {state.ttsSpeed === 0.5 ? "Slow" : state.ttsSpeed === 0.8 ? "Normal" : "Fast"}
+            {t.settings.ttsLabel(state.ttsSpeed)}
           </label>
           <div className="flex gap-2">
             {[
-              { val: 0.5, label: "Hinay" },
-              { val: 0.8, label: "Normal" },
-              { val: 1.2, label: "Dasig" },
+              { val: 0.5, key: "ttsSlow" },
+              { val: 0.8, key: "ttsNormal" },
+              { val: 1.2, key: "ttsFast" },
             ].map((s) => (
               <button
                 key={s.val}
@@ -167,7 +176,7 @@ export default function SettingsScreen() {
                     : "bg-gray-100 text-muted-text"
                 }`}
               >
-                {s.label}
+                {t.settings[s.key]}
               </button>
             ))}
           </div>
@@ -176,14 +185,14 @@ export default function SettingsScreen() {
         {/* Color overlay */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           <label className="font-heading font-bold text-sm text-dark-text block mb-2">
-            Reading Overlay Color
+            {t.settings.overlayLabel}
           </label>
           <div className="flex gap-2">
             {[
-              { id: "none", label: "Wala", color: "bg-gray-100" },
-              { id: "yellow", label: "Yellow", color: "bg-sun-yellow/40" },
-              { id: "blue", label: "Blue", color: "bg-sky-blue/40" },
-              { id: "pink", label: "Pink", color: "bg-coral/30" },
+              { id: "none", labelKey: "overlayNone", color: "bg-gray-100" },
+              { id: "yellow", labelKey: "overlayYellow", color: "bg-sun-yellow/40" },
+              { id: "blue", labelKey: "overlayBlue", color: "bg-sky-blue/40" },
+              { id: "pink", labelKey: "overlayPink", color: "bg-coral/30" },
             ].map((o) => (
               <button
                 key={o.id}
@@ -198,7 +207,7 @@ export default function SettingsScreen() {
                     : ""
                 }`}
               >
-                {o.label}
+                {t.settings[o.labelKey]}
               </button>
             ))}
           </div>
@@ -207,12 +216,12 @@ export default function SettingsScreen() {
         {/* Gemini API Key */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           <label className="font-heading font-bold text-sm text-dark-text block mb-1">
-            Gemini API Key
+            {t.settings.apiLabel}
           </label>
           <p className={`text-xs mb-3 font-semibold ${keyIsSet ? "text-leaf-green" : "text-muted-text"}`}>
             {keyIsSet
-              ? "✅ API key is set — AI definitions active"
-              : "Kuha-a ang free key sa aistudio.google.com"}
+              ? t.settings.apiKeySet
+              : t.settings.apiKeyUnset}
           </p>
           {keyIsSet ? (
             <button
@@ -220,7 +229,7 @@ export default function SettingsScreen() {
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-coral/10 text-coral text-sm font-semibold border border-coral/20"
             >
               <X size={14} />
-              Remove API Key
+              {t.settings.apiRemove}
             </button>
           ) : (
             <div className="flex gap-2">
@@ -230,7 +239,7 @@ export default function SettingsScreen() {
                   value={apiKeyInput}
                   onChange={(e) => setApiKeyInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSaveKey()}
-                  placeholder="Paste API key here..."
+                  placeholder={t.settings.apiPlaceholder}
                   className="w-full bg-cream rounded-xl px-3 py-2.5 pr-10 text-sm outline-none focus:ring-2 focus:ring-teal/30"
                 />
                 <button
@@ -246,7 +255,7 @@ export default function SettingsScreen() {
                 disabled={!apiKeyInput.trim()}
                 className="bg-teal text-white text-sm font-bold px-4 rounded-xl disabled:opacity-40"
               >
-                {keySaved ? "✓" : "Save"}
+                {keySaved ? t.settings.apiSaved : t.settings.apiSave}
               </button>
             </div>
           )}
@@ -260,25 +269,25 @@ export default function SettingsScreen() {
               className="w-full text-coral font-semibold text-sm flex items-center justify-center gap-2"
             >
               <AlertTriangle size={16} />
-              Reset Progress
+              {t.settings.resetBtn}
             </button>
           ) : (
             <div className="text-center">
               <p className="text-sm text-dark-text mb-3 font-semibold">
-                Sigurado ka? Mawala ang tanan nga natuon mo.
+                {t.settings.resetConfirm}
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowReset(false)}
                   className="flex-1 py-2.5 rounded-xl bg-gray-100 text-muted-text text-sm font-semibold"
                 >
-                  Cancel
+                  {t.settings.resetCancel}
                 </button>
                 <button
                   onClick={handleReset}
                   className="flex-1 py-2.5 rounded-xl bg-coral text-white text-sm font-semibold"
                 >
-                  I-reset
+                  {t.settings.resetConfirmBtn}
                 </button>
               </div>
             </div>
@@ -289,13 +298,13 @@ export default function SettingsScreen() {
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
           <Mascot size={28} />
           <p className="font-heading font-bold text-sm text-dark-text mt-1">
-            Handog Aral v2.0
+            {t.settings.version}
           </p>
           <p className="text-muted-text text-xs">
-            AI Literacy App para sa mga Bata
+            {t.settings.tagline}
           </p>
-          <p className="text-muted-text text-[10px] mt-1">
-            Built with ❤️ for Filipino children
+          <p className="text-muted-text text-xs mt-1">
+            {t.settings.credit}
           </p>
         </div>
       </div>

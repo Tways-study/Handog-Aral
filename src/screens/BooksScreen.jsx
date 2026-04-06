@@ -1,9 +1,11 @@
 import { useApp } from "../context/AppContext";
+import { useTranslations } from "../hooks/useTranslations";
 import { sampleBooks } from "../data/books";
 import BookCard from "../components/BookCard";
 
 export default function BooksScreen({ onNavigate }) {
   const { state, dispatch } = useApp();
+  const t = useTranslations();
   const completedCount = Object.values(state.bookProgress).filter(
     (p) => p >= 100
   ).length;
@@ -26,37 +28,37 @@ export default function BooksScreen({ onNavigate }) {
         }}
       >
         <h1 className="font-heading text-2xl font-bold text-white mb-1">
-          Mga Libro 📚
+          {t.books.title}
         </h1>
         <p className="text-white/80 text-sm">
           {completedCount > 0
-            ? `${completedCount} libro na ang natapos mo!`
-            : "Pili-a ang imo basahon!"}
+            ? t.books.subtitleCompleted(completedCount)
+            : t.books.subtitleNew}
         </p>
 
         <div className="grid grid-cols-3 gap-2 mt-4">
           <div className="bg-white/25 rounded-xl p-3 text-center">
-            <p className="text-white font-extrabold text-2xl font-heading leading-none">
+            <p className="text-white font-extrabold text-xl font-heading leading-none">
               {sampleBooks.length}
             </p>
-            <p className="text-white/80 text-[10px] font-semibold mt-0.5">
-              Mga Libro
+            <p className="text-white/80 text-xs font-semibold mt-0.5">
+              {t.books.statTotal}
             </p>
           </div>
           <div className="bg-white/25 rounded-xl p-3 text-center">
-            <p className="text-white font-extrabold text-2xl font-heading leading-none">
+            <p className="text-white font-extrabold text-xl font-heading leading-none">
               {inProgressCount}
             </p>
-            <p className="text-white/80 text-[10px] font-semibold mt-0.5">
-              Ginapadayon
+            <p className="text-white/80 text-xs font-semibold mt-0.5">
+              {t.books.statInProgress}
             </p>
           </div>
           <div className="bg-white/25 rounded-xl p-3 text-center">
-            <p className="text-white font-extrabold text-2xl font-heading leading-none">
+            <p className="text-white font-extrabold text-xl font-heading leading-none">
               {completedCount}
             </p>
-            <p className="text-white/80 text-[10px] font-semibold mt-0.5">
-              Natapos
+            <p className="text-white/80 text-xs font-semibold mt-0.5">
+              {t.books.statCompleted}
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from "react";
 import { Camera, Type, Loader2 } from "lucide-react";
 import { useApp } from "../context/AppContext";
+import { useTranslations } from "../hooks/useTranslations";
 import { explainWord } from "../services/geminiService";
 import { extractTextFromImage } from "../services/ocrService";
 import WordPopup from "../components/WordPopup";
@@ -9,6 +10,7 @@ import Mascot from "../components/Mascot";
 
 export default function ScanScreen() {
   const { state, dispatch } = useApp();
+  const t = useTranslations();
   const [mode, setMode] = useState("camera"); // "camera" | "text"
   const [rawText, setRawText] = useState("");
   const [isOCRing, setIsOCRing] = useState(false);
@@ -121,7 +123,7 @@ export default function ScanScreen() {
       <div className="px-4 pt-5 pb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Mascot size={28} />
-          <h1 className="font-heading text-lg font-bold text-white">I-Scan</h1>
+          <h1 className="font-heading text-lg font-bold text-white">{t.scan.title}</h1>
         </div>
 
         {/* Mode toggle */}
@@ -134,7 +136,7 @@ export default function ScanScreen() {
                 : "text-white/60"
             }`}
           >
-            <Camera size={14} /> Camera
+            <Camera size={14} /> {t.scan.modeCamera}
           </button>
           <button
             onClick={() => setMode("text")}
@@ -144,13 +146,13 @@ export default function ScanScreen() {
                 : "text-white/60"
             }`}
           >
-            <Type size={14} /> Text
+            <Type size={14} /> {t.scan.modeText}
           </button>
         </div>
 
         {/* LIVE badge */}
-        <span className="bg-coral text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">
-          LIVE
+        <span className="bg-coral text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse">
+          {t.scan.live}
         </span>
       </div>
 
@@ -201,7 +203,7 @@ export default function ScanScreen() {
               <div className="absolute inset-0 bg-white/60 z-20 flex flex-col items-center justify-center">
                 <Mascot size={40} />
                 <Loader2 size={20} className="animate-spin text-teal mt-2" />
-                <p className="text-muted-text text-xs mt-1">Ginapangita...</p>
+                <p className="text-muted-text text-xs mt-1">{t.scan.loading}</p>
               </div>
             )}
 
@@ -210,7 +212,7 @@ export default function ScanScreen() {
               <textarea
                 ref={textareaRef}
                 className="w-full h-[280px] resize-none bg-transparent text-dark-text text-sm leading-relaxed outline-none placeholder:text-muted-text/50"
-                placeholder="I-paste o i-type diri ang teksto sang libro..."
+                placeholder={t.scan.textPlaceholder}
                 defaultValue=""
               />
             )}
@@ -220,14 +222,14 @@ export default function ScanScreen() {
               <div className="flex flex-col items-center justify-center h-[280px] gap-4">
                 <Mascot size={48} />
                 <p className="text-muted-text text-sm text-center font-semibold">
-                  Kuhai sang retrato ang libro
+                  {t.scan.cameraPrompt}
                 </p>
                 <button
                   onClick={() => setShowCamera(true)}
                   className="bg-teal text-white font-bold text-sm px-6 py-3 rounded-xl flex items-center gap-2"
                 >
                   <Camera size={18} />
-                  Buksa ang Camera
+                  {t.scan.openCamera}
                 </button>
               </div>
             )}
@@ -235,8 +237,8 @@ export default function ScanScreen() {
             {/* Rendered words */}
             {displayText && !isOCRing && (
               <>
-                <p className="text-muted-text/50 text-[10px] text-right mb-1 font-semibold">
-                  Tap any word to learn its meaning 👆
+                <p className="text-muted-text/50 text-xs text-right mb-1 font-semibold">
+                  {t.scan.tapHint}
                 </p>
                 <div className="leading-loose">
                   {tokens.map((token, i) => {
@@ -267,12 +269,12 @@ export default function ScanScreen() {
       <div className="mt-4 px-4">
         <div className="bg-deep-teal rounded-2xl p-4">
           <p className="text-white/60 text-xs font-semibold mb-2">
-            Bag-o lang gin-tap:
+            {t.scan.recentLabel}
           </p>
           <div className="flex flex-wrap gap-2">
             {recentWords.length === 0 && (
               <p className="text-white/30 text-xs">
-                Tap-a ang bisan ano nga pulong sa ibabaw ☝️
+                {t.scan.recentEmpty}
               </p>
             )}
             {recentWords.map((w) => (
@@ -299,7 +301,7 @@ export default function ScanScreen() {
             className="w-full bg-teal/20 text-teal text-sm font-bold py-3 rounded-xl flex items-center justify-center gap-2"
           >
             <Camera size={16} />
-            I-scan Liwat
+            {t.scan.rescanBtn}
           </button>
         </div>
       )}
@@ -314,7 +316,7 @@ export default function ScanScreen() {
             }}
             className="w-full bg-teal text-white text-sm font-bold py-3 rounded-xl"
           >
-            Ipakita ang Teksto
+            {t.scan.showTextBtn}
           </button>
         </div>
       )}
@@ -325,7 +327,7 @@ export default function ScanScreen() {
             onClick={() => setRawText("")}
             className="w-full bg-teal/20 text-teal text-sm font-bold py-3 rounded-xl"
           >
-            Bag-o nga Teksto
+            {t.scan.newTextBtn}
           </button>
         </div>
       )}

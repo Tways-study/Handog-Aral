@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { useApp } from "../context/AppContext";
+import { useTranslations } from "../hooks/useTranslations";
 import Mascot from "../components/Mascot";
 import { ChevronRight, RotateCcw, Trophy, Camera } from "lucide-react";
 
@@ -11,6 +12,7 @@ const QUESTIONS_PER_ROUND = 5;
 
 export default function QuizScreen({ onNavigate }) {
   const { state, dispatch } = useApp();
+  const t = useTranslations();
   const words = state.wordsLearned;
 
   // Build quiz questions from learned words
@@ -64,12 +66,12 @@ export default function QuizScreen({ onNavigate }) {
       <div className="min-h-screen bg-cream pb-nav flex flex-col items-center justify-center px-6 text-center">
         <Mascot size={72} />
         <h2 className="font-heading text-xl font-bold text-dark-text mt-5 mb-2">
-          Kulang pa ang mga pulong!
+          {t.quiz.notEnoughTitle}
         </h2>
         <p className="text-muted-text text-sm leading-relaxed mb-6">
-          Kinahanglan mo sang labing menos 4 ka pulong para mag-quiz.
-          <br />
-          Mag-scan sang libro kag tap-a ang mga bag-o nga pulong!
+          {t.quiz.notEnoughBody.split("\n").map((line, i) => (
+            <span key={i}>{line}{i === 0 && <br />}</span>
+          ))}
         </p>
         <button
           onClick={() => onNavigate("scan")}
@@ -77,7 +79,7 @@ export default function QuizScreen({ onNavigate }) {
           style={{ boxShadow: "0 4px 16px rgba(46,196,182,0.3)" }}
         >
           <Camera size={18} />
-          Mag-Scan
+          {t.quiz.scanBtn}
         </button>
       </div>
     );
@@ -96,12 +98,12 @@ export default function QuizScreen({ onNavigate }) {
     const resultEmoji = pct === 100 ? "🏆" : pct >= 60 ? "🌟" : "😊";
     const resultMsg =
       pct === 100
-        ? "Perpekto! Ikaw ang champion!"
+        ? t.quiz.resultPerfect
         : pct >= 80
-        ? "Maayo gid ka! Dugang pa!"
+        ? t.quiz.resultGreat
         : pct >= 60
-        ? "Maayo! Padayon lang!"
-        : "Sige pa, you can do it!";
+        ? t.quiz.resultGood
+        : t.quiz.resultOk;
 
     return (
       <div className="min-h-screen bg-cream pb-nav">
@@ -125,10 +127,10 @@ export default function QuizScreen({ onNavigate }) {
               <Trophy size={22} className="text-soft-orange flex-shrink-0" />
               <div>
                 <p className="font-heading font-bold text-sm text-dark-text">
-                  Pinaka-mataas na Score
+                  {t.quiz.highScoreTitle}
                 </p>
                 <p className="text-muted-text text-xs">
-                  {state.quizHighScore}/{total} tama
+                  {t.quiz.highScoreSub(state.quizHighScore, total)}
                 </p>
               </div>
             </div>
@@ -166,14 +168,14 @@ export default function QuizScreen({ onNavigate }) {
               className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white border border-gray-200 text-dark-text font-bold text-sm"
             >
               <RotateCcw size={16} />
-              Liwat
+              {t.quiz.retryBtn}
             </button>
             <button
               onClick={() => onNavigate("vocabulary")}
               className="flex-1 py-3.5 rounded-2xl text-white font-bold text-sm"
               style={{ background: "linear-gradient(135deg, #0EA5A0, #0D3D56)" }}
             >
-              Tan-awa ang Pulong
+              {t.quiz.viewVocabBtn}
             </button>
           </div>
         </div>
@@ -197,9 +199,9 @@ export default function QuizScreen({ onNavigate }) {
       >
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-white/70 text-sm">Vocabulary Quiz 🧠</p>
+            <p className="text-white/70 text-sm">{t.quiz.header}</p>
             <h1 className="font-heading text-xl font-bold text-white">
-              Pangutana {currentQ + 1} / {questions.length}
+              {t.quiz.questionLabel(currentQ + 1, questions.length)}
             </h1>
           </div>
           <Mascot size={40} />
@@ -230,8 +232,7 @@ export default function QuizScreen({ onNavigate }) {
         </div>
 
         <p className="text-center text-muted-text text-sm font-semibold mb-4">
-          Ano ang buot sipdon sini sa{" "}
-          {state.language === "hiligaynon" ? "Hiligaynon" : "Filipino"}?
+          {t.quiz.questionPrompt}
         </p>
 
         {/* Options */}
@@ -285,8 +286,8 @@ export default function QuizScreen({ onNavigate }) {
             }}
           >
             {currentQ + 1 >= questions.length
-              ? "Tan-awa ang Resulta 🏆"
-              : "Sunod nga Pangutana"}
+              ? t.quiz.resultsBtn
+              : t.quiz.nextBtn}
             <ChevronRight size={20} />
           </button>
         )}
