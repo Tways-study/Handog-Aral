@@ -41,6 +41,31 @@ const PART_OF_SPEECH_EMOJI = {
   exclamation: "❗",
 };
 
+// Generates a basic local Hiligaynon/Filipino translation when Gemini is unavailable.
+// Uses part-of-speech templates so the result is more meaningful than a bare placeholder.
+function generateLocalTranslation(word, english, pos, targetLanguage) {
+  const isHiligaynon = targetLanguage !== "tagalog";
+  const shortDef = english.length > 60 ? english.slice(0, 57) + "…" : english;
+
+  const templates = isHiligaynon
+    ? {
+        verb: `Buhat — "${word}" nagakahulugan: ${shortDef}`,
+        noun: `"${word}" — isa ka butang ukon tawo: ${shortDef}`,
+        adjective: `Nagahulagway — "${word}" nagpakita sang: ${shortDef}`,
+        adverb: `Paagi — "${word}" nagahulagway kung paano: ${shortDef}`,
+        default: `"${word}" sa English nagakahulugan: ${shortDef}`,
+      }
+    : {
+        verb: `Gawa — "${word}" nangangahulugang: ${shortDef}`,
+        noun: `"${word}" — isang bagay o tao: ${shortDef}`,
+        adjective: `Naglalarawan — "${word}" nagpapakita ng: ${shortDef}`,
+        adverb: `Paraan — "${word}" naglalarawan kung paano: ${shortDef}`,
+        default: `"${word}" sa English nangangahulugang: ${shortDef}`,
+      };
+
+  return templates[pos] || templates.default;
+}
+
 async function lookupDictionaryAPI(word, targetLanguage) {
   try {
     const res = await fetch(
@@ -63,12 +88,10 @@ async function lookupDictionaryAPI(word, targetLanguage) {
     const emoji = PART_OF_SPEECH_EMOJI[pos] || "📖";
     const wordLen = word.length;
     const difficulty = wordLen <= 4 ? "easy" : wordLen <= 7 ? "medium" : "hard";
-    const noKeyNote =
-      targetLanguage === "hiligaynon"
-        ? "I-set ang Gemini API key para sa paliwanag sa Hiligaynon."
-        : "I-set ang Gemini API key para sa paliwanag sa Filipino.";
 
-    return { word, phonetic, english, translation: noKeyNote, emoji, difficulty, example };
+    const translation = generateLocalTranslation(word, english, pos, targetLanguage);
+
+    return { word, phonetic, english, translation, emoji, difficulty, example };
   } catch {
     return null;
   }
@@ -80,14 +103,22 @@ export async function explainWord({ word, sentence, targetLanguage }) {
 
   const ai = getGenAI();
   if (!ai) {
-    if (fallback) return fallback;
+    if (fallback)
+      return {
+        ...fallback,
+        translation:
+          targetLanguage === "tagalog" ? fallback.tagalog : fallback.hiligaynon,
+      };
     const dictResult = await lookupDictionaryAPI(word, targetLanguage);
     if (dictResult) return dictResult;
     return {
       word,
       phonetic: `/${word}/`,
       english: "A word found in your reading.",
-      translation: "Tan-awa sa diksyunaryo ang buot silingon sini.",
+      translation:
+        targetLanguage === "tagalog"
+          ? "Hanapin sa diksyunaryo ang kahulugan nito."
+          : "Tan-awa sa diksyunaryo ang buot silingon sini.",
       emoji: "📖",
       difficulty: "easy",
       example: null,
@@ -137,14 +168,22 @@ Respond ONLY in this exact JSON format, no markdown, no backticks:
     if (!jsonMatch) throw new Error("No JSON in response");
     return JSON.parse(jsonMatch[0]);
   } catch {
-    if (fallback) return fallback;
+    if (fallback)
+      return {
+        ...fallback,
+        translation:
+          targetLanguage === "tagalog" ? fallback.tagalog : fallback.hiligaynon,
+      };
     const dictResult = await lookupDictionaryAPI(word, targetLanguage);
     if (dictResult) return dictResult;
     return {
       word,
       phonetic: `/${word}/`,
       english: "A word found in your reading.",
-      translation: "Tan-awa sa diksyunaryo ang buot silingon sini.",
+      translation:
+        targetLanguage === "tagalog"
+          ? "Hanapin sa diksyunaryo ang kahulugan nito."
+          : "Tan-awa sa diksyunaryo ang buot silingon sini.",
       emoji: "📖",
       difficulty: "easy",
       example: null,
