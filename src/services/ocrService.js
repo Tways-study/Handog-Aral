@@ -1,4 +1,12 @@
+import { extractTextFromImageWithGemini } from "./geminiService";
+
 export async function extractTextFromImage(imageFile, onProgress) {
+  // Try Gemini Vision first — far more accurate than Tesseract for book pages
+  const geminiText = await extractTextFromImageWithGemini(imageFile, onProgress);
+  if (geminiText) return geminiText;
+
+  // Fallback to Tesseract.js when no Gemini API key is configured
+  onProgress?.(5);
   const { createWorker } = await import("tesseract.js");
   const worker = await createWorker("eng", 1, {
     logger: (m) => {

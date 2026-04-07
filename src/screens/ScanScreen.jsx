@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from "react";
-import { Camera, Type, Loader2 } from "lucide-react";
+import { Camera, Type, Loader2, Volume2, StopCircle } from "lucide-react";
+import { useTextToSpeech } from "../hooks/useTextToSpeech";
 import { useApp } from "../context/AppContext";
 import { useTranslations } from "../hooks/useTranslations";
 import { explainWord } from "../services/geminiService";
@@ -22,6 +23,7 @@ export default function ScanScreen() {
   const debounceRef = useRef(null);
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
+  const { speak, stop, isSpeaking } = useTextToSpeech();
 
   // When arriving from a book, pre-load its text
   const bookText = state.currentBook?.text;
@@ -36,9 +38,11 @@ export default function ScanScreen() {
     setShowCamera(false);
     setIsOCRing(true);
     setOcrProgress(0);
+    stop();
     try {
       const text = await extractTextFromImage(file, setOcrProgress);
       setRawText(text);
+      if (text) speak(text);
     } catch {
       setRawText("");
     } finally {
@@ -237,9 +241,25 @@ export default function ScanScreen() {
             {/* Rendered words */}
             {displayText && !isOCRing && (
               <>
-                <p className="text-muted-text/50 text-xs text-right mb-1 font-semibold">
-                  {t.scan.tapHint}
-                </p>
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-muted-text/50 text-xs font-semibold">
+                    {t.scan.tapHint}
+                  </p>
+                  <button
+                    onClick={() => isSpeaking ? stop() : speak(displayText)}
+                    className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold transition-colors ${
+                      isSpeaking
+                        ? "bg-coral/20 text-coral"
+                        : "bg-teal/15 text-teal"
+                    }`}
+                  >
+                    {isSpeaking ? (
+                      <><StopCircle size={13} /> Stop</>
+                    ) : (
+                      <><Volume2 size={13} /> Read</>  
+                    )}
+                  </button>
+                </div>
                 <div className="leading-loose">
                   {tokens.map((token, i) => {
                     const isWord = /[a-zA-Z]/.test(token);
@@ -294,6 +314,7 @@ export default function ScanScreen() {
         <div className="px-4 mt-3">
           <button
             onClick={() => {
+              stop();
               setRawText("");
               dispatch({ type: "SET_CURRENT_BOOK", payload: null });
               setShowCamera(true);
@@ -312,7 +333,10 @@ export default function ScanScreen() {
           <button
             onClick={() => {
               const val = textareaRef.current?.value;
-              if (val?.trim()) setRawText(val.trim());
+              if (val?.trim()) {
+                setRawText(val.trim());
+                speak(val.trim());
+              }
             }}
             className="w-full bg-teal text-white text-sm font-bold py-3 rounded-xl"
           >
@@ -324,7 +348,7 @@ export default function ScanScreen() {
       {mode === "text" && displayText && (
         <div className="px-4 mt-3">
           <button
-            onClick={() => setRawText("")}
+            onClick={() => { stop(); setRawText(""); }}
             className="w-full bg-teal/20 text-teal text-sm font-bold py-3 rounded-xl"
           >
             {t.scan.newTextBtn}

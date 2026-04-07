@@ -97,6 +97,48 @@ async function lookupDictionaryAPI(word, targetLanguage) {
   }
 }
 
+export async function extractTextFromImageWithGemini(imageFile, onProgress) {
+  const ai = getGenAI();
+  if (!ai) return null;
+
+  onProgress?.(20);
+
+  try {
+    // Convert file to base64
+    const arrayBuffer = await imageFile.arrayBuffer();
+    const bytes = new Uint8Array(arrayBuffer);
+    let binary = "";
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    const base64 = btoa(binary);
+    const mimeType = imageFile.type || "image/jpeg";
+
+    onProgress?.(50);
+
+    const prompt = `Extract all the text visible in this image exactly as it appears on the page. 
+Preserve the original words, sentences, and paragraph structure. 
+Return ONLY the raw text content — no explanations, no commentary, no formatting symbols. 
+If the image contains a children's book page, a printed document, or any readable text, output that text faithfully word for word.`;
+
+    const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          data: base64,
+          mimeType,
+        },
+      },
+    ]);
+
+    onProgress?.(100);
+    return result.response.text().trim();
+  } catch {
+    return null;
+  }
+}
+
 export async function explainWord({ word, sentence, targetLanguage }) {
   const lower = word.toLowerCase();
   const fallback = fallbackWords[lower];
