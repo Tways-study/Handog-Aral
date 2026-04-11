@@ -132,10 +132,18 @@ html.font-large { font-size: 20px; }
 .animate-floatOwl { animation: floatOwl 3s ease-in-out infinite; }
 
 button, .tappable {
-  transition: all 0.2s ease;
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
-button:active, .tappable:active {
-  transform: scale(0.95);
+button:hover:not(:disabled), .tappable:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+}
+button:active:not(:disabled), .tappable:active {
+  transform: scale(0.95) translateY(0px);
+  filter: brightness(0.97);
+}
+button:disabled {
+  cursor: not-allowed;
 }
 
 .overlay-yellow { background-color: rgba(255, 209, 102, 0.15); }
