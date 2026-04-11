@@ -25,6 +25,8 @@ export default function BottomNav({ current, onNavigate }) {
                 <button
                   key={tab.id}
                   onClick={() => onNavigate(tab.id)}
+                  aria-label={t.nav[tab.labelKey]}
+                  aria-current={active ? "page" : undefined}
                   className="flex-1 flex flex-col items-center"
                   style={{ paddingBottom: '8px' }}
                 >
@@ -57,6 +59,8 @@ export default function BottomNav({ current, onNavigate }) {
               <button
                 key={tab.id}
                 onClick={() => onNavigate(tab.id)}
+                aria-label={t.nav[tab.labelKey]}
+                aria-current={active ? "page" : undefined}
                 className={`flex-1 flex flex-col items-center transition-colors ${
                   active ? "text-teal" : "text-muted-text"
                 }`}

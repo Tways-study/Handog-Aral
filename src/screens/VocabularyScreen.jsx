@@ -131,6 +131,7 @@ export default function VocabularyScreen() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t.vocabulary.searchPlaceholder}
+                aria-label={t.vocabulary.searchPlaceholder}
                 className="w-full bg-white rounded-xl pl-10 pr-4 py-3 text-sm text-dark-text outline-none border border-gray-100 focus:ring-2 focus:ring-lavender/30"
               />
             </div>
@@ -141,6 +142,7 @@ export default function VocabularyScreen() {
                 <button
                   key={f.id}
                   onClick={() => setActiveFilter(f.id)}
+                  aria-pressed={activeFilter === f.id}
                   className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
                     activeFilter === f.id
                       ? "bg-lavender text-white shadow-sm"

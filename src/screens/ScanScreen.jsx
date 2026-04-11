@@ -272,6 +272,7 @@ export default function ScanScreen() {
                         role="button"
                         tabIndex={0}
                         onClick={() => handleWordTap(token, tokens, i)}
+                        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleWordTap(token, tokens, i)}
                         className="tappable inline-block px-0.5 rounded cursor-pointer transition-all underline decoration-teal/40 decoration-dotted underline-offset-4 hover:decoration-teal hover:decoration-solid hover:decoration-2 hover:bg-sun-yellow/20 active:bg-sun-yellow/30 active:decoration-teal active:decoration-2"
                       >
                         {token}

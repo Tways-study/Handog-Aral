@@ -73,13 +73,14 @@ export default function SettingsScreen() {
           <div className="flex gap-2">
             {[
               { id: "hiligaynon", label: "🗣 Hiligaynon" },
-              { id: "tagalog", label: "🇵🇭 Filipino" },
+              { id: "tagalog", label: "� Filipino" },
             ].map((lang) => (
               <button
                 key={lang.id}
                 onClick={() =>
                   dispatch({ type: "SET_LANGUAGE", payload: lang.id })
                 }
+                aria-pressed={state.language === lang.id}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
                   state.language === lang.id
                     ? "bg-teal text-white"
@@ -108,6 +109,7 @@ export default function SettingsScreen() {
                 onClick={() =>
                   dispatch({ type: "SET_FONT_SIZE", payload: size.id })
                 }
+                aria-pressed={state.fontSize === size.id}
                 className={`flex-1 py-2.5 rounded-xl font-semibold transition-colors flex flex-col items-center gap-0.5 ${
                   state.fontSize === size.id
                     ? "bg-teal text-white"
@@ -125,8 +127,8 @@ export default function SettingsScreen() {
 
         {/* Dyslexia font */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
               <p className="font-heading font-bold text-sm text-dark-text">
                 {t.settings.dyslexiaLabel}
               </p>
@@ -141,7 +143,9 @@ export default function SettingsScreen() {
                   payload: !state.dyslexiaFont,
                 })
               }
-              className={`w-12 h-7 rounded-full transition-colors relative ${
+              role="switch"
+              aria-checked={state.dyslexiaFont}
+              className={`flex-shrink-0 w-12 h-7 rounded-full transition-colors relative ${
                 state.dyslexiaFont ? "bg-teal" : "bg-gray-200"
               }`}
             >
@@ -170,6 +174,7 @@ export default function SettingsScreen() {
                 onClick={() =>
                   dispatch({ type: "SET_TTS_SPEED", payload: s.val })
                 }
+                aria-pressed={state.ttsSpeed === s.val}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
                   state.ttsSpeed === s.val
                     ? "bg-lavender text-white"
@@ -199,6 +204,7 @@ export default function SettingsScreen() {
                 onClick={() =>
                   dispatch({ type: "SET_COLOR_OVERLAY", payload: o.id })
                 }
+                aria-pressed={state.colorOverlay === o.id}
                 className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                   o.color
                 } ${
@@ -245,6 +251,7 @@ export default function SettingsScreen() {
                 <button
                   type="button"
                   onClick={() => setShowKey((v) => !v)}
+                  aria-label={showKey ? "Itago ang API key" : "Ipakita ang API key"}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-text"
                 >
                   {showKey ? <EyeOff size={15} /> : <Eye size={15} />}

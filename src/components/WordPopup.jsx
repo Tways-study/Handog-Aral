@@ -1,5 +1,5 @@
-import { memo } from "react";
-import { X, Volume2, Check, BookOpen } from "lucide-react";
+import { memo, useEffect } from "react";
+import { X, Volume2, Check, BookOpen, StopCircle } from "lucide-react";
 import { useTextToSpeech } from "../hooks/useTextToSpeech";
 import { useApp } from "../context/AppContext";
 import { useTranslations } from "../hooks/useTranslations";
@@ -11,7 +11,7 @@ const difficultyConfig = {
 };
 
 const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
-  const { speak } = useTextToSpeech();
+  const { speak, stop, isSpeaking } = useTextToSpeech();
   const { state, dispatch } = useApp();
   const t = useTranslations();
   if (!wordData) return null;
@@ -26,8 +26,20 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
   };
 
   const handleSpeak = () => {
-    speak(wordData.word, state.ttsSpeed);
+    if (isSpeaking) {
+      stop();
+    } else {
+      speak(wordData.word, state.ttsSpeed);
+    }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   const handleSave = () => {
     dispatch({ type: "LEARN_WORD", payload: wordData });
@@ -43,7 +55,12 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
       />
 
       {/* Sheet */}
-      <div className="relative w-full max-w-[390px] bg-white rounded-t-[28px] animate-slideUp shadow-2xl">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="word-popup-heading"
+        className="relative w-full max-w-[390px] bg-white rounded-t-[28px] animate-slideUp shadow-2xl"
+      >
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 bg-gray-200 rounded-full" />
@@ -67,7 +84,7 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
               <span className="text-4xl">{wordData.emoji}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="font-heading text-2xl font-bold text-dark-text leading-tight">
+              <h2 id="word-popup-heading" className="font-heading text-2xl font-bold text-dark-text leading-tight">
                 {wordData.word}
               </h2>
               <div className="flex items-center gap-2 mt-1">
@@ -114,14 +131,16 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
           <div className="flex gap-3 mt-4">
             <button
               onClick={handleSpeak}
-              className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm"
+              className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm transition-all ${isSpeaking ? "animate-pulse" : ""}`}
               style={{
-                background: "linear-gradient(135deg, #38BDF8, #0EA5A0)",
+                background: isSpeaking
+                  ? "linear-gradient(135deg, #F4614A, #F97316)"
+                  : "linear-gradient(135deg, #38BDF8, #0EA5A0)",
                 color: "white",
               }}
             >
-              <Volume2 size={17} />
-              {t.popup.speakBtn}
+              {isSpeaking ? <StopCircle size={17} /> : <Volume2 size={17} />}
+              {isSpeaking ? t.popup.speakingBtn : t.popup.speakBtn}
             </button>
             <button
               onClick={handleSave}

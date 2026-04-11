@@ -202,6 +202,7 @@ export default function CameraScanner({ onCapture, onClose }) {
                   streamRef.current?.getTracks().forEach((t) => t.stop());
                   onClose();
                 }}
+                aria-label="Isira ang camera"
                 className="w-10 h-10 bg-black/40 backdrop-blur rounded-full flex items-center justify-center"
               >
                 <X size={20} className="text-white" />
@@ -213,6 +214,7 @@ export default function CameraScanner({ onCapture, onClose }) {
               </div>
               <button
                 onClick={handleFlipCamera}
+                aria-label="I-flip ang camera"
                 className="w-10 h-10 bg-black/40 backdrop-blur rounded-full flex items-center justify-center"
               >
                 <SwitchCamera size={18} className="text-white" />
@@ -235,6 +237,7 @@ export default function CameraScanner({ onCapture, onClose }) {
             {/* Gallery button */}
             <button
               onClick={() => fileInputRef.current?.click()}
+              aria-label="Pilion sa Gallery"
               className="w-12 h-12 bg-white/15 rounded-xl flex items-center justify-center"
             >
               <ImagePlus size={22} className="text-white" />
@@ -251,6 +254,8 @@ export default function CameraScanner({ onCapture, onClose }) {
             <button
               onClick={capturePhoto}
               disabled={!ready}
+              aria-label="Kuha ng larawan"
+              aria-disabled={!ready}
               className={`w-20 h-20 rounded-full border-4 border-white flex items-center justify-center transition-all active:scale-95 ${
                 ready ? "bg-white/20" : "bg-white/10 opacity-50"
               }`}
