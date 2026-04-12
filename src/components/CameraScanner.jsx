@@ -58,10 +58,38 @@ export default function CameraScanner({ onCapture, onClose }) {
     const canvas = canvasRef.current;
     if (!video || !canvas) return;
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    const nativeW = video.videoWidth;
+    const nativeH = video.videoHeight;
+
+    // Measure the video element's rendered CSS size (object-cover)
+    const rect = video.getBoundingClientRect();
+    const cW = rect.width;
+    const cH = rect.height;
+
+    // object-cover: scale so the video completely fills the container
+    const scale = Math.max(cW / nativeW, cH / nativeH);
+
+    // The video is centered — compute how far it's offset from the container edge
+    const oX = (cW - nativeW * scale) / 2;
+    const oY = (cH - nativeH * scale) / 2;
+
+    // Bracket guide: 80% wide, 4:3 aspect, centered (matches the UI overlay)
+    const bracketCSSW = cW * 0.8;
+    const bracketCSSH = bracketCSSW * (3 / 4);
+    const bracketCSSLeft = (cW - bracketCSSW) / 2;
+    const bracketCSSTop = (cH - bracketCSSH) / 2;
+
+    // Map bracket CSS coordinates → native video pixel coordinates
+    const srcX = Math.max(0, Math.round((bracketCSSLeft - oX) / scale));
+    const srcY = Math.max(0, Math.round((bracketCSSTop - oY) / scale));
+    const srcW = Math.min(Math.round(bracketCSSW / scale), nativeW - srcX);
+    const srcH = Math.min(Math.round(bracketCSSH / scale), nativeH - srcY);
+
+    // Draw only the cropped bracket region
+    canvas.width = srcW;
+    canvas.height = srcH;
     const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0);
+    ctx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, srcW, srcH);
 
     // Flash effect
     setFlash(true);

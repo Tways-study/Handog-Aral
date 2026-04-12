@@ -116,10 +116,16 @@ export async function extractTextFromImageWithGemini(imageFile, onProgress) {
 
     onProgress?.(50);
 
-    const prompt = `Extract all the text visible in this image exactly as it appears on the page. 
-Preserve the original words, sentences, and paragraph structure. 
-Return ONLY the raw text content — no explanations, no commentary, no formatting symbols. 
-If the image contains a children's book page, a printed document, or any readable text, output that text faithfully word for word.`;
+    const prompt = `You are a precise OCR engine. This image is a cropped section of a printed book or document page.
+
+Your task: transcribe every word of text visible in this image exactly as it is printed — same spelling, same word order, same sentence breaks.
+
+Rules:
+- Do NOT add, invent, correct, or omit any words.
+- Do NOT include explanations, headers, or commentary.
+- Preserve the natural reading order (left to right, top to bottom).
+- If a word is partially cut off at the edge, include only the visible letters.
+- Return ONLY the raw transcribed text — nothing else.`;
 
     const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
     const result = await model.generateContent([
