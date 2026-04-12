@@ -146,6 +146,19 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* Toggle switches: skip scale-on-press so the knob slide is the only visual feedback */
+button[role="switch"]:hover:not(:disabled),
+button[role="switch"]:active:not(:disabled) {
+  transform: none;
+  filter: none;
+}
+
+/* Prevent dyslexia-font word/letter-spacing from cascading into the toggle track */
+body.dyslexia-font button[role="switch"] {
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+
 .overlay-yellow { background-color: rgba(255, 209, 102, 0.15); }
 .overlay-blue { background-color: rgba(115, 194, 251, 0.15); }
 .overlay-pink { background-color: rgba(255, 107, 107, 0.1); }

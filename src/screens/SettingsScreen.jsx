@@ -151,7 +151,7 @@ export default function SettingsScreen() {
             >
               <span
                 className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${
-                  state.dyslexiaFont ? "translate-x-5" : "translate-x-0.5"
+                  state.dyslexiaFont ? "translate-x-[1.375rem]" : "translate-x-0.5"
                 }`}
               />
             </button>
