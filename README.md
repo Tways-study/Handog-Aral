@@ -173,16 +173,61 @@ Built files are output to `dist/`. The PWA service worker pre-caches all assets 
 
 ## Tech Stack
 
-| Layer          | Technology                             |
-| -------------- | -------------------------------------- |
-| UI Framework   | React 19 + Vite 7                      |
-| Styling        | Tailwind CSS v4                        |
-| AI Definitions | Google Gemini API (`gemini-2.0-flash`) |
-| OCR            | Tesseract.js v7                        |
-| Text-to-Speech | Web Speech API                         |
-| PWA            | vite-plugin-pwa                        |
-| Icons          | lucide-react                           |
-| State          | React Context + localStorage           |
+| Layer                       | Technology                                | Version            |
+| --------------------------- | ----------------------------------------- | ------------------ |
+| UI Framework                | React + Vite                              | 19 / 7             |
+| Styling                     | Tailwind CSS                              | v4                 |
+| AI Definitions & Vision OCR | Google Gemini API                         | `gemini-2.0-flash` |
+| Offline OCR Fallback        | Tesseract.js                              | v7                 |
+| Text-to-Speech              | Web Speech API                            | Browser native     |
+| PWA / Offline               | vite-plugin-pwa (Workbox)                 | 1.2.0              |
+| Icons                       | lucide-react                              | 1.7.0              |
+| State Management            | React Context + useReducer + localStorage | Built-in           |
+| Mobile Wrapper              | Capacitor (Android)                       | v8                 |
+
+---
+
+### React 19 + Vite 7
+
+React is the UI layer. The app uses a simple **string-based screen state machine** in `App.jsx` instead of React Router — this keeps the bundle smaller and avoids URL routing complexity that could break the Android Capacitor wrapper. All global state lives in a single `AppContext` backed by `useReducer`. `BookCard` and `WordPopup` are wrapped in `memo()` for targeted re-render prevention. Vite handles the build with its built-in Tailwind v4 plugin and HMR for fast development iteration. Tesseract.js is **dynamically imported** on demand (`import('tesseract.js')`) so the ~2 MB OCR library never blocks the initial page load.
+
+### Tailwind CSS v4
+
+All UI styling uses Tailwind utility classes with a custom **"Isla Sunrise"** design palette defined in `index.css` (teal, deep-teal, sun-yellow, coral, leaf-green, sky-blue, soft-orange, cream). Screens use `max-w-[390px] mx-auto` for a consistent mobile phone width. Font scaling is applied to the `<html>` element as a class (`font-small`, `font-medium`, `font-large`) so every `rem`-based Tailwind utility scales proportionally across the entire app. A `--nav-h` CSS variable tracks the bottom nav's pixel height, and a `.pb-nav` utility class is applied to all screen wrappers so content always clears the nav bar regardless of font size. Entrance animations (`animate-slideUp`, `animate-fadeUp`, `animate-floatOwl`, `animate-scanLine`) are defined as custom `@keyframes` in `index.css`.
+
+### Google Gemini API (`gemini-2.0-flash`)
+
+Used for two tasks:
+
+1. **Word definitions** — When a child taps a word, `geminiService.js` builds a prompt that includes the tapped word, the **full surrounding sentence** (extracted by `findSentence()`), and the user's language preference (Hiligaynon or Filipino). Gemini returns a JSON object with `{ word, phonetic, english, translation, emoji, difficulty, example }`. This context-awareness means "cover" as a verb ("She covered the pot") gets a different definition than "cover" as a noun.
+
+2. **Vision OCR** — When a child scans a page with the camera, `ocrService.js` tries Gemini Vision first via `extractTextFromImageWithGemini()`. Gemini is significantly more accurate than Tesseract for printed book pages and handles varied lighting, fonts, and layouts. The OCR result is the raw text string that becomes the tappable word view.
+
+The API key is optional — the app works fully without it using free fallbacks (see below).
+
+### Tesseract.js v7 (OCR Fallback)
+
+If Gemini Vision fails (no API key, network error, or quota limit), `ocrService.js` falls back to **client-side OCR with Tesseract.js**. The library is dynamically imported to keep it out of the initial bundle. It runs entirely in the browser — no server needed. An `onProgress` callback streams recognition progress (0–100%) back to `ScanScreen` so the animated progress bar stays accurate. Tesseract is slower (10–60 seconds depending on image complexity) but ensures OCR always works offline.
+
+### Web Speech API
+
+Text-to-speech is handled by the browser's native `SpeechSynthesisUtterance` API, wrapped in `useTextToSpeech.js`. No external library is needed. The `speak(text, rate)` function creates an utterance with `lang: "en-US"` and applies the TTS speed stored in app state (0.5×, 0.8×, or 1.2×). This works natively in all modern browsers and in the Android WebView used by the Capacitor build. Words can be spoken individually from the definition popup or the entire scanned text can be read aloud from the scan screen.
+
+### vite-plugin-pwa (Workbox)
+
+Configured in `generateSW` mode. On first load, Workbox pre-caches all built assets (JS, CSS, fonts, icons). A `CacheFirst` runtime strategy handles Google Fonts. After the first visit the entire app shell loads offline. Word definitions also work offline if they hit `fallbackWords.js` or the `wordCache` stored in `localStorage`. The PWA manifest provides the app name, "Isla Sunrise" theme color, and icon references for Android home-screen installation.
+
+### lucide-react
+
+Provides a consistent icon set used across all screens, nav tabs, and action buttons (`Camera`, `BookOpen`, `Brain`, `Star`, `Volume2`, `StopCircle`, `Check`, `Trash2`, etc.). Tree-shaken per icon import, so only referenced icons appear in the final bundle.
+
+### React Context + localStorage (State Management)
+
+There is no Redux or Zustand. All application state — words learned, streaks, quiz scores, settings, book progress, word definition cache — lives in a single `AppContext` with `useReducer`. Every state change triggers a `localStorage.setItem` write. On cold start, `loadState()` reads from `localStorage` and merges with `initialState` (guarding against corrupt data). This gives full persistent state across app restarts with zero external dependencies. The word definition cache (`wordCache`) is included in this persistence layer so tapping a previously-seen word is always instant, even after closing and reopening the app.
+
+### Capacitor v8 (Android)
+
+Capacitor wraps the Vite PWA build as a native Android APK. The `dist/` output is copied into `android/app/src/main/assets/public/`. The app runs inside an Android WebView, which supports the Web Speech API, `getUserMedia` for camera access, and all modern CSS features used by Tailwind. Because the screen router is string-based (not URL-based), there are no routing conflicts with the WebView's navigation model.
 
 ---
 

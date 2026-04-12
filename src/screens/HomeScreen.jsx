@@ -123,7 +123,11 @@ export default function HomeScreen({ onNavigate }) {
               {canQuiz ? t.home.quickQuiz : t.home.quickVocab}
             </p>
             <p className="text-muted-text text-xs mt-0.5">
-              {canQuiz ? t.home.quickQuizSub(learnedCount) : t.home.quickVocabSub(learnedCount)}
+              {canQuiz
+                ? t.home.quickQuizSub(learnedCount)
+                : learnedCount === 0
+                ? t.home.quickVocabSub(learnedCount)
+                : `Save ${4 - learnedCount} more word${4 - learnedCount === 1 ? "" : "s"} to unlock`}
             </p>
           </button>
         </div>

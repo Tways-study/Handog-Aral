@@ -1,5 +1,5 @@
 import { memo, useEffect } from "react";
-import { X, Volume2, Check, BookOpen, StopCircle } from "lucide-react";
+import { X, Volume2, Check, BookOpen, StopCircle, Trash2 } from "lucide-react";
 import { useTextToSpeech } from "../hooks/useTextToSpeech";
 import { useApp } from "../context/AppContext";
 import { useTranslations } from "../hooks/useTranslations";
@@ -44,6 +44,10 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
   const handleSave = () => {
     dispatch({ type: "LEARN_WORD", payload: wordData });
     onSave?.(wordData);
+  };
+
+  const handleRemove = () => {
+    dispatch({ type: "REMOVE_WORD", payload: wordData.word });
   };
 
   return (
@@ -142,18 +146,29 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
               {isSpeaking ? <StopCircle size={17} /> : <Volume2 size={17} />}
               {isSpeaking ? t.popup.speakingBtn : t.popup.speakBtn}
             </button>
-            <button
-              onClick={handleSave}
-              disabled={isLearned}
-              className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm transition-all ${
-                isLearned
-                  ? "bg-leaf-green/15 text-leaf-green border border-leaf-green/30"
-                  : "bg-leaf-green text-white"
-              }`}
-            >
-              <Check size={17} />
-              {isLearned ? t.popup.savedBtn : t.popup.saveBtn}
-            </button>
+            {isLearned ? (
+              <div className="flex-1 flex items-center gap-2">
+                <div className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-leaf-green/15 text-leaf-green border border-leaf-green/30 font-bold text-sm">
+                  <Check size={17} />
+                  {t.popup.savedBtn}
+                </div>
+                <button
+                  onClick={handleRemove}
+                  aria-label="Remove word"
+                  className="p-3.5 rounded-2xl bg-gray-100 text-muted-text hover:bg-coral/15 hover:text-coral transition-colors"
+                >
+                  <Trash2 size={17} />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleSave}
+                className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl font-bold text-sm bg-leaf-green text-white"
+              >
+                <Check size={17} />
+                {t.popup.saveBtn}
+              </button>
+            )}
           </div>
         </div>
       </div>

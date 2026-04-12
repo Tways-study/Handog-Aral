@@ -16,6 +16,7 @@ export default function ScanScreen() {
   const [rawText, setRawText] = useState("");
   const [isOCRing, setIsOCRing] = useState(false);
   const [ocrProgress, setOcrProgress] = useState(0);
+  const cancelOCRRef = useRef(false);
   const [selectedWord, setSelectedWord] = useState(null);
   const [wordLoading, setWordLoading] = useState(false);
   const [recentWords, setRecentWords] = useState([]);
@@ -38,13 +39,19 @@ export default function ScanScreen() {
     setShowCamera(false);
     setIsOCRing(true);
     setOcrProgress(0);
+    cancelOCRRef.current = false;
     stop();
     try {
-      const text = await extractTextFromImage(file, setOcrProgress);
-      setRawText(text);
-      if (text) speak(text);
+      const text = await extractTextFromImage(file, (p) => {
+        if (cancelOCRRef.current) return;
+        setOcrProgress(p);
+      });
+      if (!cancelOCRRef.current) {
+        setRawText(text);
+        if (text) speak(text);
+      }
     } catch {
-      setRawText("");
+      if (!cancelOCRRef.current) setRawText("");
     } finally {
       setIsOCRing(false);
     }
@@ -199,6 +206,15 @@ export default function ScanScreen() {
                   />
                 </div>
                 <p className="text-muted-text text-xs">{ocrProgress}%</p>
+                <button
+                  onClick={() => {
+                    cancelOCRRef.current = true;
+                    setIsOCRing(false);
+                  }}
+                  className="mt-1 text-xs font-semibold text-coral/80 hover:text-coral underline"
+                >
+                  Cancel
+                </button>
               </div>
             )}
 
@@ -266,6 +282,9 @@ export default function ScanScreen() {
                     if (!isWord) {
                       return <span key={i}>{token}</span>;
                     }
+                    const alreadySaved = state.wordsLearned.some(
+                      (w) => w.word.toLowerCase() === token.toLowerCase()
+                    );
                     return (
                       <span
                         key={i}
@@ -273,7 +292,11 @@ export default function ScanScreen() {
                         tabIndex={0}
                         onClick={() => handleWordTap(token, tokens, i)}
                         onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleWordTap(token, tokens, i)}
-                        className="tappable inline-block px-0.5 rounded cursor-pointer transition-all underline decoration-teal/40 decoration-dotted underline-offset-4 hover:decoration-teal hover:decoration-solid hover:decoration-2 hover:bg-sun-yellow/20 active:bg-sun-yellow/30 active:decoration-teal active:decoration-2"
+                        className={`tappable inline-block px-0.5 rounded cursor-pointer transition-all underline underline-offset-4 hover:bg-sun-yellow/20 active:bg-sun-yellow/30 ${
+                          alreadySaved
+                            ? "decoration-teal decoration-solid decoration-2"
+                            : "decoration-teal/40 decoration-dotted hover:decoration-teal hover:decoration-solid hover:decoration-2 active:decoration-teal active:decoration-2"
+                        }`}
                       >
                         {token}
                       </span>

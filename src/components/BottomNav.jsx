@@ -1,8 +1,12 @@
 import { Home, Camera, Star, Settings, BookOpen } from "lucide-react";
 import { useTranslations } from "../hooks/useTranslations";
+import { useApp } from "../context/AppContext";
 
 export default function BottomNav({ current, onNavigate }) {
   const t = useTranslations();
+  const { state } = useApp();
+  const wordsNeededForQuiz = Math.max(0, 4 - state.wordsLearned.length);
+  const canQuiz = wordsNeededForQuiz === 0;
 
   const tabs = [
     { id: "home", labelKey: "home", icon: Home },
@@ -55,6 +59,8 @@ export default function BottomNav({ current, onNavigate }) {
               );
             }
 
+            const isQuizLocked = tab.id === "vocabulary" && !canQuiz && state.wordsLearned.length > 0;
+
             return (
               <button
                 key={tab.id}
@@ -70,6 +76,14 @@ export default function BottomNav({ current, onNavigate }) {
                   <Icon size={21} strokeWidth={active ? 2.5 : 1.8} />
                   {active && (
                     <span className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-teal block" />
+                  )}
+                  {isQuizLocked && (
+                    <span
+                      className="absolute -top-1 -right-2 bg-sun-yellow text-deep-teal font-extrabold rounded-full flex items-center justify-center"
+                      style={{ fontSize: '0.5rem', minWidth: '14px', height: '14px', padding: '0 2px' }}
+                    >
+                      {wordsNeededForQuiz}
+                    </span>
                   )}
                 </div>
                 <span className="font-semibold" style={{ fontSize: '0.625rem' }}>{t.nav[tab.labelKey]}</span>

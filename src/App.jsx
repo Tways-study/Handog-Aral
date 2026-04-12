@@ -9,8 +9,23 @@ import SettingsScreen from "./screens/SettingsScreen";
 import QuizScreen from "./screens/QuizScreen";
 import BottomNav from "./components/BottomNav";
 
+function getInitialScreen() {
+  try {
+    const saved = localStorage.getItem("handog-aral-state");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed?.wordsLearned?.length > 0 || parsed?.childName || parsed?.streak > 0) {
+        return "home";
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return "splash";
+}
+
 function AppContent() {
-  const [screen, setScreen] = useState("splash");
+  const [screen, setScreen] = useState(getInitialScreen);
 
   const navigate = useCallback((s) => setScreen(s), []);
   const onSplashDone = useCallback(() => setScreen("home"), []);

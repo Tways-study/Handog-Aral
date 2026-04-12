@@ -76,6 +76,13 @@ function reducer(state, action) {
     }
     case "SET_QUIZ_HIGH_SCORE":
       return { ...state, quizHighScore: Math.max(state.quizHighScore || 0, action.payload) };
+    case "REMOVE_WORD": {
+      const newWords = state.wordsLearned.filter(
+        (w) => w.word.toLowerCase() !== action.payload.toLowerCase()
+      );
+      const newStars = Math.min(5, Math.floor(newWords.length / 3));
+      return { ...state, wordsLearned: newWords, stars: newStars };
+    }
     case "RESET_PROGRESS":
       return { ...initialState, childName: state.childName, language: state.language };
     default:
