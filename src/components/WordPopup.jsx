@@ -42,7 +42,10 @@ const WordPopup = memo(function WordPopup({ wordData, onClose, onSave }) {
   }, [onClose]);
 
   const handleSave = () => {
-    dispatch({ type: "LEARN_WORD", payload: wordData });
+    dispatch({
+      type: "LEARN_WORD",
+      payload: { ...wordData, bookId: state.currentBook?.id ?? null },
+    });
     onSave?.(wordData);
   };
 

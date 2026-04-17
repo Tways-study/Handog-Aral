@@ -53,7 +53,13 @@ function reducer(state, action) {
       if (state.wordsLearned.find((w) => w.word === word.word)) return state;
       const newWords = [...state.wordsLearned, word];
       const newStars = Math.min(5, Math.floor(newWords.length / 3));
-      return { ...state, wordsLearned: newWords, stars: newStars };
+      let newBookProgress = state.bookProgress;
+      if (word.bookId) {
+        const count = newWords.filter((w) => w.bookId === word.bookId).length;
+        const pct = Math.min(100, Math.round((count / 6) * 100));
+        newBookProgress = { ...state.bookProgress, [word.bookId]: pct };
+      }
+      return { ...state, wordsLearned: newWords, stars: newStars, bookProgress: newBookProgress };
     }
     case "CACHE_WORD":
       return {
@@ -77,11 +83,21 @@ function reducer(state, action) {
     case "SET_QUIZ_HIGH_SCORE":
       return { ...state, quizHighScore: Math.max(state.quizHighScore || 0, action.payload) };
     case "REMOVE_WORD": {
+      const removed = state.wordsLearned.filter(
+        (w) => w.word.toLowerCase() === action.payload.toLowerCase()
+      );
       const newWords = state.wordsLearned.filter(
         (w) => w.word.toLowerCase() !== action.payload.toLowerCase()
       );
       const newStars = Math.min(5, Math.floor(newWords.length / 3));
-      return { ...state, wordsLearned: newWords, stars: newStars };
+      const newBookProgress = { ...state.bookProgress };
+      removed.forEach((rw) => {
+        if (rw.bookId) {
+          const count = newWords.filter((w) => w.bookId === rw.bookId).length;
+          newBookProgress[rw.bookId] = Math.min(100, Math.round((count / 6) * 100));
+        }
+      });
+      return { ...state, wordsLearned: newWords, stars: newStars, bookProgress: newBookProgress };
     }
     case "RESET_PROGRESS":
       return { ...initialState, childName: state.childName, language: state.language };
