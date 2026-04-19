@@ -1,12 +1,257 @@
-# Handog Aral 🦉📖
+<div align="center">
+  <h1>Handog Aral</h1>
+  <p><em>"Ang Imo Gabay sa Pagbasa" — AI-powered literacy companion for Filipino children in rural areas and children with dyslexia.</em></p>
 
-**"Ang Imo Gabay sa Pagbasa"** — AI-powered literacy companion for Filipino children in rural areas and children with dyslexia.
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38BDF8?logo=tailwindcss&logoColor=white)
+![Capacitor](https://img.shields.io/badge/Capacitor-8-119EFF?logo=capacitor&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-Enabled-5A0FC8?logo=pwa&logoColor=white)
+![License](https://img.shields.io/badge/License-None-lightgrey)
+
+  <br/>
+
+![React](https://skillicons.dev/icons?i=react,vite,tailwind,js,androidstudio)
+
+</div>
 
 ---
 
-## Features
+## Overview
 
-### Core Reading Tools
+Handog Aral is a mobile-first literacy app built for Filipino children aged 6–12, with a focus on rural communities and learners with dyslexia. Children tap any word in a scanned book page or story to get an instant, child-friendly definition in either Hiligaynon or Filipino. The app works fully offline for 250+ common words and wraps natively as an Android APK via Capacitor.
+
+- Tap any word in a scanned page or in-app story for an instant definition
+- Scan physical book pages with the camera (Gemini Vision or Tesseract.js OCR)
+- Hear words pronounced aloud with adjustable Text-to-Speech speed
+- Earn stars and track daily streaks to encourage consistent reading
+- Test vocabulary knowledge with a multiple-choice quiz
+- Full dyslexia support: OpenDyslexic font, adjustable font size, color overlays
+
+---
+
+## Tech Stack
+
+| Technology         | Version        | Category   | Purpose                                              |
+| ------------------ | -------------- | ---------- | ---------------------------------------------------- |
+| React              | ^19.2.4        | Framework  | UI component layer and screen rendering              |
+| Vite               | ^7.0.0         | Build Tool | Dev server, HMR, production bundler                  |
+| Tailwind CSS       | ^4.2.2         | Styling    | Utility-first CSS with custom "Isla Sunrise" palette |
+| @tailwindcss/vite  | ^4.2.2         | Styling    | Vite-native Tailwind v4 plugin                       |
+| Google Gemini API  | ^0.24.1        | AI         | Context-aware word definitions and Vision OCR        |
+| Tesseract.js       | ^7.0.0         | OCR        | Client-side offline OCR fallback                     |
+| lucide-react       | ^1.7.0         | Icons      | Tree-shaken icon set used across all screens         |
+| vite-plugin-pwa    | ^1.2.0         | PWA        | Workbox service worker for offline caching           |
+| @capacitor/core    | ^8.3.0         | Mobile     | Android WebView wrapper runtime                      |
+| @capacitor/android | ^8.3.0         | Mobile     | Android project integration                          |
+| @capacitor/cli     | ^8.3.0         | Mobile     | Capacitor CLI tooling                                |
+| autoprefixer       | ^10.4.27       | Styling    | PostCSS vendor prefix automation                     |
+| postcss            | ^8.5.8         | Styling    | CSS transformation pipeline                          |
+| Web Speech API     | Browser native | Audio      | Text-to-speech utterance, no external library        |
+| dictionaryapi.dev  | Free, no key   | Fallback   | English definitions when Gemini is unavailable       |
+
+---
+
+## File & Directory Structure
+
+```
+handog-aral/
++-- index.html                  # App HTML shell, PWA meta tags
++-- vite.config.js              # Vite + React + Tailwind + PWA plugin config
++-- eslint.config.js            # ESLint flat config (react-hooks, react-refresh)
++-- capacitor.config.json       # Capacitor app ID, name, and webDir
++-- package.json                # Dependencies and npm scripts
++-- public/                     # Static assets served as-is (icons, manifest)
++-- android/                    # Capacitor-generated Android Studio project
+|   +-- app/
+|   |   +-- build.gradle        # Android app module build config
+|   |   \-- src/main/
+|   |       +-- AndroidManifest.xml   # Android permissions (camera, internet)
+|   |       \-- assets/public/        # Built dist/ copied here by Capacitor
+|   \-- build.gradle            # Root Android Gradle build file
+\-- src/
+    +-- main.jsx                # ReactDOM.createRoot entry point
+    +-- App.jsx                 # String-based screen state machine router
+    +-- index.css               # Tailwind directives, custom palette, keyframes
+    +-- assets/                 # Images and fonts (OpenDyslexic)
+    +-- context/
+    |   \-- AppContext.jsx       # Global state: useReducer + localStorage persistence
+    +-- components/
+    |   +-- BottomNav.jsx        # 5-tab nav bar with floating center Scan FAB
+    |   +-- BookCard.jsx         # Book list item: progress bar + level badge
+    |   +-- CameraScanner.jsx    # Full-screen camera viewfinder (capture/flip/gallery)
+    |   +-- Mascot.jsx           # Animated owl emoji mascot component
+    |   +-- StarProgress.jsx     # Star row in normal and compact header mode
+    |   \-- WordPopup.jsx        # Bottom-sheet definition card with TTS + save button
+    +-- screens/
+    |   +-- SplashScreen.jsx     # Animated 2.8 s app intro
+    |   +-- HomeScreen.jsx       # Dashboard: greeting, streak, stats, quick actions
+    |   +-- ScanScreen.jsx       # Camera / paste reader with tappable word tokens
+    |   +-- BooksScreen.jsx      # Story library with per-book completion stats
+    |   +-- VocabularyScreen.jsx # Saved words with search + difficulty filter
+    |   +-- QuizScreen.jsx       # Multiple-choice quiz with score and high-score badge
+    |   \-- SettingsScreen.jsx   # Name, language, font size, a11y, Gemini API key
+    +-- data/
+    |   +-- books.js             # 6 sample English story entries (title, emoji, color, text)
+    |   +-- fallbackWords.js     # 250+ offline definitions with Hiligaynon + Tagalog fields
+    |   \-- translations.js      # UI string translations keyed by language setting
+    +-- hooks/
+    |   +-- useTextToSpeech.js   # Web Speech API speak() wrapper
+    |   \-- useTranslations.js   # Returns the correct UI strings for the active language
+    \-- services/
+        +-- geminiService.js     # Gemini prompts, Dictionary API fallback, key management
+        \-- ocrService.js        # Gemini Vision primary + Tesseract.js fallback OCR
+```
+
+- **`src/App.jsx`** — Acts as the entire router. A single `screen` string state decides which component renders. No React Router means no URL conflicts inside the Android Capacitor WebView.
+- **`src/context/AppContext.jsx`** — Single source of truth for all persistent state. Every dispatch triggers a `localStorage.setItem` write so state survives app restarts and cold opens.
+- **`src/services/geminiService.js`** — Handles all AI interactions: word definition prompts with sentence context, Vision OCR, the free Dictionary API fallback, and the `generateLocalTranslation()` POS-aware template engine.
+- **`src/data/fallbackWords.js`** — 250+ curated entries guarantee instant, offline definitions for the most common children's-book vocabulary without any network call.
+
+---
+
+## Architecture & How the Code Works Together
+
+Handog Aral follows a **single-context, layered architecture** with no backend server. The entire data flow runs in the browser (or Android WebView):
+
+```
+User taps word
+     |
+     v
+ScanScreen (tokenizer + findSentence)
+     |
+     v
+geminiService.explainWord()
+     |-- 1. wordCache hit?         --> WordPopup (instant)
+     |-- 2. fallbackWords.js hit?  --> WordPopup (offline)
+     |-- 3. Gemini API available?  --> Gemini API (gemini-2.0-flash) --> WordPopup
+     \-- 4. dictionaryapi.dev      --> generateLocalTranslation() --> WordPopup
+```
+
+**State layer:** `AppContext` (React Context + `useReducer`) persists all state to `localStorage` on every change. On cold start, `loadState()` merges saved data with `initialState`. There is no Redux, Zustand, or external state manager.
+
+**Screen layer:** `App.jsx` is a plain string state machine. `BottomNav` calls `onNavigate(screenId)` to switch screens. The pattern avoids React Router entirely, which is critical for the Capacitor Android WebView which does not handle URL-based navigation reliably.
+
+**Service layer:** `geminiService.js` owns all outbound network calls (Gemini REST API and dictionaryapi.dev). `ocrService.js` chains Gemini Vision → Tesseract.js for image-to-text. Both services have no global side effects beyond the `genAI` singleton.
+
+**Build layer:** Vite bundles the app into `dist/`. `vite-plugin-pwa` injects a Workbox service worker that pre-caches all assets on first load. Capacitor copies `dist/` into `android/app/src/main/assets/public/` for the native APK build.
+
+```mermaid
+graph TD
+    A[Child taps word] --> B[ScanScreen tokenizer]
+    B --> C[geminiService.explainWord]
+    C --> D{wordCache hit?}
+    D -- Yes --> H[WordPopup]
+    D -- No --> E{fallbackWords hit?}
+    E -- Yes --> H
+    E -- No --> F{Gemini key set?}
+    F -- Yes --> G[Gemini API]
+    F -- No --> I[dictionaryapi.dev]
+    G --> H
+    I --> J[generateLocalTranslation]
+    J --> H
+    H --> K[User saves word]
+    K --> L[AppContext dispatch LEARN_WORD]
+    L --> M[localStorage persist]
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- **Node.js** >= 18.x
+- **npm** >= 9.x
+- **Android Studio** (only required for building the Android APK)
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/your-username/handog-aral.git
+   cd handog-aral
+   ```
+
+2. **Install dependencies** using npm (lockfile detected: `package-lock.json`)
+   ```bash
+   npm install
+   ```
+
+### Environment Variables
+
+The Gemini API key is optional. The app works fully offline using `fallbackWords.js` and the free `dictionaryapi.dev` when no key is set.
+
+Create a `.env` file in the project root:
+
+```env
+VITE_GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+| Variable              | Description                                                  | Required | Where to Obtain                                                                                |
+| --------------------- | ------------------------------------------------------------ | -------- | ---------------------------------------------------------------------------------------------- |
+| `VITE_GEMINI_API_KEY` | Google Gemini API key for AI word definitions and Vision OCR | No       | [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey) — free tier available |
+
+Alternatively, enter the key at runtime via the app's **Settings** screen. It is stored in `localStorage` under `handog-gemini-key`.
+
+### Running the Project
+
+**Development** — hot-reload dev server:
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+**Production Build** — compiles and bundles to `dist/`:
+
+```bash
+npm run build
+```
+
+**Production Preview** — serves the production build locally:
+
+```bash
+npm run preview
+```
+
+**Android APK** — sync the Vite build into the Capacitor Android project, then open in Android Studio:
+
+```bash
+npm run build
+npx cap sync android
+npx cap open android
+```
+
+---
+
+## Available Scripts
+
+| Script    | Command        | Description                                                 |
+| --------- | -------------- | ----------------------------------------------------------- |
+| `dev`     | `vite`         | Start Vite dev server with HMR at localhost:5173            |
+| `build`   | `vite build`   | Production bundle output to `dist/` with PWA service worker |
+| `preview` | `vite preview` | Serve the production `dist/` build locally                  |
+| `lint`    | `eslint .`     | Run ESLint across all source files                          |
+
+---
+
+## Contributing
+
+1. Fork the repository and create a new branch: `git checkout -b feat/your-feature-name`
+2. Make your changes and ensure the app runs without errors: `npm run dev`
+3. Lint your code: `npm run lint`
+4. Commit with a descriptive message: `git commit -m "feat: describe your change"`
+5. Push your branch: `git push origin feat/your-feature-name`
+6. Open a Pull Request against `main`
+
+---
+
+## License
+
+No license file detected. All rights reserved.
 
 - **Tap any word** — Get instant child-friendly explanations in Hiligaynon or Filipino
 - **Camera OCR** — Scan physical books using your phone camera (Tesseract.js)
