@@ -66,6 +66,14 @@ body.dyslexia-font {
   letter-spacing: 0.05em;
 }
 
+/* Prevent dyslexia spacing from disrupting toggle/switch button internals */
+body.dyslexia-font [role="switch"],
+body.dyslexia-font [role="switch"] * {
+  letter-spacing: 0;
+  word-spacing: 0;
+  font-family: inherit;
+}
+
 html.font-small { font-size: 14px; }
 html.font-medium { font-size: 16px; }
 html.font-large { font-size: 20px; }

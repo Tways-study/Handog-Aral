@@ -145,13 +145,13 @@ export default function SettingsScreen() {
               }
               role="switch"
               aria-checked={state.dyslexiaFont}
-              className={`flex-shrink-0 w-12 h-7 rounded-full transition-colors relative ${
+              className={`flex-shrink-0 w-12 h-7 rounded-full transition-colors relative overflow-hidden ${
                 state.dyslexiaFont ? "bg-teal" : "bg-gray-200"
               }`}
             >
               <span
-                className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${
-                  state.dyslexiaFont ? "translate-x-[1.375rem]" : "translate-x-0.5"
+                className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${
+                  state.dyslexiaFont ? "translate-x-5" : "translate-x-0"
                 }`}
               />
             </button>
