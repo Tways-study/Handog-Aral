@@ -1,0 +1,54 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { WELCOMED_KEY } from "@/context/AppContext";
+import Mascot from "@/components/Mascot";
+
+export default function SplashScreen() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        sessionStorage.setItem(WELCOMED_KEY, "1");
+      } catch {
+        // ignore
+      }
+      router.replace("/");
+    }, 2800);
+    return () => clearTimeout(timer);
+  }, [router]);
+
+  return (
+    <div
+      className="fixed inset-0 flex flex-col items-center justify-center"
+      style={{
+        background: "linear-gradient(160deg, #0D3D56 0%, #0EA5A0 50%, #F59E0B 100%)",
+      }}
+    >
+      <div className="animate-bounce mb-6">
+        <Mascot size={80} />
+      </div>
+
+      <h1 className="font-heading text-5xl font-extrabold text-white mb-2 drop-shadow-lg">
+        Handog Aral
+      </h1>
+
+      <p className="text-white/90 text-lg font-semibold mb-12">
+        Ang Imo Gabay sa Pagbasa 📖
+      </p>
+
+      {/* Loading dots */}
+      <div className="flex gap-2">
+        {[0, 1, 2].map((i) => (
+          <span
+            key={i}
+            className="w-2.5 h-2.5 rounded-full bg-white/80 animate-blink"
+            style={{ animationDelay: `${i * 0.3}s` }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}

@@ -1,7 +1,7 @@
 {
   "appId": "com.handogaral.app",
   "appName": "Handog Aral",
-  "webDir": "dist",
+  "webDir": "out",
   "server": {
     "androidScheme": "https"
   }
