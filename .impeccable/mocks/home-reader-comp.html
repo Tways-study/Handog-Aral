@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="hil">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Handog Aral comp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FBF7EE;
+    --paper-2: #F2EBDC;
+    --ink: #1D2340;
+    --ink-2: #4A5070;
+    --rule: #C3D3EE;
+    --margin: #E0756C;
+    --sunrise: #F08A24;
+    --sunrise-ink: #1D2340;
+    --marker: #FFD49A;
+    --indigo: #2B3A8C;
+    --kangkong: #2E7D55;
+    --mango: #F2B233;
+    --gumamela: #C8323A;
+    --line: #E3DACA;
+    --shadow: 0 1px 2px rgb(29 35 64 / .08), 0 8px 24px -12px rgb(29 35 64 / .25);
+    --pitch: 2.25rem;
+    --canvas: #E9E4DA;
+  }
+  .dark {
+    --paper: #1A1D2A;
+    --paper-2: #222636;
+    --ink: #EFE7D6;
+    --ink-2: #B9B3A6;
+    --rule: #2F3A57;
+    --margin: #8F3E3A;
+    --sunrise: #F39A3D;
+    --marker: #6B4A1E;
+    --line: #2E3346;
+    --indigo: #3A4AA8;
+    --shadow: 0 1px 2px rgb(0 0 0 / .4), 0 8px 24px -12px rgb(0 0 0 / .6);
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--canvas); font-family: "Atkinson Hyperlegible", system-ui, sans-serif; color: #1D2340; padding: 40px 32px 80px; }
+  ::selection { background: var(--marker); color: var(--ink); }
+  h1.board { font-family: "Baloo 2"; font-weight: 700; font-size: 1.5rem; margin-bottom: 4px; }
+  p.board { color: #4A5070; max-width: 70ch; margin-bottom: 28px; }
+  .row { display: flex; gap: 40px; flex-wrap: wrap; align-items: flex-start; }
+  .frame-label { font-weight: 700; font-size: .875rem; color: #4A5070; margin: 0 0 10px 4px; }
+
+  /* phone */
+  .phone { width: 375px; height: 780px; border-radius: 36px; overflow: hidden; position: relative;
+    background: var(--paper); color: var(--ink); box-shadow: 0 30px 60px -30px rgb(29 35 64 / .45), 0 0 0 10px #1D2340; }
+  .status { height: 28px; }
+  .appbar { display: flex; align-items: center; justify-content: space-between; padding: 8px 20px 4px; }
+  .hello { font-family: "Baloo 2"; font-weight: 700; font-size: 1.5rem; line-height: 1.1; }
+  .sub { color: var(--ink-2); font-size: .9375rem; }
+  .icon-btn { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); }
+  svg.i { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .tally { display: flex; gap: 8px; padding: 6px 20px 14px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line); font-weight: 700; font-size: .9375rem; }
+  .chip svg { width: 18px; height: 18px; }
+
+  /* notebook cover */
+  .cover { margin: 22px 16px 0; border-radius: 6px 22px 22px 6px; background: var(--indigo); color: #fff; position: relative; padding: 22px 20px 20px 34px; box-shadow: var(--shadow); }
+  .cover::before { /* spine binding */ content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 16px; border-radius: 6px 0 0 6px; background: rgb(0 0 0 / .22); }
+  .cover .owl { position: absolute; right: 18px; top: -46px; width: 92px; }
+  .label { background: #FFFDF7; color: #1D2340; border-radius: 10px; padding: 10px 14px 12px; width: 78%; border: 2px solid rgb(0 0 0 / .08); }
+  .label .k { font-size: .8125rem; color: #4A5070; display: flex; gap: 6px; align-items: baseline; }
+  .label .k + .k { margin-top: 2px; }
+  .label .v { font-family: "Baloo 2"; font-weight: 700; font-size: 1.25rem; line-height: 1.15; color: #1D2340; border-bottom: 1.5px solid #C3D3EE; flex: 1; }
+  .label .v.small { font-family: "Atkinson Hyperlegible"; font-size: .9375rem; font-weight: 700; }
+  .progress { margin-top: 16px; display: flex; align-items: center; gap: 10px; font-size: .9375rem; color: rgb(255 255 255 / .92); font-weight: 700; }
+  .bar { flex: 1; height: 10px; border-radius: 999px; background: rgb(255 255 255 / .22); overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 60%; background: #fff; border-radius: 999px; }
+  .cta { margin-top: 18px; width: 100%; height: 60px; border-radius: 18px; border: 0; background: var(--sunrise); color: var(--sunrise-ink); font-family: "Baloo 2"; font-weight: 800; font-size: 1.25rem; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 2px 0 rgb(0 0 0 / .18), 0 10px 20px -10px rgb(0 0 0 / .45); }
+  .cta svg { width: 24px; height: 24px; stroke-width: 2.4; }
+  .cta-alt { margin-top: 10px; text-align: center; font-weight: 700; color: #fff; text-decoration: underline; text-underline-offset: 4px; font-size: .9375rem; }
+
+  /* pad paper */
+  .pad { background-color: var(--paper); background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--pitch) - 1px), var(--rule) calc(var(--pitch) - 1px), var(--rule) var(--pitch)); position: relative; }
+  .pad::before { content: ""; position: absolute; top: 0; bottom: 0; left: 44px; width: 1.5px; background: var(--margin); }
+  .pad-head { font-family: "Baloo 2"; font-weight: 700; font-size: 1.125rem; line-height: var(--pitch); padding-left: 58px; display: flex; justify-content: space-between; padding-right: 20px; }
+  .pad-head a { font-family: "Atkinson Hyperlegible"; font-size: .9375rem; color: var(--ink); text-underline-offset: 4px; }
+  .words { list-style: none; padding: 0 20px 0 58px; }
+  .words li { line-height: var(--pitch); display: flex; justify-content: space-between; gap: 10px; font-size: 1.0625rem; }
+  .words b { font-family: "Baloo 2"; font-weight: 700; font-size: 1.1875rem; }
+  .words span { color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* stamp shapes */
+  .stamp { width: 26px; height: 26px; flex: none; display: inline-grid; place-items: center; align-self: center; color: var(--kangkong); }
+  .stamp.m { color: var(--indigo); } .dark .stamp.m { color: #8E9BEA; }
+  .stamp.h { color: var(--gumamela); } .dark .stamp.h { color: #F08A8F; }
+  .stamp svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; }
+
+  /* nav */
+  .nav { position: absolute; left: 0; right: 0; bottom: 0; height: 84px; padding-bottom: 14px; background: var(--paper); border-top: 1.5px solid var(--line); display: grid; grid-template-columns: repeat(5, 1fr); align-items: end; }
+  .nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: .75rem; font-weight: 700; color: var(--ink-2); text-decoration: none; padding-bottom: 4px; min-height: 52px; justify-content: flex-end; }
+  .nav a.on { color: var(--ink); }
+  .nav a.on svg { stroke: var(--ink); }
+  .nav a.on::after { content: ""; width: 18px; height: 3px; border-radius: 3px; background: var(--sunrise); margin-top: 2px; }
+  .nav .scan { width: 64px; height: 64px; border-radius: 22px; background: var(--sunrise); color: var(--sunrise-ink); display: grid; place-items: center; transform: translateY(-14px); box-shadow: 0 2px 0 rgb(0 0 0 / .15), 0 10px 18px -8px rgb(240 138 36 / .7); }
+  .nav .scan svg { width: 28px; height: 28px; stroke-width: 2.4; }
+
+  /* reader */
+  .reader-top { display: flex; align-items: center; gap: 10px; padding: 6px 12px 10px; border-bottom: 1.5px solid var(--line); }
+  .reader-top .t { flex: 1; min-width: 0; }
+  .reader-top .t b { font-family: "Baloo 2"; font-size: 1.125rem; display: block; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .reader-top .t small { color: var(--ink-2); font-size: .875rem; }
+  .text { padding: 0 20px 0 58px; font-size: 1.25rem; line-height: var(--pitch); }
+  .text p { padding-top: calc(var(--pitch) * .5 - .2rem); }
+  .w { border-radius: 6px; padding: 0 2px; margin: 0 -2px; }
+  .w.tapped { background: var(--marker); box-shadow: inset 0 -3px 0 var(--sunrise); }
+  .w.saved { text-decoration: underline; text-decoration-color: var(--kangkong); text-decoration-thickness: 2px; text-underline-offset: 5px; }
+  .listen { display: flex; gap: 8px; padding: 14px 20px 0 58px; }
+  .btn { height: 48px; padding: 0 16px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); font-weight: 700; font-size: 1rem; display: inline-flex; align-items: center; gap: 8px; font-family: inherit; }
+  .btn.primary { background: var(--sunrise); color: var(--sunrise-ink); border-color: transparent; }
+  .btn.ink { background: var(--ink); color: var(--paper); border-color: transparent; }
+
+  /* word sheet */
+  .scrim { position: absolute; inset: 0; background: rgb(29 35 64 / .28); }
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; background: var(--paper); border-radius: 28px 28px 0 0; padding: 10px 20px 24px; box-shadow: 0 -12px 40px -16px rgb(29 35 64 / .45); }
+  .grab { width: 44px; height: 5px; border-radius: 5px; background: var(--line); margin: 0 auto 14px; }
+  .wordrow { display: flex; align-items: center; gap: 12px; }
+  .wordrow h2 { font-family: "Baloo 2"; font-weight: 800; font-size: 2.25rem; line-height: 1; flex: 1; }
+  .phon { color: var(--ink-2); font-size: 1rem; margin-top: 4px; }
+  .diff { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .875rem; color: var(--ink-2); margin-top: 8px; }
+  .speak { width: 56px; height: 56px; border-radius: 18px; background: var(--ink); color: var(--paper); display: grid; place-items: center; }
+  .speak svg { width: 26px; height: 26px; }
+  .gloss { margin-top: 16px; border-radius: 16px; background: var(--paper-2); padding: 14px 16px; }
+  .gloss .lang { font-size: .8125rem; font-weight: 700; color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
+  .gloss p { font-size: 1.25rem; line-height: 1.5; font-weight: 700; margin-top: 4px; }
+  .en { margin-top: 12px; padding: 0 4px; }
+  .en .lang { font-size: .8125rem; font-weight: 700; color: var(--ink-2); }
+  .en p { font-size: 1.0625rem; line-height: 1.55; margin-top: 2px; }
+  .example { margin-top: 12px; border-top: 1.5px dashed var(--line); padding: 12px 4px 0; font-size: 1.0625rem; line-height: 1.55; color: var(--ink-2); }
+  .example mark { background: var(--marker); color: var(--ink); border-radius: 4px; padding: 0 2px; }
+  .sheet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+  .sheet-actions .btn { justify-content: center; height: 56px; font-size: 1.0625rem; }
+  .source { margin-top: 12px; display: flex; align-items: center; gap: 6px; font-size: .8125rem; color: var(--ink-2); }
+
+  /* desktop */
+  .desk { width: 1280px; height: 760px; border-radius: 18px; overflow: hidden; display: grid; grid-template-columns: 96px 1fr 400px; background: var(--paper); color: var(--ink); box-shadow: 0 30px 60px -30px rgb(29 35 64 / .45), 0 0 0 1px rgb(29 35 64 / .12); }
+  .rail { border-right: 1.5px solid var(--line); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 6px; }
+  .rail .logo { width: 52px; margin-bottom: 18px; }
+  .rail a { width: 76px; min-height: 64px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: .8125rem; font-weight: 700; color: var(--ink-2); text-decoration: none; }
+  .rail a.on { background: var(--paper-2); color: var(--ink); }
+  .rail .scan { width: 60px; height: 60px; border-radius: 20px; background: var(--sunrise); color: var(--sunrise-ink); display: grid; place-items: center; margin: 8px 0; }
+  .rail .spacer { flex: 1; }
+  .desk-main { display: flex; flex-direction: column; min-width: 0; }
+  .desk-main .reader-top { padding: 16px 32px; }
+  .desk-main .pad { flex: 1; }
+  .desk-main .text { max-width: calc(64ch + 90px); padding-left: 90px; font-size: 1.375rem; --pitch: 2.5rem; }
+  .desk-main .pad::before { left: 66px; }
+  .desk-main .listen { padding-left: 90px; }
+  .panel { border-left: 1.5px solid var(--line); padding: 28px 28px; background: var(--paper); }
+  .panel .wordrow h2 { font-size: 2.75rem; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="owl" viewBox="0 0 120 120">
+      <path d="M22 36 L30 14 L44 30 Z" fill="#8A5A2B"/>
+      <path d="M98 36 L90 14 L76 30 Z" fill="#8A5A2B"/>
+      <path d="M60 22c-26 0-42 18-42 44 0 28 18 46 42 46s42-18 42-46c0-26-16-44-42-44z" fill="#A86B34"/>
+      <path d="M60 58c-16 0-26 12-26 28 0 16 11 24 26 24s26-8 26-24c0-16-10-28-26-28z" fill="#F2D3A0"/>
+      <path d="M46 74q4 3 8 0M66 74q4 3 8 0M44 86q4 3 8 0M58 88q4 3 8 0M70 84q4 3 8 0M52 98q4 3 8 0M64 98q4 3 8 0" stroke="#C99A5E" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <circle cx="44" cy="48" r="16" fill="#FFF8EA"/><circle cx="76" cy="48" r="16" fill="#FFF8EA"/>
+      <circle cx="45" cy="49" r="8" fill="#1D2340"/><circle cx="75" cy="49" r="8" fill="#1D2340"/>
+      <circle cx="48" cy="46" r="2.6" fill="#fff"/><circle cx="78" cy="46" r="2.6" fill="#fff"/>
+      <path d="M55 58 L60 68 L65 58 Z" fill="#F08A24"/>
+      <path d="M20 70c-6 10-4 26 6 34 2-12 6-22 10-28z" fill="#8A5A2B"/>
+      <path d="M100 70c6 10 4 26-6 34-2-12-6-22-10-28z" fill="#8A5A2B"/>
+      <path d="M44 112l-4 6M50 113l0 6M70 113l0 6M76 112l4 6" stroke="#F08A24" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-6h4v6"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19.5A2 2 0 0 0 6 22h13"/></symbol>
+    <symbol id="i-words" viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M9 4v16"/><path d="M12 9h4M12 13h4"/></symbol>
+    <symbol id="i-quiz" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 22c4 0 7-2.8 7-7 0-4-3-6-4-9-1 2-2 3-3.5 3.5C11 6 10 4 10 2 7 4.5 5 8.5 5 15c0 4.2 3 7 7 7z"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+    <symbol id="s-easy" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></symbol>
+    <symbol id="s-med" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><rect x="8.5" y="8.5" width="7" height="7" rx="1"/></symbol>
+    <symbol id="s-hard" viewBox="0 0 24 24"><path d="M12 3 21.5 20h-19z"/><path d="M12 10.5 15.5 17h-7z"/></symbol>
+  </defs>
+</svg>
+
+<h1 class="board">Handog Aral · Pad Paper Storybook comp</h1>
+<p class="board">Mobile home and reader, desktop reader, and night (dark) mode. Book text and word data are sample content. Fonts: Baloo 2 headings, Atkinson Hyperlegible body. Icon set: lucide (drawn inline here). The difficulty stamp shape carries the meaning: circle = easy, square = medium, triangle = hard.</p>
+
+<div class="row">
+  <!-- MOBILE HOME LIGHT -->
+  <div>
+    <div class="frame-label">Home · mobile · light</div>
+    <div class="phone">
+      <div class="status"></div>
+      <div class="appbar">
+        <div><div class="hello">Maayong aga, Ana!</div><div class="sub">Basa kita subong.</div></div>
+        <a class="icon-btn" aria-label="Settings"><svg class="i"><use href="#i-gear"/></svg></a>
+      </div>
+      <div class="tally">
+        <span class="chip"><svg class="i" style="color:#E2A11B"><use href="#i-star"/></svg>12 ka bituon</span>
+        <span class="chip"><svg class="i" style="color:#E0756C"><use href="#i-flame"/></svg>3 ka adlaw</span>
+      </div>
+      <div class="cover">
+        <svg class="owl" aria-hidden="true"><use href="#owl"/></svg>
+        <div class="label">
+          <div class="k">Libro: <span class="v">The Brave Little Fox</span></div>
+          <div class="k">Pahina: <span class="v small">1 sang 1 · 8 ka pulong natipon</span></div>
+        </div>
+        <div class="progress"><div class="bar"><i></i></div>60%</div>
+        <button class="cta"><svg class="i"><use href="#i-scan"/></svg>I-scan ang pahina</button>
+        <div class="cta-alt">Padayon sa pagbasa</div>
+      </div>
+      <div class="pad" style="margin-top:22px;height:300px">
+        <div class="pad-head">Bag-o nga pulong <a href="#">Tanan</a></div>
+        <ul class="words">
+          <li><b>enormous</b><span>daku gid-gid</span><i class="stamp h"><svg><use href="#s-hard"/></svg></i></li>
+          <li><b>whispered</b><span>naghutik</span><i class="stamp m"><svg><use href="#s-med"/></svg></i></li>
+          <li><b>smooth</b><span>hamis</span><i class="stamp"><svg><use href="#s-easy"/></svg></i></li>
+          <li><b>forest</b><span>kagulangan</span><i class="stamp"><svg><use href="#s-easy"/></svg></i></li>
+        </ul>
+      </div>
+      <nav class="nav">
+        <a class="on"><svg class="i"><use href="#i-home"/></svg>Balay</a>
+        <a><svg class="i"><use href="#i-book"/></svg>Libro</a>
+        <a aria-label="Scan"><span class="scan"><svg class="i"><use href="#i-scan"/></svg></span></a>
+        <a><svg class="i"><use href="#i-words"/></svg>Pulong</a>
+        <a><svg class="i"><use href="#i-quiz"/></svg>Pasulit</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- MOBILE READER + SHEET -->
+  <div>
+    <div class="frame-label">Reader · mobile · tapped "enormous"</div>
+    <div class="phone">
+      <div class="status"></div>
+      <div class="reader-top">
+        <a class="icon-btn" aria-label="Back"><svg class="i"><use href="#i-back"/></svg></a>
+        <div class="t"><b>The Brave Little Fox</b><small>Pindota ang pulong nga indi mo kilala</small></div>
+      </div>
+      <div class="pad" style="height:700px">
+        <div class="text"><p>The small fox ran through the <span class="w tapped">enormous</span> forest. It was a cold day, and snow covered every tree and path. The fox <span class="w saved">whispered</span> to itself: "What an adventure this is!"</p></div>
+      </div>
+      <div class="scrim"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="wordrow">
+          <div style="flex:1"><h2>enormous</h2><div class="phon">/ih-NOR-mus/</div>
+            <div class="diff"><i class="stamp h"><svg><use href="#s-hard"/></svg></i>Mabudlay</div></div>
+          <a class="speak" aria-label="Pamatii"><svg class="i"><use href="#i-volume"/></svg></a>
+        </div>
+        <div class="gloss"><div class="lang">Sa Hiligaynon</div><p>Daku gid-gid, mas daku pa sa ordinaryo.</p></div>
+        <div class="en"><div class="lang">Sa English</div><p>Very, very big.</p></div>
+        <div class="example">The <mark>enormous</mark> tree gave shade to the whole yard.</div>
+        <div class="sheet-actions">
+          <button class="btn"><svg class="i"><use href="#i-volume"/></svg>Pamatii</button>
+          <button class="btn primary"><svg class="i"><use href="#i-save"/></svg>Tipigi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE HOME DARK -->
+  <div>
+    <div class="frame-label">Home · mobile · night</div>
+    <div class="phone dark">
+      <div class="status"></div>
+      <div class="appbar">
+        <div><div class="hello">Maayong gab-i, Ana!</div><div class="sub">Isa pa ka pahina?</div></div>
+        <a class="icon-btn" aria-label="Settings"><svg class="i"><use href="#i-gear"/></svg></a>
+      </div>
+      <div class="tally">
+        <span class="chip"><svg class="i" style="color:#F2B233"><use href="#i-star"/></svg>12 ka bituon</span>
+        <span class="chip"><svg class="i" style="color:#F08A8F"><use href="#i-flame"/></svg>3 ka adlaw</span>
+      </div>
+      <div class="cover" style="background:#2E7D55">
+        <svg class="owl" aria-hidden="true"><use href="#owl"/></svg>
+        <div class="label">
+          <div class="k">Libro: <span class="v">Pedro and the Rice Field</span></div>
+          <div class="k">Pahina: <span class="v small">1 sang 1 · 2 ka pulong natipon</span></div>
+        </div>
+        <div class="progress"><div class="bar"><i style="width:30%"></i></div>30%</div>
+        <button class="cta"><svg class="i"><use href="#i-scan"/></svg>I-scan ang pahina</button>
+        <div class="cta-alt">Padayon sa pagbasa</div>
+      </div>
+      <div class="pad" style="margin-top:22px;height:300px">
+        <div class="pad-head">Bag-o nga pulong <a href="#">Tanan</a></div>
+        <ul class="words">
+          <li><b>peculiar</b><span>katingalahan</span><i class="stamp h"><svg><use href="#s-hard"/></svg></i></li>
+          <li><b>protect</b><span>protektahan</span><i class="stamp m"><svg><use href="#s-med"/></svg></i></li>
+          <li><b>field</b><span>uma</span><i class="stamp"><svg><use href="#s-easy"/></svg></i></li>
+        </ul>
+      </div>
+      <nav class="nav">
+        <a class="on"><svg class="i"><use href="#i-home"/></svg>Balay</a>
+        <a><svg class="i"><use href="#i-book"/></svg>Libro</a>
+        <a aria-label="Scan"><span class="scan"><svg class="i"><use href="#i-scan"/></svg></span></a>
+        <a><svg class="i"><use href="#i-words"/></svg>Pulong</a>
+        <a><svg class="i"><use href="#i-quiz"/></svg>Pasulit</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:56px">
+  <div class="frame-label">Reader · desktop (≥1024px) · word panel docked</div>
+  <div class="desk">
+    <aside class="rail">
+      <svg class="logo" aria-hidden="true"><use href="#owl"/></svg>
+      <a><svg class="i"><use href="#i-home"/></svg>Balay</a>
+      <a class="on"><svg class="i"><use href="#i-book"/></svg>Libro</a>
+      <span class="scan" aria-label="Scan"><svg class="i"><use href="#i-scan"/></svg></span>
+      <a><svg class="i"><use href="#i-words"/></svg>Pulong</a>
+      <a><svg class="i"><use href="#i-quiz"/></svg>Pasulit</a>
+      <span class="spacer"></span>
+      <a><svg class="i"><use href="#i-gear"/></svg>Settings</a>
+    </aside>
+    <section class="desk-main">
+      <div class="reader-top">
+        <div class="t"><b style="font-size:1.5rem">The Brave Little Fox</b><small>Pindota ang pulong nga indi mo kilala · 8 ka pulong natipon</small></div>
+        <button class="btn ink"><svg class="i"><use href="#i-volume"/></svg>Basaha sa akon</button>
+        <button class="btn"><svg class="i"><use href="#i-scan"/></svg>Bag-o nga pahina</button>
+      </div>
+      <div class="pad">
+        <div class="text"><p>The small fox ran through the <span class="w tapped">enormous</span> forest. It was a cold day, and snow covered every tree and path. The fox <span class="w saved">whispered</span> to itself: "What an adventure this is!" It searched for food in the wide wilderness, determined and brave. Then it found a quiet home behind a <span class="w saved">smooth</span> stone. The fox felt safe and happy at last.</p></div>
+      </div>
+    </section>
+    <aside class="panel">
+      <div class="wordrow">
+        <div style="flex:1"><h2>enormous</h2><div class="phon">/ih-NOR-mus/</div>
+          <div class="diff"><i class="stamp h"><svg><use href="#s-hard"/></svg></i>Mabudlay</div></div>
+        <a class="speak" aria-label="Pamatii"><svg class="i"><use href="#i-volume"/></svg></a>
+      </div>
+      <div class="gloss"><div class="lang">Sa Hiligaynon</div><p>Daku gid-gid, mas daku pa sa ordinaryo.</p></div>
+      <div class="en"><div class="lang">Sa English</div><p>Very, very big.</p></div>
+      <div class="example">The <mark>enormous</mark> tree gave shade to the whole yard.</div>
+      <div class="sheet-actions">
+        <button class="btn"><svg class="i"><use href="#i-volume"/></svg>Pamatii</button>
+        <button class="btn primary"><svg class="i"><use href="#i-save"/></svg>Tipigi</button>
+      </div>
+      <div class="source"><svg class="i" style="width:16px;height:16px"><use href="#i-sparkle"/></svg>Gin-explain sang AI · konektado</div>
+    </aside>
+  </div>
+</div>
+</body>
+</html>
