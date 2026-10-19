@@ -398,7 +398,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
       )}
 
       {!isDesktop && (
-        <Drawer open={sheetOpen && !!panelNode} onOpenChange={setSheetOpen}>
+        <Drawer open={sheetOpen && !!panelNode} onOpenChange={setSheetOpen} autoFocus>
           <DrawerContent
             onCloseAutoFocus={(e) => {
               e.preventDefault();
