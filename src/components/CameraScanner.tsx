@@ -237,7 +237,7 @@ export default function CameraScanner({ onCapture, onClose }: CameraScannerProps
               onClick={capture}
               disabled={!ready}
               aria-label={s.cameraShutter}
-              className="grid size-20 cursor-pointer place-items-center rounded-full border-4 border-paper outline-none focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-paper disabled:opacity-40 motion-safe:active:scale-95"
+              className="grid size-20 cursor-pointer place-items-center rounded-full border-4 border-paper outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-paper disabled:opacity-40 motion-safe:active:scale-95"
             >
               <span className="size-14 rounded-full bg-sunrise" />
             </button>

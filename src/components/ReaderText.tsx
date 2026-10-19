@@ -85,7 +85,7 @@ function ReaderTextImpl({ tokens, tappedIndex, savedWords, readingSentence, onWo
                       aria-label={tok.value}
                       aria-pressed={state === "tapped" ? true : undefined}
                       onClick={() => onWordTap(tok)}
-                      className="word-mark relative inline-block cursor-pointer align-baseline text-inherit outline-none after:absolute after:-inset-x-0.5 after:-inset-y-[0.35rem] after:content-[''] focus-visible:outline-3 focus-visible:outline-ring"
+                      className="word-mark relative inline-block cursor-pointer align-baseline text-inherit outline-none after:absolute after:-inset-x-0.5 after:-inset-y-[0.35rem] after:content-[''] focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-ring"
                     >
                       {tok.value}
                     </button>

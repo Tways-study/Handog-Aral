@@ -248,7 +248,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
                 onChange={(e) => setDraft(e.target.value)}
                 placeholder={s.typePlaceholder}
                 rows={8}
-                className="w-full resize-none rounded-lg border-[1.5px] border-line bg-paper p-3 text-xl leading-normal outline-none placeholder:text-ink-2 focus-visible:outline-3 focus-visible:outline-ring"
+                className="w-full resize-none rounded-lg border-[1.5px] border-line bg-paper p-3 text-xl leading-normal outline-none placeholder:text-ink-2 focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-ring"
               />
               <div className="flex flex-wrap gap-2.5">
                 <Button type="submit" size="lg" disabled={!draft.trim()}>

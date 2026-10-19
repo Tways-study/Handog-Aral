@@ -45,3 +45,40 @@ test("upgrading an offline entry keeps the word panel the same size (no layout s
   expect(after.height, isDesktop(page) ? "desktop" : "mobile").toBeCloseTo(before.height, 0);
   expect(after.y).toBeCloseTo(before.y, 0);
 });
+
+test("keyboard focus shows a visible ring on buttons, links, inputs and word tokens", async ({ page, context }) => {
+  await stubApi(context);
+  // Tailwind v4: `outline-none` sets --tw-outline-style:none, which silently turned `focus-visible:outline-3` into
+  // "3px of no outline" everywhere. Every stop below must have a real outline.
+  const routes: [string, RegExp[]][] = [
+    ["/", [/Padayon sa pagbasa/, /I-scan ang pahina/]],
+    ["/books", [/The Brave Little Fox/]],
+    ["/settings", [/^Medium$/, /Dyslexia-friendly font|^$/]],
+    ["/read/fox", [/^The$/, /^small$/]],
+  ];
+  for (const [route, targets] of routes) {
+    await gotoAs(page, route);
+    await page.waitForTimeout(300);
+    const missing = new Set(targets.map(String));
+    for (let i = 0; i < 80 && missing.size; i++) {
+      await page.keyboard.press("Tab");
+      const info = await page.evaluate(() => {
+        const el = document.activeElement as HTMLElement;
+        const cs = getComputedStyle(el);
+        return {
+          name: (el.getAttribute("aria-label") || el.textContent || "").trim().replace(/\s+/g, " "),
+          ring: cs.outlineStyle !== "none" && parseFloat(cs.outlineWidth) >= 2 && cs.outlineColor !== "rgba(0, 0, 0, 0)",
+          tag: el.tagName,
+        };
+      });
+      if (info.tag === "BODY") continue;
+      for (const re of targets) {
+        if (re.test(info.name)) {
+          expect(info.ring, `${route}: focus ring on "${info.name}"`).toBe(true);
+          missing.delete(String(re));
+        }
+      }
+    }
+    expect([...missing], `${route}: tab never reached`).toEqual([]);
+  }
+});

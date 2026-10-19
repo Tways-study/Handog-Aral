@@ -150,7 +150,7 @@ function QuestionView({
                   data-state={state}
                   aria-label={t.quiz.optionLabel(LETTERS[i], opt)}
                   className={
-                    "flex min-h-14 w-full items-center gap-3 rounded-lg border-[1.5px] px-3 py-2 text-left text-lg font-bold transition-colors focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring " +
+                    "flex min-h-14 w-full items-center gap-3 rounded-lg border-[1.5px] px-3 py-2 text-left text-lg font-bold transition-colors focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring " +
                     (state === "right"
                       ? "border-success bg-success/15 text-ink"
                       : state === "wrong"

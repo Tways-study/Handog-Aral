@@ -141,7 +141,7 @@ export default function HomeScreen() {
             </Button>
             <Link
               href={`/read/${book.id}`}
-              className="mt-2 flex min-h-11 items-center justify-center text-[0.9375rem] font-bold underline underline-offset-4 outline-none focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="mt-2 flex min-h-11 items-center justify-center text-[0.9375rem] font-bold underline underline-offset-4 outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               {t.home.continueReading}
             </Link>
@@ -157,7 +157,7 @@ export default function HomeScreen() {
                   <Link
                     href="/words"
                     aria-label={t.home.recentViewAllLabel}
-                    className="-my-2 inline-flex min-h-11 items-center text-[0.9375rem] font-bold underline underline-offset-4 outline-none focus-visible:outline-3 focus-visible:outline-ring"
+                    className="-my-2 inline-flex min-h-11 items-center text-[0.9375rem] font-bold underline underline-offset-4 outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-ring"
                   >
                     {t.home.recentViewAll}
                   </Link>

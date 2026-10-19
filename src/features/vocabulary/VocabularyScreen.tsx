@@ -172,7 +172,7 @@ export default function VocabularyScreen() {
                         onClick={() => setSelectedKey(w.key)}
                         aria-label={t.vocabulary.openWord(w.word)}
                         aria-current={w.key === selectedKey ? "true" : undefined}
-                        className="flex h-full min-w-0 flex-1 items-center justify-between gap-3 pl-[var(--pad-gutter)] text-left focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ring"
+                        className="flex h-full min-w-0 flex-1 items-center justify-between gap-3 pl-[var(--pad-gutter)] text-left focus-visible:outline-solid focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ring"
                       >
                         <span className="min-w-0">
                           <span className="block truncate font-heading text-xl leading-[var(--pitch)] font-bold">{w.word}</span>

@@ -35,7 +35,7 @@ export default function BooksScreen() {
               <Link
                 href={`/read/${book.id}`}
                 aria-label={t.books.openBook(book.title, label[status])}
-                className="group flex items-center gap-5 rounded-lg outline-none focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ring sm:flex-col sm:items-stretch sm:gap-3"
+                className="group flex items-center gap-5 rounded-lg outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ring sm:flex-col sm:items-stretch sm:gap-3"
               >
                 <div className="@container relative w-[11.5rem] shrink-0 transition-transform duration-150 motion-safe:group-hover:-translate-y-0.5 sm:mx-auto sm:w-full sm:max-w-[16rem]">
                   <BookCover coverId={book.coverId} jacket={book.jacket} label={false} className="drop-shadow-md" />
