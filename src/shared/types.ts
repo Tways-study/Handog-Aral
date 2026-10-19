@@ -20,10 +20,20 @@ export interface FallbackWord extends Omit<WordEntry, "translation"> {
   tagalog: string;
 }
 
+/** Notebook-cover motif and jacket colour token (v3). */
+export type CoverId = "fox" | "star" | "rice" | "rainbow" | "turtle" | "basket";
+export type Jacket = "indigo" | "kangkong" | "mango" | "gumamela";
+
 export interface Book {
   id: string;
   title: string;
+  /** v3: SVG cover motif (replaces `emoji`). */
+  coverId: CoverId;
+  /** v3: jacket colour token (replaces `color`). */
+  jacket: Jacket;
+  /** LEGACY: removed in Phase 4. */
   emoji: string;
+  /** LEGACY: removed in Phase 4. */
   color: string;
   progress: number;
   text: string;

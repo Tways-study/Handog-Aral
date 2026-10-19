@@ -3,6 +3,8 @@ import type { Book } from "@/shared/types";
 export const sampleBooks: Book[] = [
   {
     id: "fox",
+    coverId: "fox",
+    jacket: "indigo",
     title: "The Brave Little Fox",
     emoji: "🦊",
     color: "#F97316",
@@ -11,6 +13,8 @@ export const sampleBooks: Book[] = [
   },
   {
     id: "star",
+    coverId: "star",
+    jacket: "mango",
     title: "Maria and the Shining Star",
     emoji: "⭐",
     color: "#F59E0B",
@@ -19,6 +23,8 @@ export const sampleBooks: Book[] = [
   },
   {
     id: "pedro",
+    coverId: "rice",
+    jacket: "kangkong",
     title: "Pedro and the Rice Field",
     emoji: "🌾",
     color: "#34D399",
@@ -27,6 +33,8 @@ export const sampleBooks: Book[] = [
   },
   {
     id: "rainbow",
+    coverId: "rainbow",
+    jacket: "gumamela",
     title: "The Rainbow After the Rain",
     emoji: "🌈",
     color: "#8B5CF6",
@@ -35,6 +43,8 @@ export const sampleBooks: Book[] = [
   },
   {
     id: "turtle",
+    coverId: "turtle",
+    jacket: "indigo",
     title: "The Slow and Steady Turtle",
     emoji: "🐢",
     color: "#06B6D4",
@@ -43,6 +53,8 @@ export const sampleBooks: Book[] = [
   },
   {
     id: "market",
+    coverId: "basket",
+    jacket: "mango",
     title: "A Day at the Market",
     emoji: "🧺",
     color: "#EC4899",
