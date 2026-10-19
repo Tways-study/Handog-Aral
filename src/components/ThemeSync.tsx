@@ -34,7 +34,18 @@ export function useResolvedTheme(): "light" | "dark" {
 export default function ThemeSync() {
   const hydrated = useSettingsHydrated();
   const theme = useSettings((s) => s.theme);
+  const fontSize = useSettings((s) => s.fontSize);
+  const dyslexiaFont = useSettings((s) => s.dyslexiaFont);
   const resolved = useResolvedTheme();
+
+  // Reading settings: font scale on <html> (rem-based, drives --pitch) and the dyslexia font on <body>.
+  useEffect(() => {
+    if (!hydrated) return;
+    const root = document.documentElement;
+    root.classList.remove("font-small", "font-medium", "font-large");
+    root.classList.add(`font-${fontSize}`);
+    document.body.classList.toggle("dyslexia-font", dyslexiaFont);
+  }, [hydrated, fontSize, dyslexiaFont]);
 
   useEffect(() => {
     if (!hydrated) return;
