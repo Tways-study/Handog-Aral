@@ -3,6 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
+    "postinstall": "node scripts/copy-tesseract.mjs",
+    "prebuild": "node scripts/copy-tesseract.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
