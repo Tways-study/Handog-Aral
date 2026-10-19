@@ -118,3 +118,23 @@ test("a book opens offline from a warm cache and word lookups still resolve", as
   await page.locator("[data-slot=reader-text]").getByRole("button", { name: "brave", exact: true }).click();
   await expect(page.locator("[data-slot=word-panel]")).toBeVisible();
 });
+
+test("the service worker never caches the proxy, so a lost connection is detected", async ({ page, context }) => {
+  await gotoAs(page, "/", { childName: "Ana" });
+  await swReady(page);
+  await precacheWarm(page);
+  await page.reload(); // controlled page: /api/health goes through the worker
+  await expect(page.getByRole("heading", { name: /Maayong .*Ana/ })).toBeVisible();
+  expect(await page.evaluate(async () => (await fetch("/api/health", { cache: "no-store" })).status)).toBe(200);
+  const cachedApi = await page.evaluate(async () => {
+    const hits: string[] = [];
+    for (const n of await caches.keys()) for (const k of await (await caches.open(n)).keys()) if (new URL(k.url).pathname.startsWith("/api/")) hits.push(`${n} ${k.url}`);
+    return hits;
+  });
+  expect(cachedApi, "nothing under /api/ may be in Cache Storage").toEqual([]);
+
+  await context.setOffline(true);
+  // A stale cached health answer would report 200 here; it must fail like the network does.
+  const health = await page.evaluate(() => fetch("/api/health", { cache: "no-store" }).then((r) => `status ${r.status}`, () => "network error"));
+  expect(health).toBe("network error");
+});

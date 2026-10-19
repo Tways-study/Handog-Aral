@@ -2,7 +2,7 @@
 /// <reference lib="webworker" />
 import { defaultCache } from "@serwist/turbopack/worker";
 import type { PrecacheEntry, RuntimeCaching, SerwistGlobalConfig } from "serwist";
-import { CacheFirst, CacheableResponsePlugin, Serwist } from "serwist";
+import { CacheFirst, CacheableResponsePlugin, NetworkOnly, Serwist } from "serwist";
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -23,13 +23,20 @@ const tesseractAssets: RuntimeCaching = {
   }),
 };
 
+// The proxy is never cached. defaultCache serves GET /api/* NetworkFirst, which answered /api/health from a stale cache
+// while offline, so isReachable() said "online" and the OfflineBanner never appeared.
+const proxy: RuntimeCaching = {
+  matcher: ({ url, sameOrigin }) => sameOrigin && url.pathname.startsWith("/api/"),
+  handler: new NetworkOnly(),
+};
+
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   // A new worker waits until the page asks it to take over (see the "update available" toast in Providers).
   skipWaiting: false,
   clientsClaim: true,
   navigationPreload: true,
-  runtimeCaching: [tesseractAssets, ...defaultCache],
+  runtimeCaching: [proxy, tesseractAssets, ...defaultCache],
   fallbacks: {
     entries: [
       {
