@@ -121,7 +121,7 @@ export default function VocabularyScreen() {
                 value={filter}
                 onValueChange={(v) => v && setFilter(v as Filter)}
                 aria-label={t.vocabulary.filterLabel}
-                className="flex-wrap"
+                className="grid w-full grid-cols-2 sm:flex sm:flex-wrap"
               >
                 <ToggleGroupItem value="all">{t.vocabulary.filterAll} ({total})</ToggleGroupItem>
                 {LEVELS.map((l) => (

@@ -135,7 +135,7 @@ function QuestionView({
           <p className="pad-line">{q.english}</p>
         </div>
 
-        <p className="mt-5 mb-3 font-bold">{t.quiz.prompt}</p>
+        <p className="mt-4 mb-2 font-bold">{t.quiz.prompt}</p>
         <ul className="grid gap-3" aria-label={t.quiz.prompt}>
           {q.options.map((opt, i) => {
             const isAnswer = i === q.answerIndex;
@@ -172,7 +172,7 @@ function QuestionView({
           })}
         </ul>
 
-        <div className="mt-4 min-h-[5.5rem]" role="status" aria-live="polite">
+        <div className="mt-3 mb-3 min-h-[3.5rem]" role="status" aria-live="polite">
           {answered && (
             <div className="flex items-center gap-3">
               {correct && (
