@@ -11,8 +11,10 @@ Branch: **`v3-overhaul`** (not pushed).
 | Phase 2 prep | Done. Shared contracts `src/shared/schemas.ts` and `src/lib/api.ts` (stub) committed; all Phase 2 dependencies installed | `08c34d6`, `89f9319` |
 | 2. Parallel core (A/B/C) | Done (rerun in the main checkout, no worktrees). Data layer, Gemini proxy and OCR/TTS are committed; typecheck, lint, 76 tests, the web build and the Android export all pass (verified). Proxy guard rails checked against a production build. Not yet wired into any screen. | `508a5dc`, `5887a14`, `399f3cc`, `d59b325` |
 | 3. Design system + shell | Done and verified (159 tests, both builds, screenshots reviewed). Token-driven pad-paper design system, shadcn components, AppShell (bottom nav / rail), SVG owl + covers, GSAP helpers, PWA manifest/icons/update prompt/offline page, dev-only `/design` showcase. Old screens still run on a LEGACY token block. | `34de880`..`b9d37c1` |
-| Phase 4 prep | Done: translations split per feature (`src/data/strings/*`), reading settings applied from the settings store, shared `src/lib/vocabulary.ts` (learnWord/forgetWord keep progress in sync) and `useSavedWords` hook | `d03aa20` + next commit |
-| 4–6 | Not started | none |
+| Phase 4 prep | Done: translations split per feature (`src/data/strings/*`), reading settings applied from the settings store, shared `src/lib/vocabulary.ts` (learnWord/forgetWord keep progress in sync) and `useSavedWords` hook | `d03aa20`, `2ccf128`, `499dd86` |
+| 4. Screens (D/E/F) | Done and integrated. Reader (`/scan`, `/read/[bookId]`, WordPanel, camera), Home/Books/Welcome (first-run onboarding), Words/Quiz/Settings (offline pack control, no API-key card). Legacy `AppContext`, Gemini client, old services and legacy CSS removed; hydration gate added. typecheck, lint, 227 tests, web and Capacitor builds pass (verified); mechanical design detector: no findings | `5cb721d`..`9ee1604` |
+| 5. Offline dictionary build | **Blocked on a `GEMINI_API_KEY` on the dev machine** (script not written yet) | none |
+| 6. Audit + polish | In progress: Playwright e2e (agent), then Impeccable audit/critique, `/qa`, README + CLAUDE.md update, DESIGN.md | none |
 
 ### Before resuming
 Check `df -h /` (keep at least 5 GB free). Then tell Claude: "resume the v3 plan from docs/v3-plan.md".
