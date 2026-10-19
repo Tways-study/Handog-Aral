@@ -292,7 +292,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
 
   return (
     <div className="flex min-h-dvh flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_25rem]">
-      <section className="flex min-w-0 flex-col">
+      <section className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex items-center gap-2.5 border-b-[1.5px] border-line bg-paper px-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2.5 lg:static lg:px-8 lg:py-4">
           {!isDesktop && (
             <Button asChild variant="ghost" size="icon">
@@ -349,7 +349,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
               </Badge>
             </div>
           )}
-          <div ref={textRef} className="pad-text pt-[calc(var(--pitch)*0.5-0.2rem)] lg:max-w-[calc(64ch+var(--pad-gutter)+1.25rem)]">
+          <div ref={textRef} className="pad-text pt-[calc(var(--pitch)*0.22)] lg:max-w-[calc(64ch+var(--pad-gutter)+1.25rem)]">
             <ReaderText tokens={tokens} tappedIndex={tappedIndex} savedWords={savedSet} readingSentence={readingSentence} onWordTap={onWordTap} />
           </div>
           {scanned && (

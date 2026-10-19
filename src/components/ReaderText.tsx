@@ -22,6 +22,17 @@ export function sentenceIndexes(tokens: Token[]): number[] {
   return out;
 }
 
+/** Groups tokens into whitespace runs and unbreakable word chunks. */
+function chunks(tokens: Token[]): Token[][] {
+  const out: Token[][] = [];
+  for (const tok of tokens) {
+    const last = out[out.length - 1];
+    if (last && (last[0].kind === "space") === (tok.kind === "space")) last.push(tok);
+    else out.push([tok]);
+  }
+  return out;
+}
+
 export interface ReaderTextProps {
   tokens: Token[];
   /** Token index of the tapped word. */
@@ -56,24 +67,33 @@ function ReaderTextImpl({ tokens, tappedIndex, savedWords, readingSentence, onWo
           data-reading={readingSentence === g.sentence ? "true" : undefined}
           className="box-decoration-clone data-[reading=true]:bg-marker/35"
         >
-          {g.tokens.map((tok) => {
-            if (tok.kind !== "word") return tok.value;
-            const state = tok.index === tappedIndex ? "tapped" : savedWords.has(normalizeWord(tok.value)) ? "saved" : undefined;
-            return (
-              <button
-                key={tok.index}
-                type="button"
-                data-token-index={tok.index}
-                data-state={state}
-                aria-label={tok.value}
-                aria-pressed={state === "tapped" ? true : undefined}
-                onClick={() => onWordTap(tok)}
-                className="word-mark relative inline-block cursor-pointer align-baseline text-inherit outline-none after:absolute after:-inset-x-0.5 after:-inset-y-[0.35rem] after:content-[''] focus-visible:outline-3 focus-visible:outline-ring"
-              >
-                {tok.value}
-              </button>
-            );
-          })}
+          {chunks(g.tokens).map((chunk) =>
+            chunk[0].kind === "space" ? (
+              chunk[0].value
+            ) : (
+              // Punctuation stays glued to its word, so a line never starts with a stray "." or ends on a lone quote.
+              <span key={chunk[0].index} className="whitespace-nowrap">
+                {chunk.map((tok) => {
+                  if (tok.kind !== "word") return tok.value;
+                  const state = tok.index === tappedIndex ? "tapped" : savedWords.has(normalizeWord(tok.value)) ? "saved" : undefined;
+                  return (
+                    <button
+                      key={tok.index}
+                      type="button"
+                      data-token-index={tok.index}
+                      data-state={state}
+                      aria-label={tok.value}
+                      aria-pressed={state === "tapped" ? true : undefined}
+                      onClick={() => onWordTap(tok)}
+                      className="word-mark relative inline-block cursor-pointer align-baseline text-inherit outline-none after:absolute after:-inset-x-0.5 after:-inset-y-[0.35rem] after:content-[''] focus-visible:outline-3 focus-visible:outline-ring"
+                    >
+                      {tok.value}
+                    </button>
+                  );
+                })}
+              </span>
+            ),
+          )}
         </span>
       ))}
     </div>
