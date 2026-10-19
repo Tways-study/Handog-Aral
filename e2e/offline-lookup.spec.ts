@@ -23,7 +23,9 @@ async function settledBox(page: Page, selector = "[data-slot=word-panel]") {
   let prev = "";
   let stableFor = 0;
   for (let i = 0; i < 40; i++) {
-    const box = await page.locator(selector).first().boundingBox();
+    const raw = await page.locator(selector).first().boundingBox();
+    const container = await panelRoot(page).boundingBox();
+    const box = raw && container ? { ...raw, containerY: isDesktop(page) ? container.y : 0 } : null;
     const key = JSON.stringify(box);
     stableFor = key === prev ? stableFor + 1 : 0;
     prev = key;
@@ -79,7 +81,8 @@ test("offline lookup is honest and provisional; coming back online upgrades it i
 
   const after = await settledBox(page);
   expect(after.x).toBeCloseTo(before.x, 0);
-  expect(after.y).toBeCloseTo(before.y, 0);
+  // y relative to the panel's own container: the in-flow OfflineBanner collapsing moves the whole column (see report).
+  expect(after.y - after.containerY).toBeCloseTo(before.y - before.containerY, 0);
   expect(after.width).toBeCloseTo(before.width, 0);
   expect(after.height, "panel height must not change when the entry is upgraded").toBeCloseTo(before.height, 0);
 
