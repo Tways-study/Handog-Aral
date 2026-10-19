@@ -32,7 +32,6 @@ export function useOnlineStatus(): { online: boolean } {
       if (document.visibilityState === "visible") void check();
     };
 
-    setOnline(navigator.onLine !== false);
     void check();
     window.addEventListener("online", onOnline);
     window.addEventListener("offline", onOffline);
