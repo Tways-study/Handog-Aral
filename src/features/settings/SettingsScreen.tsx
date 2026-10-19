@@ -1,327 +1,333 @@
 "use client";
 
-import { useState } from "react";
-import { useApp } from "@/context/AppContext";
-import { useTranslations } from "@/hooks/useTranslations";
-import { hasApiKey, setApiKey, clearApiKey } from "@/lib/geminiService";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { Download, Trash2, Volume2, Wifi, WifiOff } from "lucide-react";
+import { toast } from "sonner";
+import { PageContainer, PageHeader } from "@/components/PageLayout";
 import Mascot from "@/components/Mascot";
-import type { ColorOverlay, FontSize, Language } from "@/shared/types";
-import { AlertTriangle, Eye, EyeOff, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useT } from "@/hooks/useT";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { offlinePackStatus, warmOfflinePack } from "@/lib/ocr/tesseract";
+import { speak } from "@/lib/tts";
+import { syncVocabularyProgress } from "@/lib/vocabulary";
+import { clearAllData, queueSize } from "@/stores/db";
+import { useProgress } from "@/stores/progress";
+import { useSettings, type ColorOverlay, type FontSize, type Theme } from "@/stores/settings";
+import type { Language } from "@/shared/schemas";
+import { APP_VERSION } from "./version";
+
+/** A settings group: heading, then rows divided by rules. No cards. */
+function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
+  return (
+    <section aria-labelledby={id} className="py-6 first:pt-2">
+      <h2 id={id} className="mb-1 font-heading text-2xl font-bold">
+        {title}
+      </h2>
+      <div className="divide-y divide-line">{children}</div>
+    </section>
+  );
+}
+
+function Row({ label, help, htmlFor, children, id }: { label: string; help?: string; htmlFor?: string; children: ReactNode; id?: string }) {
+  return (
+    <div className="grid gap-3 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-6">
+      <div className="min-w-0">
+        {htmlFor ? (
+          <Label htmlFor={htmlFor} className="text-base leading-snug font-bold">
+            {label}
+          </Label>
+        ) : (
+          <p id={id} className="text-base leading-snug font-bold">
+            {label}
+          </p>
+        )}
+        {help && <p className="mt-1 text-[0.9375rem] text-ink-2">{help}</p>}
+      </div>
+      <div className="min-w-0">{children}</div>
+    </div>
+  );
+}
+
+const mb = (bytes: number) => `${Math.max(0.1, bytes / 1_048_576).toFixed(1)} MB`;
 
 export default function SettingsScreen() {
-  const { state, dispatch } = useApp();
-  const t = useTranslations();
-  // Keys whose translation is a plain string (the speed label is a function and is not indexed here).
-  type SettingsKey = {
-    [K in keyof typeof t.settings]: (typeof t.settings)[K] extends string ? K : never;
-  }[keyof typeof t.settings];
-  const [apiKeyInput, setApiKeyInput] = useState("");
-  const [showReset, setShowReset] = useState(false);
-  const [keySaved, setKeySaved] = useState(false);
-  const [keyIsSet, setKeyIsSet] = useState(() => hasApiKey());
-  const [showKey, setShowKey] = useState(false);
+  const t = useT();
+  const s = useSettings();
+  return (
+    <PageContainer>
+      <PageHeader title={t.settings.title} subtitle={t.settings.subtitle} hideSettings />
+      <div className="mx-auto max-w-2xl divide-y divide-line">
+        <Section id="sec-child" title={t.settings.childHeading}>
+          <Row label={t.settings.nameLabel} help={t.settings.nameHelp} htmlFor="child-name">
+            <Input
+              id="child-name"
+              value={s.childName}
+              maxLength={30}
+              placeholder={t.settings.namePlaceholder}
+              onChange={(e) => s.setChildName(e.target.value)}
+              className="sm:w-64"
+              autoComplete="off"
+            />
+          </Row>
+        </Section>
 
-  const handleSaveKey = () => {
-    if (apiKeyInput.trim()) {
-      setApiKey(apiKeyInput.trim());
-      setApiKeyInput("");
-      setKeySaved(true);
-      setKeyIsSet(true);
-      setTimeout(() => setKeySaved(false), 2000);
-    }
-  };
+        <Section id="sec-language" title={t.settings.languageHeading}>
+          <Row label={t.settings.languageLabel} help={t.settings.languageHelp} id="lbl-language">
+            <ToggleGroup type="single" variant="outline" value={s.language} onValueChange={(v) => v && s.setLanguage(v as Language)} aria-labelledby="lbl-language">
+              <ToggleGroupItem value="hiligaynon">{t.settings.hiligaynon}</ToggleGroupItem>
+              <ToggleGroupItem value="tagalog">{t.settings.tagalog}</ToggleGroupItem>
+            </ToggleGroup>
+          </Row>
+        </Section>
 
-  const handleClearKey = () => {
-    clearApiKey();
-    setKeyIsSet(false);
-    setApiKeyInput("");
-  };
+        <ReadingSection />
 
-  const handleReset = () => {
-    dispatch({ type: "RESET_PROGRESS" });
-    setShowReset(false);
-  };
+        <Section id="sec-appearance" title={t.settings.appearanceHeading}>
+          <Row label={t.settings.themeLabel} help={t.settings.themeHelp} id="lbl-theme">
+            <ToggleGroup type="single" variant="outline" value={s.theme} onValueChange={(v) => v && s.setTheme(v as Theme)} aria-labelledby="lbl-theme" className="flex-wrap">
+              <ToggleGroupItem value="light">{t.settings.light}</ToggleGroupItem>
+              <ToggleGroupItem value="dark">{t.settings.dark}</ToggleGroupItem>
+              <ToggleGroupItem value="system">{t.settings.system}</ToggleGroupItem>
+            </ToggleGroup>
+          </Row>
+        </Section>
+
+        <OfflineSection />
+        <DataSection />
+
+        <Section id="sec-about" title={t.settings.aboutHeading}>
+          <div className="flex items-center gap-4 py-4">
+            <Mascot size={72} />
+            <div>
+              <p className="font-heading text-xl font-bold">{t.settings.appName}</p>
+              <p>{t.settings.tagline}</p>
+              <p className="text-[0.9375rem] text-ink-2">{t.settings.version(APP_VERSION)}</p>
+              <p className="mt-1 text-[0.9375rem] text-ink-2">{t.settings.owlCredit}</p>
+            </div>
+          </div>
+        </Section>
+      </div>
+    </PageContainer>
+  );
+}
+
+const SPEEDS = [0.5, 0.8, 1.2] as const;
+
+function ReadingSection() {
+  const t = useT();
+  const fontSize = useSettings((s) => s.fontSize);
+  const setFontSize = useSettings((s) => s.setFontSize);
+  const dyslexiaFont = useSettings((s) => s.dyslexiaFont);
+  const setDyslexiaFont = useSettings((s) => s.setDyslexiaFont);
+  const overlay = useSettings((s) => s.colorOverlay);
+  const setOverlay = useSettings((s) => s.setColorOverlay);
+  const ttsSpeed = useSettings((s) => s.ttsSpeed);
+  const setTtsSpeed = useSettings((s) => s.setTtsSpeed);
 
   return (
-    <div className="min-h-screen bg-cream pb-nav">
-      {/* Header */}
-      <div className="px-5 pt-8 pb-4 flex items-center gap-3">
-        <Mascot size={32} />
-        <div>
-          <h1 className="font-heading text-2xl font-bold text-dark-text">
-            {t.settings.title}
-          </h1>
-          <p className="text-muted-text text-xs">{t.settings.subtitle}</p>
-        </div>
+    <Section id="sec-reading" title={t.settings.readingHeading}>
+      <Row label={t.settings.fontSizeLabel} help={t.settings.fontSizeHelp} id="lbl-size">
+        <ToggleGroup type="single" variant="outline" value={fontSize} onValueChange={(v) => v && setFontSize(v as FontSize)} aria-labelledby="lbl-size">
+          <ToggleGroupItem value="small">{t.settings.small}</ToggleGroupItem>
+          <ToggleGroupItem value="medium">{t.settings.medium}</ToggleGroupItem>
+          <ToggleGroupItem value="large">{t.settings.large}</ToggleGroupItem>
+        </ToggleGroup>
+      </Row>
+
+      <Row label={t.settings.dyslexiaLabel} help={t.settings.dyslexiaHelp} htmlFor="dyslexia-font">
+        <Switch id="dyslexia-font" checked={dyslexiaFont} onCheckedChange={setDyslexiaFont} />
+      </Row>
+      <p
+        data-testid="dyslexia-preview"
+        data-dyslexic={dyslexiaFont ? "on" : "off"}
+        className="rounded-lg bg-paper-2 px-4 py-3 text-lg"
+        style={{
+          fontFamily: dyslexiaFont ? "var(--font-opendyslexic), var(--font-atkinson), system-ui, sans-serif" : "var(--font-atkinson), system-ui, sans-serif",
+          wordSpacing: dyslexiaFont ? "0.3em" : undefined,
+          letterSpacing: dyslexiaFont ? "0.05em" : undefined,
+        }}
+      >
+        {t.settings.dyslexiaPreview}
+      </p>
+
+      <div>
+        <Row label={t.settings.overlayLabel} help={t.settings.overlayHelp} id="lbl-overlay">
+          <ToggleGroup type="single" variant="outline" value={overlay} onValueChange={(v) => v && setOverlay(v as ColorOverlay)} aria-labelledby="lbl-overlay" className="flex-wrap">
+            <ToggleGroupItem value="none">{t.settings.overlayNone}</ToggleGroupItem>
+            <ToggleGroupItem value="yellow">{t.settings.overlayYellow}</ToggleGroupItem>
+            <ToggleGroupItem value="blue">{t.settings.overlayBlue}</ToggleGroupItem>
+            <ToggleGroupItem value="pink">{t.settings.overlayPink}</ToggleGroupItem>
+          </ToggleGroup>
+        </Row>
+        <p
+          data-testid="overlay-preview"
+          className={`mb-4 rounded-lg border-[1.5px] border-line px-4 py-3 text-lg ${overlay === "none" ? "bg-paper" : `overlay-${overlay}`}`}
+        >
+          {t.settings.overlayPreview}
+        </p>
       </div>
 
-      <div className="px-5 space-y-4 animate-fadeUp">
-        {/* Child's name */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <label className="font-heading font-bold text-sm text-dark-text block mb-2">
-            {t.settings.nameLabel}
-          </label>
-          <input
-            type="text"
-            value={state.childName}
-            onChange={(e) =>
-              dispatch({ type: "SET_NAME", payload: e.target.value })
-            }
-            placeholder={t.settings.namePlaceholder}
-            className="w-full bg-cream rounded-xl px-4 py-3 text-sm text-dark-text outline-none focus:ring-2 focus:ring-teal/30"
-          />
+      <Row label={t.settings.speedLabel} help={t.settings.speedHelp} id="lbl-speed">
+        <div className="flex flex-wrap items-center gap-3">
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            value={String(ttsSpeed)}
+            onValueChange={(v) => v && setTtsSpeed(Number(v))}
+            aria-labelledby="lbl-speed"
+          >
+            <ToggleGroupItem value="0.5">{t.settings.slow}</ToggleGroupItem>
+            <ToggleGroupItem value="0.8">{t.settings.normal}</ToggleGroupItem>
+            <ToggleGroupItem value="1.2">{t.settings.fast}</ToggleGroupItem>
+          </ToggleGroup>
+          <Button variant="ink" size="sm" onClick={() => void speak(t.settings.listenSample, { rate: ttsSpeed })}>
+            <Volume2 aria-hidden="true" />
+            {t.settings.listen}
+          </Button>
         </div>
+      </Row>
+    </Section>
+  );
+}
 
-        {/* Language */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <label className="font-heading font-bold text-sm text-dark-text block mb-2">
-            {t.settings.languageLabel}
-          </label>
-          <div className="flex gap-2">
-            {[
-              { id: "hiligaynon", label: "🗣 Hiligaynon" },
-              { id: "tagalog", label: "� Filipino" },
-            ].map((lang) => (
-              <button
-                key={lang.id}
-                onClick={() =>
-                  dispatch({ type: "SET_LANGUAGE", payload: lang.id as Language })
-                }
-                aria-pressed={state.language === lang.id}
-                className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                  state.language === lang.id
-                    ? "bg-teal text-white"
-                    : "bg-gray-100 text-muted-text"
-                }`}
-              >
-                {lang.label}
-              </button>
-            ))}
+type PackInfo = { cached: boolean; bytes: number; total: number };
+
+function OfflineSection() {
+  const t = useT();
+  const { online } = useOnlineStatus();
+  const [pack, setPack] = useState<PackInfo | "checking">("checking");
+  const [progress, setProgress] = useState<number | null>(null);
+  const [pending, setPending] = useState<number | null>(null);
+  const downloading = progress !== null;
+
+  const refresh = useCallback(async () => {
+    const [p, q] = await Promise.all([offlinePackStatus(), queueSize()]);
+    setPack(p);
+    setPending(q);
+  }, []);
+
+  useEffect(() => {
+    // Initial async read of external state (Cache Storage and IndexedDB).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void refresh();
+  }, [refresh]);
+
+  async function download() {
+    setProgress(0);
+    try {
+      await warmOfflinePack((p) => setProgress(Math.round(p * 100)));
+      toast.success(t.settings.packDone);
+    } catch {
+      toast.error(t.settings.packFailed);
+    } finally {
+      setProgress(null);
+      void refresh();
+    }
+  }
+
+  let status: string;
+  if (pack === "checking") status = t.settings.packChecking;
+  else if (pack.total === 0) status = t.settings.packUnknown;
+  else if (pack.cached) status = t.settings.packReady(mb(pack.bytes));
+  else if (pack.bytes > 0) status = t.settings.packPartial(mb(pack.bytes), mb(pack.total));
+  else status = t.settings.packMissing(mb(pack.total));
+
+  const ready = pack !== "checking" && pack.cached;
+
+  return (
+    <Section id="sec-offline" title={t.settings.offlineHeading}>
+      <Row label={t.settings.connectionLabel}>
+        <p className="flex items-center gap-2 font-bold" data-testid="connection">
+          {online ? <Wifi aria-hidden="true" className="size-5 text-success" /> : <WifiOff aria-hidden="true" className="size-5 text-warning-text" />}
+          {online ? t.settings.online : t.settings.offline}
+        </p>
+      </Row>
+      <div className="py-4">
+        <p className="font-bold">{t.settings.packLabel}</p>
+        <p className="mt-1 text-[0.9375rem] text-ink-2">{t.settings.packHelp}</p>
+        <p className="mt-2 font-bold" data-testid="pack-status">
+          {status}
+        </p>
+        {progress !== null && (
+          <div className="mt-3 flex items-center gap-3">
+            <Progress value={progress} aria-label={t.settings.downloadingPct(progress)} />
+            <span className="w-12 shrink-0 text-right font-bold tabular-nums">{progress}%</span>
           </div>
-        </div>
-
-        {/* Font size */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <label className="font-heading font-bold text-sm text-dark-text block mb-2">
-            {t.settings.fontSizeLabel}
-          </label>
-          <div className="flex gap-2">
-            {[
-              { id: "small", previewClass: "text-sm" },
-              { id: "medium", previewClass: "text-base" },
-              { id: "large", previewClass: "text-xl" },
-            ].map((size) => (
-              <button
-                key={size.id}
-                onClick={() =>
-                  dispatch({ type: "SET_FONT_SIZE", payload: size.id as FontSize })
-                }
-                aria-pressed={state.fontSize === size.id}
-                className={`flex-1 py-2.5 rounded-xl font-semibold transition-colors flex flex-col items-center gap-0.5 ${
-                  state.fontSize === size.id
-                    ? "bg-teal text-white"
-                    : "bg-gray-100 text-muted-text"
-                }`}
-              >
-                <span className={`${size.previewClass} font-bold leading-none`}>A</span>
-                <span className="text-xs">
-                  {size.id === "small" ? t.settings.fontSmall : size.id === "medium" ? t.settings.fontMedium : t.settings.fontLarge}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Dyslexia font */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between gap-4">
-            <div className="min-w-0">
-              <p className="font-heading font-bold text-sm text-dark-text">
-                {t.settings.dyslexiaLabel}
-              </p>
-              <p className="text-muted-text text-xs">
-                {t.settings.dyslexiaSub}
-              </p>
-            </div>
-            <button
-              onClick={() =>
-                dispatch({
-                  type: "SET_DYSLEXIA_FONT",
-                  payload: !state.dyslexiaFont,
-                })
-              }
-              role="switch"
-              aria-checked={state.dyslexiaFont}
-              className={`flex-shrink-0 w-12 h-7 rounded-full transition-colors relative overflow-hidden ${
-                state.dyslexiaFont ? "bg-teal" : "bg-gray-200"
-              }`}
-            >
-              <span
-                className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform ${
-                  state.dyslexiaFont ? "translate-x-5" : "translate-x-0"
-                }`}
-              />
-            </button>
-          </div>
-        </div>
-
-        {/* TTS Speed */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <label className="font-heading font-bold text-sm text-dark-text block mb-2">
-            {t.settings.ttsLabel(state.ttsSpeed)}
-          </label>
-          <div className="flex gap-2">
-            {[
-              { val: 0.5, key: "ttsSlow" },
-              { val: 0.8, key: "ttsNormal" },
-              { val: 1.2, key: "ttsFast" },
-            ].map((s) => (
-              <button
-                key={s.val}
-                onClick={() =>
-                  dispatch({ type: "SET_TTS_SPEED", payload: s.val })
-                }
-                aria-pressed={state.ttsSpeed === s.val}
-                className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                  state.ttsSpeed === s.val
-                    ? "bg-lavender text-white"
-                    : "bg-gray-100 text-muted-text"
-                }`}
-              >
-                {t.settings[s.key as SettingsKey]}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Color overlay */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <label className="font-heading font-bold text-sm text-dark-text block mb-2">
-            {t.settings.overlayLabel}
-          </label>
-          <div className="flex gap-2">
-            {[
-              { id: "none", labelKey: "overlayNone", color: "bg-gray-100" },
-              { id: "yellow", labelKey: "overlayYellow", color: "bg-sun-yellow/40" },
-              { id: "blue", labelKey: "overlayBlue", color: "bg-sky-blue/40" },
-              { id: "pink", labelKey: "overlayPink", color: "bg-coral/30" },
-            ].map((o) => (
-              <button
-                key={o.id}
-                onClick={() =>
-                  dispatch({ type: "SET_COLOR_OVERLAY", payload: o.id as ColorOverlay })
-                }
-                aria-pressed={state.colorOverlay === o.id}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-                  o.color
-                } ${
-                  state.colorOverlay === o.id
-                    ? "ring-2 ring-teal ring-offset-2"
-                    : ""
-                }`}
-              >
-                {t.settings[o.labelKey as SettingsKey]}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Gemini API Key */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-          <label className="font-heading font-bold text-sm text-dark-text block mb-1">
-            {t.settings.apiLabel}
-          </label>
-          <p className={`text-xs mb-3 font-semibold ${keyIsSet ? "text-leaf-green" : "text-muted-text"}`}>
-            {keyIsSet
-              ? t.settings.apiKeySet
-              : t.settings.apiKeyUnset}
-          </p>
-          {keyIsSet ? (
-            <button
-              onClick={handleClearKey}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-coral/10 text-coral text-sm font-semibold border border-coral/20"
-            >
-              <X size={14} />
-              {t.settings.apiRemove}
-            </button>
-          ) : (
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <input
-                  type={showKey ? "text" : "password"}
-                  value={apiKeyInput}
-                  onChange={(e) => setApiKeyInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSaveKey()}
-                  placeholder={t.settings.apiPlaceholder}
-                  className="w-full bg-cream rounded-xl px-3 py-2.5 pr-10 text-sm outline-none focus:ring-2 focus:ring-teal/30"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowKey((v) => !v)}
-                  aria-label={showKey ? "Itago ang API key" : "Ipakita ang API key"}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-text"
-                >
-                  {showKey ? <EyeOff size={15} /> : <Eye size={15} />}
-                </button>
-              </div>
-              <button
-                onClick={handleSaveKey}
-                disabled={!apiKeyInput.trim()}
-                className="bg-teal text-white text-sm font-bold px-4 rounded-xl disabled:opacity-40"
-              >
-                {keySaved ? t.settings.apiSaved : t.settings.apiSave}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Reset */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-coral/20">
-          {!showReset ? (
-            <button
-              onClick={() => setShowReset(true)}
-              className="w-full text-coral font-semibold text-sm flex items-center justify-center gap-2"
-            >
-              <AlertTriangle size={16} />
-              {t.settings.resetBtn}
-            </button>
-          ) : (
-            <div className="text-center">
-              <p className="text-sm text-dark-text mb-3 font-semibold">
-                {t.settings.resetConfirm}
-              </p>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setShowReset(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-gray-100 text-muted-text text-sm font-semibold"
-                >
-                  {t.settings.resetCancel}
-                </button>
-                <button
-                  onClick={handleReset}
-                  className="flex-1 py-2.5 rounded-xl bg-coral text-white text-sm font-semibold"
-                >
-                  {t.settings.resetConfirmBtn}
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* About */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
-          <Mascot size={28} />
-          <p className="font-heading font-bold text-sm text-dark-text mt-1">
-            {t.settings.version}
-          </p>
-          <p className="text-muted-text text-xs">
-            {t.settings.tagline}
-          </p>
-          <p className="text-muted-text text-xs mt-1">
-            {t.settings.credit}
-          </p>
+        )}
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <Button variant={ready ? "secondary" : "ink"} disabled={!online || downloading} onClick={() => void download()}>
+            <Download aria-hidden="true" />
+            {downloading ? t.settings.downloading : ready ? t.settings.downloadAgain : t.settings.download}
+          </Button>
+          {!online && <p className="text-[0.9375rem] text-warning-text">{t.settings.needOnline}</p>}
         </div>
       </div>
-    </div>
+      <Row label={t.settings.pendingLabel} help={t.settings.pendingHelp}>
+        <p className="font-bold" data-testid="pending">
+          {pending === null ? t.settings.packChecking : t.settings.pendingCount(pending)}
+        </p>
+      </Row>
+    </Section>
+  );
+}
+
+function DataSection() {
+  const t = useT();
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  async function reset() {
+    setBusy(true);
+    try {
+      await clearAllData();
+      useProgress.getState().resetAll();
+      await syncVocabularyProgress();
+      setOpen(false);
+      toast.success(t.settings.resetDone);
+    } catch {
+      toast.error(t.settings.resetFailed);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Section id="sec-data" title={t.settings.dataHeading}>
+      <Row label={t.settings.resetLabel} help={t.settings.resetHelp}>
+        <Button variant="outline" onClick={() => setOpen(true)}>
+          <Trash2 aria-hidden="true" />
+          {t.settings.resetButton}
+        </Button>
+      </Row>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="font-heading text-xl">{t.settings.resetTitle}</DialogTitle>
+            <DialogDescription>{t.settings.resetBody}</DialogDescription>
+          </DialogHeader>
+          <ul className="list-disc space-y-1 pl-5">
+            {t.settings.resetItems.map((i) => (
+              <li key={i}>{i}</li>
+            ))}
+          </ul>
+          <p className="text-[0.9375rem] text-ink-2">{t.settings.resetKept}</p>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setOpen(false)}>
+              {t.settings.resetCancel}
+            </Button>
+            <Button variant="destructive" disabled={busy} onClick={() => void reset()}>
+              {t.settings.resetConfirm}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </Section>
   );
 }

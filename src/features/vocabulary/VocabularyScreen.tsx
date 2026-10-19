@@ -1,225 +1,233 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useApp } from "@/context/AppContext";
-import { useTranslations } from "@/hooks/useTranslations";
-import WordPopup from "@/components/WordPopup";
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import { Search, Volume2 } from "lucide-react";
+import { toast } from "sonner";
+import { PageContainer, PageHeader } from "@/components/PageLayout";
+import DifficultyStamp, { StampShape } from "@/components/DifficultyStamp";
 import Mascot from "@/components/Mascot";
-import type { Difficulty, WordEntry } from "@/shared/types";
-import { Search } from "lucide-react";
+import WordPanel from "@/components/WordPanel";
+import { Button } from "@/components/ui/button";
+import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from "@/components/ui/drawer";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useSavedWords } from "@/hooks/useSavedWords";
+import { useT } from "@/hooks/useT";
+import { MIN_QUIZ_WORDS } from "@/lib/quiz";
+import { speak, stop } from "@/lib/tts";
+import { forgetWord } from "@/lib/vocabulary";
+import { useSettings } from "@/stores/settings";
+import type { SavedWord } from "@/stores/db";
+import { useDesktop } from "./useDesktop";
 
-const difficultyColors: Record<Difficulty, { bg: string; border: string; text: string; badge: string }> = {
-  easy: {
-    bg: "bg-leaf-green/10",
-    border: "border-leaf-green/25",
-    text: "text-leaf-green",
-    badge: "bg-leaf-green text-white",
-  },
-  medium: {
-    bg: "bg-sun-yellow/10",
-    border: "border-sun-yellow/30",
-    text: "text-soft-orange",
-    badge: "bg-sun-yellow text-deep-teal",
-  },
-  hard: {
-    bg: "bg-coral/10",
-    border: "border-coral/25",
-    text: "text-coral",
-    badge: "bg-coral text-white",
-  },
-};
+type Filter = "all" | "easy" | "medium" | "hard";
+const LEVELS = ["easy", "medium", "hard"] as const;
 
-export default function VocabularyScreen() {
-  const { state } = useApp();
-  const t = useTranslations();
-  const [selectedWord, setSelectedWord] = useState<WordEntry | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilter, setActiveFilter] = useState("all");
-  const words = state.wordsLearned;
-
-  const filters = [
-    { id: "all", label: t.vocabulary.filterAll },
-    { id: "easy", label: t.vocabulary.filterEasy },
-    { id: "medium", label: t.vocabulary.filterMedium },
-    { id: "hard", label: t.vocabulary.filterHard },
-  ];
-
-  const diffLabel = (d: string) =>
-    d === "easy" ? t.vocabulary.diffEasy : d === "medium" ? t.vocabulary.diffMedium : t.vocabulary.diffHard;
-
-  const filteredWords = useMemo(() => {
-    return words.filter((w) => {
-      const matchesSearch =
-        !searchQuery ||
-        w.word.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        w.translation.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilter =
-        activeFilter === "all" || w.difficulty === activeFilter;
-      return matchesSearch && matchesFilter;
-    });
-  }, [words, searchQuery, activeFilter]);
-
-  const easyCount = words.filter((w) => w.difficulty === "easy").length;
-  const mediumCount = words.filter((w) => w.difficulty === "medium").length;
-  const hardCount = words.filter((w) => w.difficulty === "hard").length;
-
-  return (
-    <div className="min-h-screen bg-cream pb-nav">
-      {/* Header */}
-      <div
-        className="px-5 pt-10 pb-7 rounded-b-[36px]"
-        style={{
-          background: "linear-gradient(135deg, #38BDF8 0%, #0EA5A0 100%)",
-        }}
-      >
-        <h1 className="font-heading text-2xl font-bold text-white mb-1">
-          {t.vocabulary.title}
-        </h1>
-        <p className="text-white/80 text-sm">
-          {words.length > 0
-            ? t.vocabulary.subtitleWords(words.length)
-            : t.vocabulary.subtitleEmpty}
-        </p>
-
-        {words.length > 0 && (
-          <div className="grid grid-cols-3 gap-2 mt-4">
-            <div className="bg-white/25 rounded-xl p-3 text-center">
-              <p className="text-white font-extrabold text-xl font-heading leading-none">
-                {easyCount}
-              </p>
-              <p className="text-white/80 text-xs font-semibold mt-0.5">
-                {t.vocabulary.statEasy}
-              </p>
-            </div>
-            <div className="bg-white/25 rounded-xl p-3 text-center">
-              <p className="text-white font-extrabold text-xl font-heading leading-none">
-                {mediumCount}
-              </p>
-              <p className="text-white/80 text-xs font-semibold mt-0.5">
-                {t.vocabulary.statMedium}
-              </p>
-            </div>
-            <div className="bg-white/25 rounded-xl p-3 text-center">
-              <p className="text-white font-extrabold text-xl font-heading leading-none">
-                {hardCount}
-              </p>
-              <p className="text-white/80 text-xs font-semibold mt-0.5">
-                {t.vocabulary.statHard}
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="px-5 mt-4">
-        {words.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 gap-4">
-            <Mascot size={56} />
-            <p className="text-muted-text text-sm text-center leading-relaxed">
-              {t.vocabulary.emptyTitle}
-              <br />
-              {t.vocabulary.emptyBody}
-            </p>
-          </div>
-        ) : (
-          <>
-            {/* Search bar */}
-            <div className="relative mb-3">
-              <Search
-                size={15}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-text"
-              />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t.vocabulary.searchPlaceholder}
-                aria-label={t.vocabulary.searchPlaceholder}
-                className="w-full bg-white rounded-xl pl-10 pr-4 py-3 text-sm text-dark-text outline-none border border-gray-100 focus:ring-2 focus:ring-lavender/30"
-              />
-            </div>
-
-            {/* Filter chips */}
-            <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar pb-0.5">
-              {filters.map((f) => (
-                <button
-                  key={f.id}
-                  onClick={() => setActiveFilter(f.id)}
-                  aria-pressed={activeFilter === f.id}
-                  className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                    activeFilter === f.id
-                      ? "bg-lavender text-white shadow-sm"
-                      : "bg-white text-muted-text border border-gray-100"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-
-            {filteredWords.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-muted-text text-sm">
-                  {t.vocabulary.noResults}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-3 animate-fadeUp">
-                {filteredWords.map((w, i) => {
-                  const colors =
-                    difficultyColors[w.difficulty] || difficultyColors.easy;
-                  return (
-                    <button
-                      key={`${w.word}-${i}`}
-                      onClick={() => setSelectedWord(w)}
-                      className={`tappable rounded-2xl p-4 border text-left ${colors.bg} ${colors.border}`}
-                    >
-                      <span className="text-2xl block mb-1.5">{w.emoji}</span>
-                      <p className="font-heading font-bold text-sm text-dark-text truncate">
-                        {w.word}
-                      </p>
-                      <p className={`text-xs font-semibold mt-0.5 ${colors.text}`}>
-                        {w.phonetic}
-                      </p>
-                      <span
-                        className={`inline-block mt-2 text-xs font-bold px-2 py-0.5 rounded-full ${colors.badge}`}
-                      >
-                        {diffLabel(w.difficulty)}
-                      </span>
-                    </button>
-                  );
-                })}
-
-                {/* Mystery placeholder cards */}
-                {words.length < 6 &&
-                  activeFilter === "all" &&
-                  !searchQuery &&
-                  Array.from({ length: Math.max(0, 6 - words.length) }).map(
-                    (_, i) => (
-                      <div
-                        key={`mystery-${i}`}
-                        className="bg-gray-50 rounded-2xl p-4 border border-dashed border-gray-200 flex flex-col items-center justify-center min-h-[120px]"
-                      >
-                        <span className="text-2xl mb-1 opacity-20">â“</span>
-                        <p className="text-muted-text/30 text-xs font-bold">
-                          ???
-                        </p>
-                      </div>
-                    )
-                  )}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-
-      {selectedWord && (
-        <WordPopup
-          wordData={selectedWord}
-          onClose={() => setSelectedWord(null)}
-        />
-      )}
-    </div>
+export function filterWords(words: SavedWord[], query: string, filter: Filter): SavedWord[] {
+  const q = query.trim().toLowerCase();
+  return words.filter(
+    (w) =>
+      (filter === "all" || w.difficulty === filter) &&
+      (!q || w.word.toLowerCase().includes(q) || w.translation.toLowerCase().includes(q) || w.english.toLowerCase().includes(q)),
   );
 }
 
+export default function VocabularyScreen() {
+  const t = useT();
+  const words = useSavedWords();
+  const desktop = useDesktop();
+  const ttsSpeed = useSettings((s) => s.ttsSpeed);
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<Filter>("all");
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [speakingKey, setSpeakingKey] = useState<string | null>(null);
+
+  const counts = useMemo(() => {
+    const c = { easy: 0, medium: 0, hard: 0 };
+    for (const w of words ?? []) c[w.difficulty]++;
+    return c;
+  }, [words]);
+  const shown = useMemo(() => filterWords(words ?? [], query, filter), [words, query, filter]);
+  const selected = words?.find((w) => w.key === selectedKey) ?? null;
+
+  async function say(w: SavedWord) {
+    setSpeakingKey(w.key);
+    try {
+      await speak(w.word, { rate: ttsSpeed });
+    } finally {
+      setSpeakingKey((k) => (k === w.key ? null : k));
+    }
+  }
+
+  async function remove(w: SavedWord) {
+    setSelectedKey(null);
+    void stop();
+    await forgetWord(w.word);
+    toast(t.vocabulary.removed(w.word));
+  }
+
+  const total = words?.length ?? 0;
+  const detail = selected && (
+    <WordPanel
+      entry={selected}
+      saved
+      onSave={() => {}}
+      onRemove={() => void remove(selected)}
+      onSpeak={() => void say(selected)}
+      speaking={speakingKey === selected.key}
+    />
+  );
+
+  return (
+    <PageContainer>
+      <PageHeader title={t.vocabulary.title} subtitle={words === null ? undefined : total ? t.vocabulary.subtitleWords(total) : t.vocabulary.subtitleEmpty} />
+
+      {words === null ? (
+        <div className="grid gap-3" role="status" aria-busy="true">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-72 w-full" />
+        </div>
+      ) : total === 0 ? (
+        <EmptyState />
+      ) : (
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-8">
+          <div className="min-w-0">
+            <div className="grid gap-3">
+              <div>
+                <Label htmlFor="word-search" className="sr-only">
+                  {t.vocabulary.searchLabel}
+                </Label>
+                <div className="relative">
+                  <Search aria-hidden="true" className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-ink-2" />
+                  <Input
+                    id="word-search"
+                    type="search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder={t.vocabulary.searchPlaceholder}
+                    className="pl-11 text-base"
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                spacing={2}
+                value={filter}
+                onValueChange={(v) => v && setFilter(v as Filter)}
+                aria-label={t.vocabulary.filterLabel}
+                className="flex-wrap"
+              >
+                <ToggleGroupItem value="all">{t.vocabulary.filterAll} ({total})</ToggleGroupItem>
+                {LEVELS.map((l) => (
+                  <ToggleGroupItem key={l} value={l}>
+                    <StampShape level={l} className="text-current" />
+                    {t.difficulty[l]} ({counts[l]})
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+              <p className="sr-only">{t.vocabulary.countsLabel(counts.easy, counts.medium, counts.hard)}</p>
+              {total < MIN_QUIZ_WORDS ? (
+                <div className="flex items-center gap-3">
+                  <p className="shrink-0 font-bold">{t.vocabulary.unlockQuiz(MIN_QUIZ_WORDS - total)}</p>
+                  <Progress value={(total / MIN_QUIZ_WORDS) * 100} aria-label={t.vocabulary.unlockQuiz(MIN_QUIZ_WORDS - total)} />
+                </div>
+              ) : (
+                <p className="font-bold">
+                  {t.vocabulary.quizReady}{" "}
+                  <Link href="/quiz" className="underline underline-offset-4">
+                    {t.vocabulary.takeQuiz}
+                  </Link>
+                </p>
+              )}
+            </div>
+
+            <div className="-mx-5 mt-4 lg:mx-0">
+              {shown.length === 0 ? (
+                <div className="mx-5 flex flex-col items-center gap-3 rounded-xl bg-paper-2 px-6 py-10 text-center lg:mx-0" data-testid="no-matches">
+                  <Mascot mood="think" size={80} />
+                  <h2 className="font-heading text-xl font-bold">{t.vocabulary.noResultsTitle}</h2>
+                  <p className="text-ink-2">{t.vocabulary.noResultsBody}</p>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setQuery("");
+                      setFilter("all");
+                    }}
+                  >
+                    {t.vocabulary.clearFilters}
+                  </Button>
+                </div>
+              ) : (
+                <ul className="pad lg:rounded-xl lg:border-[1.5px] lg:border-line" aria-label={t.vocabulary.listLabel}>
+                  {shown.map((w) => (
+                    <li key={w.key} className="flex h-[calc(var(--pitch)*2)] items-center gap-1 pr-3" data-testid="word-row">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedKey(w.key)}
+                        aria-label={t.vocabulary.openWord(w.word)}
+                        aria-current={w.key === selectedKey ? "true" : undefined}
+                        className="flex h-full min-w-0 flex-1 items-center justify-between gap-3 pl-[var(--pad-gutter)] text-left focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ring"
+                      >
+                        <span className="min-w-0">
+                          <span className="block truncate font-heading text-xl leading-[var(--pitch)] font-bold">{w.word}</span>
+                          <span className="block truncate leading-[var(--pitch)] text-ink-2">{w.translation}</span>
+                        </span>
+                        <DifficultyStamp level={w.difficulty} showLabel={false} />
+                      </button>
+                      <Button variant="ghost" size="icon" onClick={() => void say(w)} aria-label={t.vocabulary.speakWord(w.word)}>
+                        <Volume2 aria-hidden="true" />
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+
+          {desktop && (
+            <aside className="mt-4 hidden lg:block" aria-label={t.vocabulary.detailTitle}>
+              <div className="sticky top-6 rounded-xl border-[1.5px] border-line bg-paper p-6">
+                {detail ?? <p className="text-ink-2">{t.vocabulary.detailHint}</p>}
+              </div>
+            </aside>
+          )}
+        </div>
+      )}
+
+      {!desktop && (
+        <Drawer open={!!selected} onOpenChange={(o) => !o && setSelectedKey(null)}>
+          <DrawerContent>
+            <DrawerTitle className="sr-only">{selected?.word ?? t.vocabulary.detailTitle}</DrawerTitle>
+            <DrawerDescription className="sr-only">{t.vocabulary.detailTitle}</DrawerDescription>
+            <div className="overflow-y-auto px-5 pt-3 pb-6">{detail}</div>
+          </DrawerContent>
+        </Drawer>
+      )}
+    </PageContainer>
+  );
+}
+
+function EmptyState() {
+  const t = useT();
+  return (
+    <div className="flex flex-col items-center gap-4 rounded-xl bg-paper-2 px-6 py-12 text-center" data-testid="words-empty">
+      <Mascot size={110} />
+      <h2 className="font-heading text-2xl font-bold">{t.vocabulary.emptyTitle}</h2>
+      <p className="max-w-prose text-ink-2">{t.vocabulary.emptyBody}</p>
+      <div className="flex flex-wrap justify-center gap-3">
+        <Button asChild size="lg">
+          <Link href="/scan">{t.vocabulary.emptyScan}</Link>
+        </Button>
+        <Button asChild size="lg" variant="secondary">
+          <Link href="/books">{t.vocabulary.emptyBooks}</Link>
+        </Button>
+      </div>
+    </div>
+  );
+}
