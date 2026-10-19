@@ -3,11 +3,11 @@
 import { useEffect, type ReactNode } from "react";
 import { SerwistProvider, useSerwist } from "@serwist/turbopack/react";
 import { toast } from "sonner";
-import { AppProvider, useApp } from "@/context/AppContext";
 import { translations } from "@/data/translations";
 import { ensureDictionary } from "@/lib/dictionary/seed";
 import { startLookupQueue } from "@/lib/queue/processor";
 import { runMigrations } from "@/stores/migrate";
+import { useProgressHydrated } from "@/stores/progress";
 import { useSettings, useSettingsHydrated } from "@/stores/settings";
 import AppShell from "@/components/AppShell";
 import LoadingFrame from "@/components/LoadingFrame";
@@ -58,24 +58,13 @@ function UpdatePrompt() {
 }
 
 /**
- * LEGACY — delete in Phase 4 together with AppContext.
- * Mirrors the old reducer's settings into the v3 settings store so the shell, theme and new
- * components follow what the old Settings screen changes.
+ * Holds the first paint on a designed loading frame until the persisted settings and progress
+ * have been read, so a returning child never sees the default language or an empty name flash by.
  */
-function LegacySettingsBridge() {
-  const { state } = useApp();
-  const hydrated = useSettingsHydrated();
-  useEffect(() => {
-    if (!hydrated) return;
-    const s = useSettings.getState();
-    if (s.language !== state.language) s.setLanguage(state.language);
-    if (s.childName !== state.childName) s.setChildName(state.childName);
-    if (s.fontSize !== state.fontSize) s.setFontSize(state.fontSize);
-    if (s.dyslexiaFont !== state.dyslexiaFont) s.setDyslexiaFont(state.dyslexiaFont);
-    if (s.colorOverlay !== state.colorOverlay) s.setColorOverlay(state.colorOverlay);
-    if (s.ttsSpeed !== state.ttsSpeed) s.setTtsSpeed(state.ttsSpeed);
-  }, [hydrated, state.language, state.childName, state.fontSize, state.dyslexiaFont, state.colorOverlay, state.ttsSpeed]);
-  return null;
+function HydrationGate({ children }: { children: ReactNode }) {
+  const settingsReady = useSettingsHydrated();
+  const progressReady = useProgressHydrated();
+  return settingsReady && progressReady ? <>{children}</> : <LoadingFrame />;
 }
 
 export default function Providers({ children }: { children: ReactNode }) {
@@ -87,11 +76,7 @@ export default function Providers({ children }: { children: ReactNode }) {
         <ThemeSync />
         <UpdatePrompt />
         <AppShell>
-          {/* LEGACY: AppProvider goes away in Phase 4; the shell and everything above stay. */}
-          <AppProvider fallback={<LoadingFrame />}>
-            <LegacySettingsBridge />
-            {children}
-          </AppProvider>
+          <HydrationGate>{children}</HydrationGate>
         </AppShell>
         <Toaster />
       </TooltipProvider>
