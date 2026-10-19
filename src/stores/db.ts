@@ -228,3 +228,14 @@ export function updateSavedWord(entry: ResolvedExplanation): Promise<boolean> {
     return true;
   });
 }
+
+// --- reset ---
+
+/** Deletes the child's saved words, the explanation cache and the pending lookup queue. The offline dictionary and meta are kept. */
+export function clearAllData(): Promise<void> {
+  return safe(undefined, async (db) => {
+    await db.transaction("rw", db.words, db.wordCache, db.lookupQueue, async () => {
+      await Promise.all([db.words.clear(), db.wordCache.clear(), db.lookupQueue.clear()]);
+    });
+  });
+}
