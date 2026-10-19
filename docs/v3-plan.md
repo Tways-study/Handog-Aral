@@ -10,7 +10,8 @@ Branch: **`v3-overhaul`** (not pushed).
 | 1. Next.js 16 foundation | Done. typecheck, lint, test, build and the Capacitor export all pass (verified) | `440f69b` |
 | Phase 2 prep | Done. Shared contracts `src/shared/schemas.ts` and `src/lib/api.ts` (stub) committed; all Phase 2 dependencies installed | `08c34d6`, `89f9319` |
 | 2. Parallel core (A/B/C) | Done (rerun in the main checkout, no worktrees). Data layer, Gemini proxy and OCR/TTS are committed; typecheck, lint, 76 tests, the web build and the Android export all pass (verified). Proxy guard rails checked against a production build. Not yet wired into any screen. | `508a5dc`, `5887a14`, `399f3cc`, `d59b325` |
-| 3. Design system + shell | Next | none |
+| 3. Design system + shell | Done and verified (159 tests, both builds, screenshots reviewed). Token-driven pad-paper design system, shadcn components, AppShell (bottom nav / rail), SVG owl + covers, GSAP helpers, PWA manifest/icons/update prompt/offline page, dev-only `/design` showcase. Old screens still run on a LEGACY token block. | `34de880`..`b9d37c1` |
+| Phase 4 prep | Done: translations split per feature (`src/data/strings/*`), reading settings applied from the settings store, shared `src/lib/vocabulary.ts` (learnWord/forgetWord keep progress in sync) and `useSavedWords` hook | `d03aa20` + next commit |
 | 4–6 | Not started | none |
 
 ### Before resuming
