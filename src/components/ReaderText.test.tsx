@@ -26,6 +26,15 @@ describe("ReaderText", () => {
     expect(screen.getByRole("button", { name: "ran" }).getAttribute("data-state")).toBeNull();
   });
 
+  it("keeps the saved flag on a word that is also the tapped word", () => {
+    const fox = tokens.find((t) => t.value === "fox")!;
+    render(<ReaderText tokens={tokens} tappedIndex={fox.index} savedWords={new Set(["fox"])} readingSentence={null} onWordTap={() => {}} />);
+    const btn = screen.getByRole("button", { name: "fox" });
+    expect(btn.getAttribute("data-state")).toBe("tapped");
+    expect(btn.getAttribute("data-saved")).toBe("true");
+    expect(screen.getByRole("button", { name: "ran" }).getAttribute("data-saved")).toBeNull();
+  });
+
   it("reports the tapped token", () => {
     const onTap = vi.fn();
     render(<ReaderText tokens={tokens} tappedIndex={null} savedWords={new Set()} readingSentence={null} onWordTap={onTap} />);

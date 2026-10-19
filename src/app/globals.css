@@ -333,7 +333,9 @@ a { text-underline-offset: 4px; }
   transform: scaleX(var(--mark-x, 1));
   transform-origin: left center;
 }
-.word-mark[data-state="saved"] {
+/* A saved word keeps its underline even while it is the tapped word (data-saved is independent of data-state). */
+.word-mark[data-state="saved"],
+.word-mark[data-saved="true"] {
   text-decoration: underline;
   text-decoration-color: var(--kangkong);
   text-decoration-thickness: 2px;

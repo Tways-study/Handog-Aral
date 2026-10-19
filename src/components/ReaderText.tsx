@@ -75,13 +75,15 @@ function ReaderTextImpl({ tokens, tappedIndex, savedWords, readingSentence, onWo
               <span key={chunk[0].index} className="whitespace-nowrap">
                 {chunk.map((tok) => {
                   if (tok.kind !== "word") return tok.value;
-                  const state = tok.index === tappedIndex ? "tapped" : savedWords.has(normalizeWord(tok.value)) ? "saved" : undefined;
+                  const isSaved = savedWords.has(normalizeWord(tok.value));
+                  const state = tok.index === tappedIndex ? "tapped" : isSaved ? "saved" : undefined;
                   return (
                     <button
                       key={tok.index}
                       type="button"
                       data-token-index={tok.index}
                       data-state={state}
+                      data-saved={isSaved ? "true" : undefined}
                       aria-label={tok.value}
                       aria-pressed={state === "tapped" ? true : undefined}
                       onClick={() => onWordTap(tok)}
