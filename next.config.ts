@@ -5,6 +5,8 @@ const isCapacitor = process.env.BUILD_TARGET === "capacitor";
 
 const baseConfig: NextConfig = {
   reactStrictMode: true,
+  // Parallel agents/tools can point NEXT_DIST_DIR at a private folder (e.g. .next-reader) to avoid clobbering .next.
+  ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
   // The dev badge sits on top of the bottom nav while testing the shell.
   devIndicators: false,
   env: {
