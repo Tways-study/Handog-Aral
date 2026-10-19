@@ -9,29 +9,16 @@ Branch: **`v3-overhaul`** (not pushed).
 | 0. Design direction | Done. `PRODUCT.md`, the direction contract in `.impeccable/surfaces/src-app-jsx.md` and the approved comp `.impeccable/mocks/home-reader-comp.html` are committed | `907598f` |
 | 1. Next.js 16 foundation | Done. typecheck, lint, test, build and the Capacitor export all pass (verified) | `440f69b` |
 | Phase 2 prep | Done. Shared contracts `src/shared/schemas.ts` and `src/lib/api.ts` (stub) committed; all Phase 2 dependencies installed | `08c34d6`, `89f9319` |
-| 2. Parallel core (A/B/C) | **Blocked: the disk filled up.** All 3 agents stopped before writing code. Nothing to merge. | none |
-| 3–6 | Not started | none |
+| 2. Parallel core (A/B/C) | Done (rerun in the main checkout, no worktrees). Data layer, Gemini proxy and OCR/TTS are committed; typecheck, lint, 76 tests, the web build and the Android export all pass (verified). Proxy guard rails checked against a production build. Not yet wired into any screen. | `508a5dc`, `5887a14`, `399f3cc`, `d59b325` |
+| 3. Design system + shell | Next | none |
+| 4–6 | Not started | none |
 
 ### Before resuming
-1. Free disk space (aim for at least 5 GB free):
-   ```bash
-   cd ~/Downloads/Handog-Aral
-   rm -rf .claude/worktrees/*/node_modules .next out
-   npm cache clean --force
-   df -h /
-   ```
-2. Remove the stale Phase 2 worktrees. They were created from `main`, not `v3-overhaul`, and have no work in them:
-   ```bash
-   git worktree list
-   git worktree remove --force .claude/worktrees/agent-ada1e1d82f89305ab
-   git worktree remove --force .claude/worktrees/agent-ac3e73dd1438a2031
-   git worktree remove --force .claude/worktrees/agent-ad1f55fb6e57ade8b
-   git branch -D worktree-agent-ada1e1d82f89305ab worktree-agent-ac3e73dd1438a2031 worktree-agent-ad1f55fb6e57ade8b
-   ```
-3. Tell Claude: "resume the v3 plan from docs/v3-plan.md".
+Check `df -h /` (keep at least 5 GB free). Then tell Claude: "resume the v3 plan from docs/v3-plan.md".
 
-### Lessons from the Phase 2 attempt (apply on the rerun)
-- **Don't `npm install` in worktrees.** Running three full installs at once is what filled the disk. Every Phase 2 dependency is already in `v3-overhaul`. In each worktree, symlink the main repo's `node_modules` (`ln -s ../../../node_modules node_modules`) and forbid installs in the agent brief.
+### Lessons from the Phase 2 attempt
+- **Run parallel agents in the main checkout, not worktrees** (what worked for the rerun): give each agent disjoint file paths and have it commit only those paths. Never `npm install` in extra copies of the repo.
+- (Original note) **Don't `npm install` in worktrees.** Running three full installs at once is what filled the disk. Every Phase 2 dependency is already in `v3-overhaul`. In each worktree, symlink the main repo's `node_modules` (`ln -s ../../../node_modules node_modules`) and forbid installs in the agent brief.
 - **Worktree base:** isolated worktrees start from `main`. Each agent's first step must be `git reset --hard v3-overhaul` (or check out a branch from it), then confirm that `src/shared/schemas.ts` exists.
 - **Gemini model:** the installed `@google/genai` (2.30.0) README uses `gemini-flash-latest`. Default `GEMINI_MODEL` to that, never `gemini-2.0-flash`.
 - **Zod v4:** use `z.toJSONSchema(WordExplanationSchema)` for Gemini's `responseJsonSchema`.
