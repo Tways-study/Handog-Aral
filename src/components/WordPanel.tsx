@@ -88,7 +88,7 @@ export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, spe
         </Button>
       </div>
 
-      <div className="mt-4 min-h-[6.5rem] rounded-xl bg-paper-2 px-4 py-3.5">
+      <div className="mt-4 min-h-[7rem] rounded-xl bg-paper-2 px-4 py-3.5">
         <p className="text-[0.8125rem] font-bold text-ink-2">{p.translationLabel}</p>
         <p className="mt-1 text-xl leading-normal font-bold" lang={entry.language === "tagalog" ? "tl" : "hil"}>
           {loading ? <span className="font-normal text-ink-2">{p.pending}</span> : entry.translation}
