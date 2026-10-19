@@ -1,73 +1,401 @@
 @import "tailwindcss";
 
-@theme inline {
-  --color-sun-yellow: #F59E0B;
-  --color-coral: #F4614A;
-  --color-teal: #0EA5A0;
-  --color-deep-teal: #0D3D56;
-  --color-sky-blue: #38BDF8;
-  --color-leaf-green: #34D399;
-  --color-cream: #FAFAF7;
-  --color-soft-orange: #F97316;
-  --color-lavender: #38BDF8;
-  --color-dark-text: #1E293B;
-  --color-muted-text: #64748B;
-  --font-heading: var(--font-baloo), cursive;
-  --font-body: var(--font-nunito), sans-serif;
-  --font-reading: var(--font-atkinson), sans-serif;
-}
+@custom-variant dark (&:is(.dark *));
+
+/* ==========================================================================
+   Handog Aral: Pad Paper Storybook tokens.
+   Source of truth: .impeccable/mocks/home-reader-comp.html
+   All NEW code uses only the tokens in this section. Hex on purpose: the
+   values are verified by src/styles/contrast.test.ts, which parses this file.
+   ========================================================================== */
 
 :root {
-  --sun-yellow: #F59E0B;
-  --coral: #F4614A;
-  --teal: #0EA5A0;
-  --deep-teal: #0D3D56;
-  --sky-blue: #38BDF8;
-  --leaf-green: #34D399;
-  --cream: #FAFAF7;
-  --soft-orange: #F97316;
-  --lavender: #38BDF8;
-  --dark-text: #1E293B;
-  --muted-text: #64748B;
+  /* paper and ink */
+  --paper: #FBF7EE;
+  --paper-2: #F2EBDC;
+  --card-surface: #FFFDF7;
+  --ink: #1D2340;
+  --ink-2: #4A5070;
+  --rule: #C3D3EE;
+  --margin: #E0756C;
+  --line: #E3DACA;
+  --line-strong: #7F849C;
+
+  /* the one accent, plus the tapped-word marker */
+  --sunrise: #F08A24;
+  --sunrise-ink: #1D2340;
+  --marker: #FFD49A;
+
+  /* book jackets (notebook covers) and the text that sits on them */
+  --indigo: #2B3A8C;
+  --indigo-fg: #FFFFFF;
+  --kangkong: #2E7D55;
+  --kangkong-fg: #FFFFFF;
+  --mango: #F2B233;
+  --mango-fg: #1D2340;
+  --gumamela: #C8323A;
+  --gumamela-fg: #FFFFFF;
+
+  /* difficulty stamps (shape carries the meaning, color only reinforces) */
+  --stamp-easy: #2E7D55;
+  --stamp-medium: #2B3A8C;
+  --stamp-hard: #C8323A;
+
+  /* semantic */
+  --success: #2E7D55;
+  --success-foreground: #FFFFFF;
+  --warning: #F2B233;
+  --warning-foreground: #1D2340;
+  --warning-text: #8A5A00;
+  --destructive-text: #C8323A;
+
+  /* colour-overlay tints for reading (mixed into the paper, never over the text) */
+  --tint-yellow: #FFD166;
+  --tint-blue: #73C2FB;
+  --tint-pink: #FF6B6B;
+
+  /* shadcn semantic layer */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--card-surface);
+  --card-foreground: var(--ink);
+  --popover: var(--card-surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--sunrise);
+  --primary-foreground: var(--sunrise-ink);
+  --secondary: var(--paper-2);
+  --secondary-foreground: var(--ink);
+  --muted: var(--paper-2);
+  --muted-foreground: var(--ink-2);
+  --accent: var(--paper-2);
+  --accent-foreground: var(--ink);
+  --destructive: var(--gumamela);
+  --destructive-foreground: #FFFFFF;
+  --border: var(--line);
+  --input: var(--line-strong);
+  --ring: #2B3A8C;
+
+  /* geometry */
+  --radius: 1rem;
+  --elev-sm: 0 1px 2px rgb(29 35 64 / 0.08), 0 4px 10px -6px rgb(29 35 64 / 0.18);
+  --elev-md: 0 1px 2px rgb(29 35 64 / 0.08), 0 8px 24px -12px rgb(29 35 64 / 0.25);
+  --elev-lg: 0 2px 4px rgb(29 35 64 / 0.08), 0 14px 32px -14px rgb(29 35 64 / 0.4);
+  --elev-sheet: 0 -12px 40px -16px rgb(29 35 64 / 0.45);
+  --elev-cta: 0 1px 2px rgb(29 35 64 / 0.2), 0 10px 20px -10px rgb(29 35 64 / 0.55);
+  --scrim: rgb(29 35 64 / 0.28);
+
+  /* pad paper: one pitch, rem-based so it scales with html.font-* */
+  --pitch: 2.25rem;
+  --pad-margin: 2.75rem;
+  --pad-gutter: calc(var(--pad-margin) + 0.875rem);
+  --pad-text-size: 1.25rem;
+
+  /* layout */
+  --nav-h: 58px;
+  --rail-w: 6rem;
+  --content-max: 64rem;
+
+  color-scheme: light;
 }
 
+.dark {
+  --paper: #1A1D2A;
+  --paper-2: #222636;
+  --card-surface: #222636;
+  --ink: #EFE7D6;
+  --ink-2: #B9B3A6;
+  --rule: #2F3A57;
+  --margin: #8F3E3A;
+  --line: #2E3346;
+  --line-strong: #7A8099;
+
+  --sunrise: #F39A3D;
+  --sunrise-ink: #1D2340;
+  --marker: #6B4A1E;
+
+  --indigo: #3A4AA8;
+  --indigo-fg: #FFFFFF;
+  --kangkong: #2E7D55;
+  --kangkong-fg: #FFFFFF;
+  --mango: #F2B233;
+  --mango-fg: #1D2340;
+  --gumamela: #C8323A;
+  --gumamela-fg: #FFFFFF;
+
+  --stamp-easy: #6CC596;
+  --stamp-medium: #8E9BEA;
+  --stamp-hard: #F08A8F;
+
+  --success: #6CC596;
+  --success-foreground: #1D2340;
+  --warning: #F2B233;
+  --warning-foreground: #1D2340;
+  --warning-text: #F2B233;
+  --destructive-text: #F08A8F;
+
+  --destructive-foreground: #FFFFFF;
+  --ring: #8E9BEA;
+
+  --elev-sm: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 10px -6px rgb(0 0 0 / 0.5);
+  --elev-md: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  --elev-lg: 0 2px 4px rgb(0 0 0 / 0.4), 0 14px 32px -14px rgb(0 0 0 / 0.7);
+  --elev-sheet: 0 -12px 40px -16px rgb(0 0 0 / 0.7);
+  --elev-cta: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 20px -10px rgb(0 0 0 / 0.7);
+  --scrim: rgb(0 0 0 / 0.5);
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-rule: var(--rule);
+  --color-margin: var(--margin);
+  --color-line: var(--line);
+  --color-sunrise: var(--sunrise);
+  --color-sunrise-ink: var(--sunrise-ink);
+  --color-marker: var(--marker);
+
+  --color-indigo: var(--indigo);
+  --color-indigo-fg: var(--indigo-fg);
+  --color-kangkong: var(--kangkong);
+  --color-kangkong-fg: var(--kangkong-fg);
+  --color-mango: var(--mango);
+  --color-mango-fg: var(--mango-fg);
+  --color-gumamela: var(--gumamela);
+  --color-gumamela-fg: var(--gumamela-fg);
+
+  --color-stamp-easy: var(--stamp-easy);
+  --color-stamp-medium: var(--stamp-medium);
+  --color-stamp-hard: var(--stamp-hard);
+
+  --color-scrim: var(--scrim);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-text: var(--warning-text);
+  --color-destructive-text: var(--destructive-text);
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 1.75rem;
+
+  --shadow-sm: var(--elev-sm);
+  --shadow-md: var(--elev-md);
+  --shadow-lg: var(--elev-lg);
+  --shadow-sheet: var(--elev-sheet);
+  --shadow-cta: var(--elev-cta);
+}
+
+/* Not inline: utilities read var(--font-*) at use, so body.dyslexia-font can swap them. */
+@theme {
+  --font-heading: var(--font-baloo), ui-rounded, system-ui, sans-serif;
+  --font-body: var(--font-atkinson), system-ui, sans-serif;
+  --font-sans: var(--font-body);
+}
+
+@layer base {
 * {
   -webkit-tap-highlight-color: transparent;
+  border-color: var(--border);
 }
-
-/* Nav height (tab-area only, safe-area added separately in .pb-nav) */
-:root { --nav-h: 58px; }
 
 html {
   font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
-/* Per-font-size nav heights (calibrated to actual rendered nav bar at each size) */
+/* Font size scaling: everything is rem, so --pitch and the pad scale with it. */
 html.font-small  { font-size: 14px; --nav-h: 52px; }
 html.font-medium { font-size: 16px; --nav-h: 58px; }
 html.font-large  { font-size: 20px; --nav-h: 70px; }
 
-/* Replace pb-24 on all screens with this class for correct clearance at any font */
-.pb-nav {
-  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 12px);
-}
-
 body {
   font-family: var(--font-body);
-  color: var(--dark-text);
-  background-color: var(--cream);
+  color: var(--foreground);
+  background-color: var(--background);
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
+  caret-color: var(--ring);
+  overflow-wrap: break-word;
 }
 
+h1, h2, h3, h4, .font-heading { font-family: var(--font-heading); text-wrap: balance; }
+
+a { text-underline-offset: 4px; }
+
+::selection { background: var(--marker); color: var(--ink); }
+
+:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Scrollbars */
+* { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 8px; border: 2px solid var(--paper); }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+}
+
+/* Clearance for the bottom nav (mobile) on every screen. Rail layouts reset it. */
+.pb-nav {
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 12px);
+}
+@media (min-width: 64rem) {
+  .pb-nav { padding-bottom: 2rem; }
+  :root { --pitch: 2.5rem; --pad-margin: 4.125rem; --pad-gutter: calc(var(--pad-margin) + 1.5rem); --pad-text-size: 1.375rem; }
+}
+
+.safe-bottom { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
+
+@layer components {
+/* ---------- pad paper ---------- */
+
+/* Ruled paper. line-height of .pad-text equals --pitch, so text sits on the rules at every font size. */
+.pad {
+  position: relative;
+  background-color: var(--pad-bg, var(--paper));
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--pitch) - 1px),
+    var(--rule) calc(var(--pitch) - 1px),
+    var(--rule) var(--pitch)
+  );
+}
+.pad::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--pad-margin);
+  width: 1.5px;
+  background: var(--margin);
+  pointer-events: none;
+}
+.pad-text {
+  font-size: var(--pad-text-size);
+  line-height: var(--pitch);
+  padding-left: var(--pad-gutter);
+  padding-right: 1.25rem;
+}
+.pad-line { min-height: var(--pitch); line-height: var(--pitch); padding-left: var(--pad-gutter); padding-right: 1.25rem; }
+
+/* Tapped / saved word marks in reading text. The marker is a pseudo-element so GSAP can sweep it
+   with transform only (it tweens --mark-x from 0 to 1, see src/lib/motion.ts markWord). */
+.word-mark {
+  position: relative;
+  isolation: isolate;
+  border-radius: 0.375rem;
+  padding: 0 2px;
+  margin: 0 -2px;
+}
+.word-mark[data-state="tapped"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 0.375rem;
+  background: var(--marker);
+  box-shadow: inset 0 -3px 0 var(--sunrise);
+  transform: scaleX(var(--mark-x, 1));
+  transform-origin: left center;
+}
+.word-mark[data-state="saved"] {
+  text-decoration: underline;
+  text-decoration-color: var(--kangkong);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
+
+/* Colour overlays: the tint is mixed into the paper, text keeps full contrast. */
+.overlay-yellow { --pad-bg: color-mix(in srgb, var(--tint-yellow) 16%, var(--paper)); background-color: var(--pad-bg); }
+.overlay-blue   { --pad-bg: color-mix(in srgb, var(--tint-blue) 16%, var(--paper)); background-color: var(--pad-bg); }
+.overlay-pink   { --pad-bg: color-mix(in srgb, var(--tint-pink) 12%, var(--paper)); background-color: var(--pad-bg); }
+
+}
+
+/* ---------- overlay motion for shadcn dialog / sheet / tooltip (CSS only, 150-250ms) ---------- */
+
+:root {
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+}
+@keyframes ui-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ui-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes ui-pop-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+@keyframes ui-pop-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.96); } }
+@keyframes ui-slide-in-right { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes ui-slide-out-right { from { transform: translateX(0); } to { transform: translateX(100%); } }
+@keyframes ui-slide-in-left { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+@keyframes ui-slide-out-left { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+@keyframes ui-slide-in-top { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+@keyframes ui-slide-out-top { from { transform: translateY(0); } to { transform: translateY(-100%); } }
+@keyframes ui-slide-in-bottom { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes ui-slide-out-bottom { from { transform: translateY(0); } to { transform: translateY(100%); } }
+@keyframes ui-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+
+.ui-fade[data-state="open"] { animation: ui-fade-in 200ms var(--ease-out) both; }
+.ui-fade[data-state="closed"] { animation: ui-fade-out 150ms var(--ease-in) both; }
+.ui-pop[data-state="open"], .ui-pop[data-state="delayed-open"], .ui-pop[data-state="instant-open"] { animation: ui-pop-in 200ms var(--ease-out) both; }
+.ui-pop[data-state="closed"] { animation: ui-pop-out 150ms var(--ease-in) both; }
+.ui-slide-right[data-state="open"] { animation: ui-slide-in-right 250ms var(--ease-out) both; }
+.ui-slide-right[data-state="closed"] { animation: ui-slide-out-right 200ms var(--ease-in) both; }
+.ui-slide-left[data-state="open"] { animation: ui-slide-in-left 250ms var(--ease-out) both; }
+.ui-slide-left[data-state="closed"] { animation: ui-slide-out-left 200ms var(--ease-in) both; }
+.ui-slide-top[data-state="open"] { animation: ui-slide-in-top 250ms var(--ease-out) both; }
+.ui-slide-top[data-state="closed"] { animation: ui-slide-out-top 200ms var(--ease-in) both; }
+.ui-slide-bottom[data-state="open"] { animation: ui-slide-in-bottom 250ms var(--ease-out) both; }
+.ui-slide-bottom[data-state="closed"] { animation: ui-slide-out-bottom 200ms var(--ease-in) both; }
+
+/* ---------- dyslexia mode: real OpenDyslexic ---------- */
+
 body.dyslexia-font {
-  font-family: "OpenDyslexic", var(--font-body);
+  --font-heading: var(--font-opendyslexic), var(--font-atkinson), system-ui, sans-serif;
+  --font-body: var(--font-opendyslexic), var(--font-atkinson), system-ui, sans-serif;
+  font-family: var(--font-body);
   word-spacing: 0.3em;
   letter-spacing: 0.05em;
 }
+body.dyslexia-font h1,
+body.dyslexia-font h2,
+body.dyslexia-font h3,
+body.dyslexia-font h4,
+body.dyslexia-font .font-heading { font-family: var(--font-heading); }
 
-/* Prevent dyslexia spacing from disrupting toggle/switch button internals */
+/* Keep toggle/switch internals unspaced. */
 body.dyslexia-font [role="switch"],
 body.dyslexia-font [role="switch"] * {
   letter-spacing: 0;
@@ -75,59 +403,88 @@ body.dyslexia-font [role="switch"] * {
   font-family: inherit;
 }
 
-html.font-small { font-size: 14px; }
-html.font-medium { font-size: 16px; }
-html.font-large { font-size: 20px; }
+/* ---------- reduced motion: nothing animates ---------- */
 
-.font-heading {
-  font-family: var(--font-heading);
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
 }
+
+/* ==========================================================================
+   LEGACY TOKENS — delete in Phase 4
+   Keeps the old screens compiling and readable on the new paper background.
+   Nothing new may use these names.
+   ========================================================================== */
+
+:root {
+  --legacy-teal: #2B3A8C;
+  --legacy-sky: #3F59C9;
+}
+.dark {
+  --legacy-teal: #4A5BC0;
+  --legacy-sky: #6F86E8;
+}
+
+@theme inline {
+  --color-sun-yellow: var(--mango);
+  --color-coral: var(--gumamela);
+  --color-teal: var(--legacy-teal);
+  --color-deep-teal: var(--ink);
+  --color-sky-blue: var(--legacy-sky);
+  --color-leaf-green: var(--kangkong);
+  --color-cream: var(--paper);
+  --color-soft-orange: var(--sunrise);
+  --color-lavender: var(--legacy-sky);
+  --color-dark-text: var(--ink);
+  --color-muted-text: var(--ink-2);
+  --font-reading: var(--font-body);
+}
+
+.dark .bg-white { background-color: var(--card); }
+.dark .border-gray-100 { border-color: var(--line); }
 
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-12px); }
 }
-
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes scanLine {
   0% { top: 8%; }
   95% { top: 82%; }
   100% { top: 8%; }
 }
-
 @keyframes wordPop {
   from { opacity: 0; transform: scale(0.9) translateY(40px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
-
 @keyframes shimmer {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
 }
-
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
 }
-
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.03); }
 }
-
 @keyframes slideUp {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
-
-@keyframes floatOwl {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-6px) rotate(-2deg); }
-  75% { transform: translateY(-3px) rotate(2deg); }
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .animate-bounce { animation: bounce 1.2s ease-in-out infinite; }
@@ -138,57 +495,10 @@ html.font-large { font-size: 20px; }
 .animate-blink { animation: blink 1.4s ease-in-out infinite; }
 .animate-pulse { animation: pulse 2s ease-in-out infinite; }
 .animate-slideUp { animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-.animate-floatOwl { animation: floatOwl 3s ease-in-out infinite; }
-
-button, .tappable {
-  transition: transform 0.15s ease, filter 0.15s ease;
-}
-button:hover:not(:disabled), .tappable:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.06);
-}
-button:active:not(:disabled), .tappable:active {
-  transform: scale(0.95) translateY(0px);
-  filter: brightness(0.97);
-}
-button:disabled {
-  cursor: not-allowed;
-}
-
-/* Toggle switches: skip scale-on-press so the knob slide is the only visual feedback */
-button[role="switch"]:hover:not(:disabled),
-button[role="switch"]:active:not(:disabled) {
-  transform: none;
-  filter: none;
-}
-
-/* Prevent dyslexia-font word/letter-spacing from cascading into the toggle track */
-body.dyslexia-font button[role="switch"] {
-  letter-spacing: normal;
-  word-spacing: normal;
-}
-
-.overlay-yellow { background-color: rgba(255, 209, 102, 0.15); }
-.overlay-blue { background-color: rgba(115, 194, 251, 0.15); }
-.overlay-pink { background-color: rgba(255, 107, 107, 0.1); }
-
-.line-highlight:hover {
-  background-color: rgba(255, 209, 102, 0.2);
-  border-radius: 4px;
-}
-
-.safe-bottom {
-  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-}
-
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-thumb { background: var(--teal); border-radius: 4px; }
-
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-@keyframes popIn {
-  from { opacity: 0; transform: scale(0.85); }
-  to { opacity: 1; transform: scale(1); }
-}
 .animate-popIn { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+.tappable { transition: transform 0.15s ease, filter 0.15s ease; }
+.tappable:hover { transform: translateY(-2px); filter: brightness(1.06); }
+.tappable:active { transform: scale(0.95); filter: brightness(0.97); }
+
+.line-highlight:hover { background-color: color-mix(in srgb, var(--tint-yellow) 20%, transparent); border-radius: 4px; }
