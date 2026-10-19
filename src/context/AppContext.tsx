@@ -134,7 +134,7 @@ function reducer(state: AppState, action: Action | { type: "HYDRATE"; payload: A
   }
 }
 
-export function AppProvider({ children }: { children: ReactNode }) {
+export function AppProvider({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
   const [state, rawDispatch] = useReducer(reducer, initialState);
   // Persisted state is read after mount so server HTML and the first client render match.
   const [hydrated, setHydrated] = useState(false);
@@ -165,7 +165,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Children render only after hydration so screens never see (and persist) default state.
   return (
     <AppContext.Provider value={{ state, dispatch: rawDispatch as Dispatch<Action> }}>
-      {hydrated ? children : null}
+      {hydrated ? children : fallback}
     </AppContext.Provider>
   );
 }

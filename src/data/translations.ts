@@ -1,5 +1,5 @@
-export const translations = {
-  hiligaynon: {
+/** Hiligaynon is the shape: Tagalog must match it key for key (see `satisfies` below). */
+const hiligaynon = {
     nav: {
       home: "Balay",
       books: "Mga Libro",
@@ -151,9 +151,32 @@ export const translations = {
       statusDone: "Natapos! 🎉",
       progressText: (pct: number) => `${pct}% natapos na`,
     },
-  },
+    difficulty: { easy: "Dali", medium: "Medyo budlay", hard: "Mabudlay" },
+    shell: {
+      navHome: "Balay",
+      navBooks: "Libro",
+      navScan: "I-scan",
+      navWords: "Pulong",
+      navQuiz: "Pasulit",
+      navSettings: "Settings",
+      appName: "Handog Aral",
+      mainNavLabel: "Pangunhon nga menu",
+      skipToContent: "Laktawan sa sulod",
+      loading: "Ginahanda ang imo pad...",
+      offlineBanner: "Wala sang internet. Nagapadayon pa ang app, pero mas simple ang kahulugan tubtob makonek liwat.",
+      offlinePageTitle: "Wala ka sang internet",
+      offlinePageBody: "Indi ma-abri ang pahina nga ini kon wala sang konekson. Ang mga libro kag pulong nga natipon na sa telepono ara pa.",
+      offlineRetry: "Probahi liwat",
+      offlineHome: "Pauli sa Balay",
+      updateAvailable: "May bag-o nga bersyon sang app.",
+      updateAction: "I-update",
+      upgradedWords: (n: number) => `Mas klaro na ang ${n} ka pulong.`,
+    },
+};
 
-  tagalog: {
+type Translation = typeof hiligaynon;
+
+const tagalog = {
     nav: {
       home: "Tahanan",
       books: "Mga Libro",
@@ -305,5 +328,29 @@ export const translations = {
       statusDone: "Natapos! 🎉",
       progressText: (pct: number) => `${pct}% natapos na`,
     },
-  },
-};
+    difficulty: { easy: "Madali", medium: "Katamtaman", hard: "Mahirap" },
+    shell: {
+      navHome: "Tahanan",
+      navBooks: "Aklat",
+      navScan: "I-scan",
+      navWords: "Salita",
+      navQuiz: "Pagsusulit",
+      navSettings: "Settings",
+      appName: "Handog Aral",
+      mainNavLabel: "Pangunahing menu",
+      skipToContent: "Lumaktaw sa nilalaman",
+      loading: "Inihahanda ang iyong pad...",
+      offlineBanner: "Walang internet. Gumagana pa rin ang app, pero mas payak ang mga kahulugan hanggang makakonekta ulit.",
+      offlinePageTitle: "Walang internet",
+      offlinePageBody: "Hindi mabuksan ang pahinang ito kapag walang koneksyon. Nandito pa rin ang mga aklat at salitang nakatipon na sa telepono.",
+      offlineRetry: "Subukan ulit",
+      offlineHome: "Bumalik sa Tahanan",
+      updateAvailable: "May bagong bersyon ng app.",
+      updateAction: "I-update",
+      upgradedWords: (n: number) => `Mas malinaw na ang ${n} salita.`,
+    },
+} satisfies Translation;
+
+export const translations = { hiligaynon, tagalog };
+
+export type Translations = Translation;
