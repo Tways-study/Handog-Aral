@@ -43,7 +43,7 @@ export default function WelcomeScreen() {
       </div>
 
       <form
-        className="mt-8 flex flex-1 flex-col gap-6"
+        className="mt-8 flex flex-1 flex-col gap-6 lg:flex-none"
         onSubmit={(e) => {
           e.preventDefault();
           finish(name.trim());
@@ -88,7 +88,7 @@ export default function WelcomeScreen() {
           </ToggleGroup>
         </div>
 
-        <div className="mt-auto flex flex-col gap-2 pt-2">
+        <div className="mt-auto flex flex-col gap-2 pt-2 lg:mt-4">
           <Button type="submit" size="xl" className="w-full">
             {t.welcome.start}
           </Button>
