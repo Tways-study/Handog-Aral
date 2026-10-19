@@ -1,0 +1,102 @@
+import "fake-indexeddb/auto";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+
+vi.mock("next/navigation", () => ({ usePathname: () => "/words" }));
+vi.mock("next/link", () => ({ default: ({ href, children, ...r }: { href: string; children: React.ReactNode }) => <a href={href} {...r}>{children}</a> }));
+vi.mock("@/lib/tts", () => ({ speak: vi.fn(async () => {}), stop: vi.fn(async () => {}) }));
+vi.mock("sonner", () => ({ toast: Object.assign(vi.fn(), { success: vi.fn(), error: vi.fn() }) }));
+vi.mock("@/components/ui/drawer", () => ({
+  Drawer: ({ open, children }: { open: boolean; children: React.ReactNode }) => (open ? <div data-testid="drawer">{children}</div> : null),
+  DrawerContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  DrawerTitle: ({ children }: { children: React.ReactNode }) => <h2>{children}</h2>,
+  DrawerDescription: ({ children }: { children: React.ReactNode }) => <p>{children}</p>,
+}));
+
+// WordPanel is owned by the reader; test against its frozen props contract only.
+vi.mock("@/components/WordPanel", () => ({
+  default: (p: { entry: { word: string }; onRemove: () => void; onSpeak: () => void }) => (
+    <div>
+      <h2>{p.entry.word}</h2>
+      <button onClick={p.onSpeak}>Listen</button>
+      <button onClick={p.onRemove}>Remove</button>
+    </div>
+  ),
+}));
+
+import VocabularyScreen, { filterWords } from "./VocabularyScreen";
+import { getDb, type SavedWord } from "@/stores/db";
+import { learnWord } from "@/lib/vocabulary";
+import { speak } from "@/lib/tts";
+import { useProgress } from "@/stores/progress";
+import type { ResolvedExplanation } from "@/shared/schemas";
+
+const entry = (word: string, translation: string, difficulty: "easy" | "medium" | "hard"): ResolvedExplanation => ({
+  word, translation, difficulty, phonetic: `/${word}/`, english: `about ${word}`, emoji: "", example: null, source: "ai", language: "hiligaynon",
+});
+
+beforeEach(async () => {
+  const db = getDb()!;
+  await Promise.all([db.wordCache.clear(), db.words.clear(), db.lookupQueue.clear()]);
+  useProgress.getState().resetAll();
+});
+afterEach(cleanup);
+
+describe("filterWords", () => {
+  const rows = [
+    { word: "cat", translation: "iring", english: "a pet", difficulty: "easy" },
+    { word: "umbrella", translation: "payong", english: "rain cover", difficulty: "hard" },
+  ] as SavedWord[];
+  it("filters by difficulty and by word or translation", () => {
+    expect(filterWords(rows, "", "hard").map((r) => r.word)).toEqual(["umbrella"]);
+    expect(filterWords(rows, "IRING", "all").map((r) => r.word)).toEqual(["cat"]);
+    expect(filterWords(rows, "cat", "hard")).toEqual([]);
+  });
+});
+
+describe("VocabularyScreen", () => {
+  it("shows the calm empty state with links to scan and books", async () => {
+    render(<VocabularyScreen />);
+    const empty = await screen.findByTestId("words-empty");
+    expect(within(empty).getByRole("link", { name: "Mag-scan" }).getAttribute("href")).toBe("/scan");
+    expect(within(empty).getByRole("link", { name: "Mga Libro" }).getAttribute("href")).toBe("/books");
+  });
+
+  it("lists words, searches, filters, and shows a no-matches state", async () => {
+    await learnWord(entry("cat", "iring", "easy"), null);
+    await learnWord(entry("umbrella", "payong", "hard"), null);
+    render(<VocabularyScreen />);
+    await waitFor(() => expect(screen.getAllByTestId("word-row")).toHaveLength(2));
+    expect(screen.getByText(/2 pa ka pulong para ma-abri/)).toBeTruthy();
+
+    fireEvent.change(screen.getByLabelText("Pangita-a ang pulong"), { target: { value: "pay" } });
+    expect(screen.getAllByTestId("word-row")).toHaveLength(1);
+    fireEvent.change(screen.getByLabelText("Pangita-a ang pulong"), { target: { value: "zzz" } });
+    expect(screen.getByTestId("no-matches")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Ipakita tanan" }));
+    expect(screen.getAllByTestId("word-row")).toHaveLength(2);
+
+    fireEvent.click(screen.getByRole("radio", { name: /Mabudlay/ }));
+    expect(screen.getAllByTestId("word-row")).toHaveLength(1);
+    expect(screen.getByText("umbrella")).toBeTruthy();
+  });
+
+  it("opens detail, speaks, and removing a word drops it from the list and the progress count", async () => {
+    await learnWord(entry("cat", "iring", "easy"), null);
+    await learnWord(entry("dog", "ido", "easy"), null);
+    render(<VocabularyScreen />);
+    await waitFor(() => expect(screen.getAllByTestId("word-row")).toHaveLength(2));
+    expect(useProgress.getState().savedWordCount).toBe(2);
+
+    fireEvent.click(screen.getByRole("button", { name: "Buksi ang cat" }));
+    const drawer = await screen.findByTestId("drawer");
+    fireEvent.click(within(drawer).getByRole("button", { name: "Listen" }));
+    expect(speak).toHaveBeenCalledWith("cat", expect.objectContaining({ rate: expect.any(Number) }));
+
+    fireEvent.click(within(drawer).getByRole("button", { name: "Remove" }));
+    await waitFor(() => expect(screen.getAllByTestId("word-row")).toHaveLength(1));
+    expect(screen.queryByTestId("drawer")).toBeNull();
+    expect(screen.queryByText("cat")).toBeNull();
+    await waitFor(() => expect(useProgress.getState().savedWordCount).toBe(1));
+  });
+});
