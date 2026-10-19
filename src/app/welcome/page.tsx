@@ -1,5 +1,5 @@
-import SplashScreen from "@/features/welcome/SplashScreen";
+import WelcomeScreen from "@/features/welcome/WelcomeScreen";
 
 export default function Page() {
-  return <SplashScreen />;
+  return <WelcomeScreen />;
 }

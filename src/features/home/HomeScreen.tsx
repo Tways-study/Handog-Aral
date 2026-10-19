@@ -1,234 +1,201 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useApp, hasSavedProgress, WELCOMED_KEY } from "@/context/AppContext";
-import { useTranslations } from "@/hooks/useTranslations";
+import { Flame, NotebookPen, ScanLine, Star } from "lucide-react";
+import { PageContainer, PageHeader } from "@/components/PageLayout";
+import BookCover from "@/components/BookCover";
+import DifficultyStamp from "@/components/DifficultyStamp";
 import Mascot from "@/components/Mascot";
-import StarProgress from "@/components/StarProgress";
-import { Camera, Lightbulb, Brain, BookOpen } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { sampleBooks } from "@/data/books";
+import { useT } from "@/hooks/useT";
+import { useSavedWords } from "@/hooks/useSavedWords";
+import { useMotion } from "@/lib/motion";
+import { cn } from "@/lib/utils";
+import { selectTotalStars, useProgress, useProgressHydrated } from "@/stores/progress";
+import { useSettings, useSettingsHydrated } from "@/stores/settings";
+import { JACKET_CLASS } from "./jacket";
+import { needsWelcome } from "./onboarding";
 
-/** First run = nothing saved yet and the welcome screen not yet seen this session. */
-function needsWelcome(): boolean {
-  try {
-    return !hasSavedProgress() && !sessionStorage.getItem(WELCOMED_KEY);
-  } catch {
-    return false;
-  }
+const QUIZ_MIN_WORDS = 4;
+const RECENT_COUNT = 4;
+
+function Chip({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <li className="inline-flex h-[2.125rem] items-center gap-1.5 rounded-full border-[1.5px] border-line px-3 text-[0.9375rem] font-bold">
+      {icon}
+      {children}
+    </li>
+  );
 }
 
 export default function HomeScreen() {
+  const t = useT();
   const router = useRouter();
-  const { state, dispatch } = useApp();
-  // Safe to read storage here: AppProvider only renders children after mount, so this never runs on the server.
-  const [redirecting] = useState(needsWelcome);
-  const t = useTranslations();
-  const name = state.childName || "Abyan";
-  const learnedCount = state.wordsLearned.length;
-  const canQuiz = learnedCount >= 4;
+  const { fadeRoute } = useMotion();
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  const settingsReady = useSettingsHydrated();
+  const progressReady = useProgressHydrated();
+  const hydrated = settingsReady && progressReady;
+  const childName = useSettings((s) => s.childName);
+  const onboarded = useSettings((s) => s.onboarded);
+  const currentBookId = useProgress((s) => s.currentBookId);
+  const bookProgress = useProgress((s) => s.bookProgress);
+  const streak = useProgress((s) => s.streak);
+  const savedWordCount = useProgress((s) => s.savedWordCount);
+  const stars = useProgress(selectTotalStars);
+  const updateStreak = useProgress((s) => s.updateStreak);
+  const words = useSavedWords();
+
+  // Wait for the saved-words table too, so a user with words but a stale counter is never redirected.
+  const redirecting = hydrated && words !== null && needsWelcome({ onboarded, childName, savedWordCount: Math.max(savedWordCount, words.length) });
+  const ready = hydrated && words !== null && !redirecting;
 
   useEffect(() => {
-    if (redirecting) {
-      router.replace("/welcome");
-      return;
-    }
-    dispatch({ type: "UPDATE_STREAK" });
-  }, [dispatch, redirecting, router]);
+    if (redirecting) router.replace("/welcome");
+  }, [redirecting, router]);
 
-  if (redirecting) return null;
+  useEffect(() => {
+    if (ready) updateStreak();
+  }, [ready, updateStreak]);
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return t.home.greetingMorning;
-    if (hour < 18) return t.home.greetingAfternoon;
-    return t.home.greetingEvening;
-  };
+  useEffect(() => {
+    if (ready) return fadeRoute(rootRef.current);
+  }, [ready, fadeRoute]);
+
+  if (!ready) return <PageContainer><div ref={rootRef} aria-busy="true" className="min-h-[60vh]" /></PageContainer>;
+
+  const book = sampleBooks.find((b) => b.id === currentBookId) ?? sampleBooks[0];
+  const pct = Math.max(0, Math.min(100, bookProgress[book.id] ?? 0));
+  const hour = new Date().getHours();
+  const [greeting, sub] =
+    hour < 12
+      ? [t.home.greetingMorning(childName), t.home.subMorning]
+      : hour < 18
+        ? [t.home.greetingAfternoon(childName), t.home.subAfternoon]
+        : [t.home.greetingEvening(childName), t.home.subEvening];
+  const wordCount = Math.max(savedWordCount, words.length);
+  const recent = words.slice(0, RECENT_COUNT);
 
   return (
-    <div className="min-h-screen bg-cream pb-nav">
-      {/* Header */}
-      <div
-        className="px-5 pt-10 pb-7 rounded-b-[36px]"
-        style={{
-          background: "linear-gradient(150deg, #0D3D56 0%, #0EA5A0 65%, #34D399 100%)",
-        }}
-      >
-        <div className="flex items-start justify-between mb-5">
-          <div>
-            <p className="text-white/70 text-sm font-medium">{getGreeting()}</p>
-            <h1 className="font-heading text-2xl font-bold text-white mt-0.5 leading-tight">
-              {t.home.readyPrompt}<br />{name}?
-            </h1>
-          </div>
-          <div className="flex flex-col items-center gap-1.5">
-            <Mascot size={46} />
-            {state.streak > 0 && (
-              <div className="flex items-center gap-1 bg-sun-yellow rounded-full px-2.5 py-0.5 shadow-sm">
-                <span className="text-xs">🔥</span>
-                <span className="text-deep-teal text-xs font-extrabold">{state.streak}</span>
+    <PageContainer>
+      <div ref={rootRef}>
+        <PageHeader title={greeting} subtitle={sub} />
+        <ul aria-label={t.home.tallyLabel} className="flex flex-wrap gap-2 pb-2">
+          <Chip icon={<Star className="size-[1.125rem] text-mango" aria-hidden="true" />}>{t.home.chipStars(stars)}</Chip>
+          <Chip icon={<Flame className="size-[1.125rem] text-margin" aria-hidden="true" />}>{t.home.chipStreak(streak)}</Chip>
+          <Chip icon={<NotebookPen className="size-[1.125rem] text-ink-2" aria-hidden="true" />}>{t.home.chipWords(wordCount)}</Chip>
+        </ul>
+
+        <div className="grid items-start gap-8 pt-14 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-10">
+          <section
+            aria-label={t.home.coverLabel}
+            className={cn(
+              "relative rounded-[0.375rem_1.375rem_1.375rem_0.375rem] py-5 pr-5 pl-9 shadow-md",
+              JACKET_CLASS[book.jacket],
+            )}
+          >
+            <span aria-hidden="true" className="absolute inset-y-0 left-0 w-4 rounded-l-[0.375rem] bg-black/25" />
+            <Mascot mood="idle" size={92} className="absolute -top-[2.9rem] right-4" />
+
+            <div className="flex items-end gap-3">
+              <div className="w-[78%] rounded-[0.625rem] border-2 border-black/10 bg-[#FFFDF7] px-3.5 py-2.5 text-[#1D2340] lg:w-auto lg:min-w-0 lg:flex-1">
+                <p className="flex items-baseline gap-1.5 text-[0.8125rem] text-[#4A5070]">
+                  {t.home.bookLabel}
+                  <span className="flex-1 border-b-[1.5px] border-[#C3D3EE] font-heading text-xl leading-[1.15] font-bold text-[#1D2340]">
+                    {book.title}
+                  </span>
+                </p>
+                <p className="mt-0.5 flex items-baseline gap-1.5 text-[0.8125rem] text-[#4A5070]">
+                  {t.home.progressLabel}
+                  <span className="flex-1 border-b-[1.5px] border-[#C3D3EE] text-[0.9375rem] font-bold text-[#1D2340]">
+                    {t.home.progressValue(pct)}
+                  </span>
+                </p>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Stats row */}
-        <div className="grid grid-cols-3 gap-2">
-          <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 text-center">
-            <p className="text-white font-extrabold text-xl font-heading leading-none">{learnedCount}</p>
-            <p className="text-white/70 text-xs font-semibold mt-0.5">{t.home.statWords}</p>
-          </div>
-          <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 text-center">
-            <p className="text-white font-extrabold text-xl font-heading leading-none">{state.streak || 0}</p>
-            <p className="text-white/70 text-xs font-semibold mt-0.5">{t.home.statStreak}</p>
-          </div>
-          <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 flex flex-col items-center justify-center">
-            <StarProgress stars={state.stars} max={5} compact />
-            <p className="text-white/70 text-xs font-semibold mt-1">{t.home.statStars}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="px-5 mt-5 space-y-3 animate-fadeUp">
-        {/* Main CTA - Scan */}
-        <button
-          onClick={() => router.push("/scan")}
-          className="w-full text-white rounded-2xl py-4 px-5 flex items-center gap-4 shadow-lg"
-          style={{
-            background: "linear-gradient(135deg, #F4614A 0%, #F97316 100%)",
-            boxShadow: "0 8px 24px rgba(244,97,74,0.25)",
-          }}
-        >
-          <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-            <Camera size={24} />
-          </div>
-          <div className="text-left flex-1">
-            <p className="font-heading font-bold text-lg leading-tight">{t.home.ctaScanTitle}</p>
-            <p className="text-white/80 text-xs">{t.home.ctaScanSubtitle}</p>
-          </div>
-          <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-white font-bold text-base">›</span>
-          </div>
-        </button>
-
-        {/* Quick access grid */}
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            onClick={() => router.push("/books")}
-            className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-left tappable"
-            style={{ borderTop: "3px solid #F97316" }}
-          >
-            <BookOpen size={22} className="text-soft-orange mb-2" />
-            <p className="font-heading font-bold text-sm text-dark-text">{t.home.quickBooks}</p>
-            <p className="text-muted-text text-xs mt-0.5">
-              {Object.values(state.bookProgress).filter((p) => p >= 100).length > 0
-                ? t.home.quickBooksSubContinue
-                : t.home.quickBooksSubNew(sampleBooks.length)}
-            </p>
-          </button>
-
-          <button
-            onClick={() => router.push(canQuiz ? "/quiz" : "/words")}
-            className={`rounded-2xl p-4 shadow-sm text-left tappable ${
-              canQuiz
-                ? "bg-lavender/10 border border-lavender/30"
-                : "bg-white border border-gray-100"
-            }`}
-            style={{ borderTop: `3px solid ${canQuiz ? "#38BDF8" : "#0EA5A0"}` }}
-          >
-            <Brain
-              size={22}
-              className={`mb-2 ${canQuiz ? "text-lavender" : "text-teal"}`}
-            />
-            <p className="font-heading font-bold text-sm text-dark-text">
-              {canQuiz ? t.home.quickQuiz : t.home.quickVocab}
-            </p>
-            <p className="text-muted-text text-xs mt-0.5">
-              {canQuiz
-                ? t.home.quickQuizSub(learnedCount)
-                : learnedCount === 0
-                ? t.home.quickVocabSub(learnedCount)
-                : `Save ${4 - learnedCount} more word${4 - learnedCount === 1 ? "" : "s"} to unlock`}
-            </p>
-          </button>
-        </div>
-
-        {/* Encouragement / Tip card */}
-        {learnedCount === 0 ? (
-          <div className="bg-sun-yellow/15 rounded-2xl p-4 flex items-start gap-3">
-            <div className="w-10 h-10 bg-sun-yellow/30 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Lightbulb size={20} className="text-soft-orange" />
+              <BookCover coverId={book.coverId} jacket={book.jacket} label={false} className="hidden w-24 shrink-0 rounded-sm lg:block" />
             </div>
-            <div>
-              <p className="font-heading font-bold text-sm text-dark-text mb-1">
-                {t.home.tipTitle}
-              </p>
-              <p className="text-muted-text text-xs leading-relaxed">
-                {t.home.tipBody}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-leaf-green/15 rounded-2xl p-4 flex items-center gap-3 border border-leaf-green/20">
-            <span className="text-3xl flex-shrink-0">🎉</span>
-            <div className="flex-1 min-w-0">
-              <p className="font-heading font-bold text-sm text-leaf-green">
-                {t.home.praiseTitle(name)}
-              </p>
-              <p className="text-muted-text text-xs mt-0.5">
-                {t.home.praiseSub(learnedCount)} {canQuiz ? t.home.praiseQuiz : t.home.praiseContinue}
-              </p>
-            </div>
-            {canQuiz && (
-              <button
-                onClick={() => router.push("/quiz")}
-                className="bg-leaf-green text-white text-xs font-bold px-3 py-1.5 rounded-xl flex-shrink-0"
+
+            <div className="mt-4 flex items-center gap-2.5 text-[0.9375rem] font-bold">
+              <div
+                role="progressbar"
+                aria-label={t.bookCard.progressText(pct)}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={pct}
+                className="h-2.5 flex-1 overflow-hidden rounded-full bg-current/25"
               >
-                {t.home.praiseQuizBtn}
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* Recently learned words */}
-        {learnedCount > 0 && (
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between mb-3">
-              <p className="font-heading font-bold text-sm text-dark-text">
-                {t.home.recentTitle}
-              </p>
-              <button
-                onClick={() => router.push("/words")}
-                className="text-teal text-xs font-bold"
-              >
-                {t.home.recentViewAll}
-              </button>
+                <div className="h-full rounded-full bg-current" style={{ width: `${pct}%` }} />
+              </div>
+              <span aria-hidden="true">{pct}%</span>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              {state.wordsLearned.slice(-4).reverse().map((w) => (
-                <div
-                  key={w.word}
-                  className="flex items-center gap-2 bg-cream rounded-xl px-3 py-2"
-                >
-                  <span className="text-lg leading-none">{w.emoji}</span>
-                  <div className="min-w-0">
-                    <p className="font-semibold text-xs text-dark-text truncate capitalize">{w.word}</p>
-                    <p className="text-muted-text text-[0.65rem] truncate leading-tight">{w.english}</p>
+
+            <Button asChild size="xl" className="mt-4 w-full">
+              <Link href="/scan">
+                <ScanLine aria-hidden="true" />
+                {t.home.scanCta}
+              </Link>
+            </Button>
+            <Link
+              href={`/read/${book.id}`}
+              className="mt-2 flex min-h-11 items-center justify-center text-[0.9375rem] font-bold underline underline-offset-4 outline-none focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            >
+              {t.home.continueReading}
+            </Link>
+          </section>
+
+          <section aria-labelledby="recent-heading" className="overflow-hidden rounded-lg border border-line">
+            <div className="pad pb-1">
+              <div className="pad-line flex items-center justify-between">
+                <h2 id="recent-heading" className="font-heading text-lg font-bold">
+                  {t.home.recentTitle}
+                </h2>
+                {recent.length > 0 && (
+                  <Link
+                    href="/words"
+                    aria-label={t.home.recentViewAllLabel}
+                    className="-my-2 inline-flex min-h-11 items-center text-[0.9375rem] font-bold underline underline-offset-4 outline-none focus-visible:outline-3 focus-visible:outline-ring"
+                  >
+                    {t.home.recentViewAll}
+                  </Link>
+                )}
+              </div>
+              {recent.length > 0 ? (
+                <ul>
+                  {recent.map((w) => (
+                    <li key={w.key} className="pad-line flex items-center justify-between gap-3">
+                      <b className="font-heading text-[1.1875rem] font-bold">{w.word}</b>
+                      <span className="flex min-w-0 items-center gap-2">
+                        <span className="truncate text-ink-2">{w.translation}</span>
+                        <DifficultyStamp level={w.difficulty} showLabel={false} />
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="pad-line flex items-start gap-3 pb-4 [line-height:1.5]">
+                  <Mascot mood="think" size={64} className="mt-1" />
+                  <div>
+                    <p className="font-heading text-lg font-bold">{t.home.emptyTitle}</p>
+                    <p className="text-ink-2">{t.home.emptyBody}</p>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
-          </div>
-        )}
-
-        {/* Mascot footer quote */}
-        <div className="flex items-center justify-center gap-2 pt-1 pb-1">
-          <Mascot size={22} />
-          <p className="text-muted-text text-xs italic">
-            &quot;{t.home.mascotQuote(name)}&quot;
-          </p>
+            {words.length >= QUIZ_MIN_WORDS && (
+              <div className="flex items-center justify-between gap-3 border-t border-line bg-paper-2 px-4 py-3">
+                <p className="text-[0.9375rem] text-ink-2">{t.home.quizNudge(wordCount)}</p>
+                <Button asChild variant="secondary" size="sm" className="shrink-0">
+                  <Link href="/quiz">{t.home.quizCta}</Link>
+                </Button>
+              </div>
+            )}
+          </section>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

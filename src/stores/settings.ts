@@ -18,6 +18,8 @@ export interface SettingsData {
   ttsSpeed: number;
   colorOverlay: ColorOverlay;
   theme: Theme;
+  /** True once the first-run welcome has been completed or skipped. */
+  onboarded: boolean;
 }
 
 export interface SettingsState extends SettingsData {
@@ -28,6 +30,7 @@ export interface SettingsState extends SettingsData {
   setTtsSpeed: (v: number) => void;
   setColorOverlay: (v: ColorOverlay) => void;
   setTheme: (v: Theme) => void;
+  setOnboarded: (v: boolean) => void;
   resetSettings: () => void;
 }
 
@@ -39,6 +42,7 @@ export const defaultSettings: SettingsData = {
   ttsSpeed: 0.8,
   colorOverlay: "none",
   theme: "system",
+  onboarded: false,
 };
 
 export const SETTINGS_STORAGE_NAME = "handog-settings";
@@ -54,11 +58,18 @@ export const useSettings = create<SettingsState>()(
       setTtsSpeed: (ttsSpeed) => set({ ttsSpeed }),
       setColorOverlay: (colorOverlay) => set({ colorOverlay }),
       setTheme: (theme) => set({ theme }),
-      resetSettings: () => set({ ...defaultSettings }),
+      setOnboarded: (onboarded) => set({ onboarded }),
+      // Resetting preferences must not send the child back through the welcome screen.
+      resetSettings: () => set({ ...defaultSettings, onboarded: true }),
     }),
     {
       name: SETTINGS_STORAGE_NAME,
-      version: 1,
+      version: 2,
+      // v1 -> v2: a child who already has a name has been through setup.
+      migrate: (persisted) => {
+        const old = (persisted ?? {}) as Partial<SettingsData>;
+        return { ...old, onboarded: old.onboarded ?? Boolean(old.childName) } as SettingsData;
+      },
       storage: createIdbStorage(),
       skipHydration: false,
       partialize: (s): SettingsData => ({
@@ -69,6 +80,7 @@ export const useSettings = create<SettingsState>()(
         ttsSpeed: s.ttsSpeed,
         colorOverlay: s.colorOverlay,
         theme: s.theme,
+        onboarded: s.onboarded,
       }),
     },
   ),
