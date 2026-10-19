@@ -1,5 +1,5 @@
-import ScanScreen from "@/features/scan/ScanScreen";
+import ReaderScreen from "@/features/reader/ReaderScreen";
 
 export default function Page() {
-  return <ScanScreen />;
+  return <ReaderScreen />;
 }

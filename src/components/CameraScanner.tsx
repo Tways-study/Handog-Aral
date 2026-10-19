@@ -1,18 +1,49 @@
 "use client";
 
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
-import { X, Circle, SwitchCamera, ImagePlus } from "lucide-react";
-import Mascot from "./Mascot";
+import { useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
+import { ImagePlus, SwitchCamera, X } from "lucide-react";
+import Mascot from "@/components/Mascot";
+import { Button } from "@/components/ui/button";
+import { useT } from "@/hooks/useT";
 
 interface CameraScannerProps {
   onCapture: (file: File) => void;
   onClose: () => void;
 }
 
-type CameraError = "permission" | "notfound" | "generic";
+type CameraError = "permission" | "notfound" | "insecure" | "generic";
 type Facing = "environment" | "user";
 
+/** The on-screen guide: 80% of the video width, 4:3, centred. */
+export const GUIDE_WIDTH_RATIO = 0.8;
+export const GUIDE_ASPECT = 4 / 3;
+
+/**
+ * Maps the on-screen guide box to source-pixel coordinates of the video frame, accounting for
+ * object-cover (the video fills the container and is centred, so edges are cropped).
+ */
+export function computeGuideCrop(nativeW: number, nativeH: number, cW: number, cH: number) {
+  const scale = Math.max(cW / nativeW, cH / nativeH);
+  const oX = (cW - nativeW * scale) / 2;
+  const oY = (cH - nativeH * scale) / 2;
+  const guideW = cW * GUIDE_WIDTH_RATIO;
+  const guideH = guideW / GUIDE_ASPECT;
+  const guideLeft = (cW - guideW) / 2;
+  const guideTop = (cH - guideH) / 2;
+  const srcX = Math.max(0, Math.round((guideLeft - oX) / scale));
+  const srcY = Math.max(0, Math.round((guideTop - oY) / scale));
+  const srcW = Math.min(Math.round(guideW / scale), nativeW - srcX);
+  const srcH = Math.min(Math.round(guideH / scale), nativeH - srcY);
+  return { srcX, srcY, srcW, srcH };
+}
+
+function stopStream(stream: MediaStream | null) {
+  stream?.getTracks().forEach((t) => t.stop());
+}
+
 export default function CameraScanner({ onCapture, onClose }: CameraScannerProps) {
+  const t = useT();
+  const s = t.scan;
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -20,297 +51,197 @@ export default function CameraScanner({ onCapture, onClose }: CameraScannerProps
 
   const [error, setError] = useState<CameraError | null>(null);
   const [ready, setReady] = useState(false);
-  const [facingMode, setFacingMode] = useState<Facing>("environment");
-  const [flash, setFlash] = useState(false);
-
-  const startCamera = async (facing: Facing = "environment") => {
-    // Stop any existing stream
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((t) => t.stop());
-    }
-    setReady(false);
-    setError(null);
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: facing,
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
-        },
-        audio: false,
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.onloadedmetadata = () => setReady(true);
-      }
-    } catch (err) {
-      const name = err instanceof Error ? err.name : "";
-      if (name === "NotAllowedError") {
-        setError("permission");
-      } else if (name === "NotFoundError") {
-        setError("notfound");
-      } else {
-        setError("generic");
-      }
-    }
-  };
+  const [facing, setFacing] = useState<Facing>("environment");
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    // Syncs React with an external system (the camera); its state resets are intentional.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    startCamera(facingMode);
-    return () => {
-      streamRef.current?.getTracks().forEach((t) => t.stop());
-    };
-  }, [facingMode]);
+    let cancelled = false;
+    stopStream(streamRef.current);
+    streamRef.current = null;
 
-  const capturePhoto = () => {
+    const fail = (e: CameraError) => {
+      if (!cancelled) {
+        setReady(false);
+        setError(e);
+      }
+    };
+
+    async function start() {
+      setReady(false);
+      setError(null);
+      if (typeof window !== "undefined" && window.isSecureContext === false) return fail("insecure");
+      if (!navigator.mediaDevices?.getUserMedia) return fail(window.isSecureContext ? "notfound" : "insecure");
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: facing, width: { ideal: 1920 }, height: { ideal: 1080 } },
+          audio: false,
+        });
+        // The promise can resolve after unmount or a flip: never leave the camera running.
+        if (cancelled) {
+          stopStream(stream);
+          return;
+        }
+        streamRef.current = stream;
+        const video = videoRef.current;
+        if (video) {
+          video.srcObject = stream;
+          video.onloadedmetadata = () => {
+            if (!cancelled) setReady(true);
+          };
+        }
+      } catch (err) {
+        const name = err instanceof Error ? err.name : "";
+        if (name === "NotAllowedError" || name === "SecurityError") fail("permission");
+        else if (name === "NotFoundError" || name === "DevicesNotFoundError") fail("notfound");
+        else fail("generic");
+      }
+    }
+    void start();
+
+    return () => {
+      cancelled = true;
+      stopStream(streamRef.current);
+      streamRef.current = null;
+    };
+  }, [facing, attempt]);
+
+  const capture = useCallback(() => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    if (!video || !canvas) return;
-
-    const nativeW = video.videoWidth;
-    const nativeH = video.videoHeight;
-
-    // Measure the video element's rendered CSS size (object-cover)
+    if (!video || !canvas || !video.videoWidth) return;
     const rect = video.getBoundingClientRect();
-    const cW = rect.width;
-    const cH = rect.height;
-
-    // object-cover: scale so the video completely fills the container
-    const scale = Math.max(cW / nativeW, cH / nativeH);
-
-    // The video is centered — compute how far it's offset from the container edge
-    const oX = (cW - nativeW * scale) / 2;
-    const oY = (cH - nativeH * scale) / 2;
-
-    // Bracket guide: 80% wide, 4:3 aspect, centered (matches the UI overlay)
-    const bracketCSSW = cW * 0.8;
-    const bracketCSSH = bracketCSSW * (3 / 4);
-    const bracketCSSLeft = (cW - bracketCSSW) / 2;
-    const bracketCSSTop = (cH - bracketCSSH) / 2;
-
-    // Map bracket CSS coordinates → native video pixel coordinates
-    const srcX = Math.max(0, Math.round((bracketCSSLeft - oX) / scale));
-    const srcY = Math.max(0, Math.round((bracketCSSTop - oY) / scale));
-    const srcW = Math.min(Math.round(bracketCSSW / scale), nativeW - srcX);
-    const srcH = Math.min(Math.round(bracketCSSH / scale), nativeH - srcY);
-
-    // Draw only the cropped bracket region
+    const { srcX, srcY, srcW, srcH } = computeGuideCrop(video.videoWidth, video.videoHeight, rect.width, rect.height);
     canvas.width = srcW;
     canvas.height = srcH;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, srcW, srcH);
-
-    // Flash effect
-    setFlash(true);
-    setTimeout(() => setFlash(false), 200);
-
     canvas.toBlob(
       (blob) => {
         if (!blob) return;
-        const file = new File([blob], "scan.jpg", { type: "image/jpeg" });
-        // Stop stream before handing off
-        streamRef.current?.getTracks().forEach((t) => t.stop());
-        onCapture(file);
+        stopStream(streamRef.current);
+        streamRef.current = null;
+        onCapture(new File([blob], "scan.jpg", { type: "image/jpeg" }));
       },
       "image/jpeg",
-      0.92
+      0.92,
     );
-  };
+  }, [onCapture]);
 
-  const handleFlipCamera = () => {
-    setFacingMode((prev) => (prev === "environment" ? "user" : "environment"));
-  };
-
-  // Gallery fallback
-  const handleGallery = (e: ChangeEvent<HTMLInputElement>) => {
+  const pickFile = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
-    streamRef.current?.getTracks().forEach((t) => t.stop());
+    stopStream(streamRef.current);
+    streamRef.current = null;
     onCapture(file);
   };
 
+  const close = () => {
+    stopStream(streamRef.current);
+    streamRef.current = null;
+    onClose();
+  };
+
+  const errorCopy: Record<CameraError, { title: string; body: string }> = {
+    permission: { title: s.cameraPermissionTitle, body: s.cameraPermissionBody },
+    notfound: { title: s.cameraNotFoundTitle, body: s.cameraNotFoundBody },
+    insecure: { title: s.cameraInsecureTitle, body: s.cameraInsecureBody },
+    generic: { title: s.cameraGenericTitle, body: s.cameraGenericBody },
+  };
+
+  const fileInput = <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={pickFile} tabIndex={-1} />;
+
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col">
-      {/* Hidden canvas for capture */}
+    <div role="dialog" aria-modal="true" aria-label={s.title} className="fixed inset-0 z-[60] flex flex-col bg-ink text-paper">
       <canvas ref={canvasRef} className="hidden" />
+      {fileInput}
 
-      {/* Flash overlay */}
-      {flash && (
-        <div className="absolute inset-0 bg-white z-50 pointer-events-none" />
-      )}
-
-      {/* Error states */}
-      {error && (
-        <div className="flex-1 flex flex-col items-center justify-center gap-5 px-8 text-center">
-          <Mascot size={56} />
-          {error === "permission" && (
-            <>
-              <p className="text-white font-heading text-lg font-bold">
-                Kinahanglan ang camera permission
-              </p>
-              <p className="text-white/60 text-sm">
-                I-allow ang camera sa imo browser settings, unya reload ang
-                page.
-              </p>
-            </>
-          )}
-          {error === "notfound" && (
-            <>
-              <p className="text-white font-heading text-lg font-bold">
-                Wala sang camera
-              </p>
-              <p className="text-white/60 text-sm">
-                Gamiton ang gallery para mag-upload sang retrato.
-              </p>
-            </>
-          )}
-          {error === "generic" && (
-            <>
-              <p className="text-white font-heading text-lg font-bold">
-                May problema ang camera
-              </p>
-              <p className="text-white/60 text-sm">
-                Subuka liwat ukon gamiton ang gallery.
-              </p>
-            </>
-          )}
-          {/* Gallery fallback on error */}
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="bg-teal text-white font-bold px-6 py-3 rounded-xl flex items-center gap-2"
-          >
-            <ImagePlus size={18} />
-            Pilion sa Gallery
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleGallery}
-          />
-          <button
-            onClick={onClose}
-            className="text-white/50 text-sm underline"
-          >
-            Cancel
-          </button>
-        </div>
-      )}
-
-      {/* Live viewfinder */}
-      {!error && (
-        <>
-          {/* Video */}
-          <div className="flex-1 relative overflow-hidden">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="w-full h-full object-cover"
-            />
-
-            {/* Scan line animation */}
-            {ready && (
-              <div className="absolute left-[8%] right-[8%] h-0.5 bg-teal/70 animate-scanLine rounded-full shadow-[0_0_10px_rgba(46,196,182,0.6)]" />
+      {error ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 px-8 text-center" role="alert">
+          <Mascot mood="think" size={72} />
+          <h2 className="font-heading text-2xl font-bold">{errorCopy[error].title}</h2>
+          <p className="max-w-sm text-base text-paper/80">{errorCopy[error].body}</p>
+          <div className="flex flex-col gap-2.5 sm:flex-row">
+            <Button type="button" size="lg" onClick={() => fileInputRef.current?.click()}>
+              <ImagePlus aria-hidden="true" />
+              {s.pickGallery}
+            </Button>
+            {(error === "generic" || error === "permission") && (
+              <Button type="button" size="lg" variant="secondary" onClick={() => setAttempt((n) => n + 1)}>
+                {s.cameraRetry}
+              </Button>
             )}
+          </div>
+          <Button type="button" variant="ghost" size="sm" className="text-paper hover:bg-paper/10" onClick={close}>
+            {s.cancel}
+          </Button>
+        </div>
+      ) : (
+        <>
+          <div className="relative flex-1 overflow-hidden">
+            <video ref={videoRef} autoPlay playsInline muted className="size-full object-cover" />
 
-            {/* Corner brackets */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="relative w-[80%]" style={{ aspectRatio: "4/3" }}>
-                {/* TL */}
-                <div className="absolute top-0 left-0 w-8 h-8 border-l-3 border-t-3 border-teal rounded-tl-lg" />
-                {/* TR */}
-                <div className="absolute top-0 right-0 w-8 h-8 border-r-3 border-t-3 border-teal rounded-tr-lg" />
-                {/* BL */}
-                <div className="absolute bottom-0 left-0 w-8 h-8 border-l-3 border-b-3 border-teal rounded-bl-lg" />
-                {/* BR */}
-                <div className="absolute bottom-0 right-0 w-8 h-8 border-r-3 border-b-3 border-teal rounded-br-lg" />
-                {/* Dim areas outside bracket */}
-                <div className="absolute inset-0 rounded-lg ring-[999px] ring-black/40" />
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+              <div className="relative w-[80%] shadow-[0_0_0_100vmax_rgb(0_0_0/0.45)]" style={{ aspectRatio: "4 / 3" }}>
+                <svg className="absolute inset-0 size-full text-sunrise" viewBox="0 0 100 100" preserveAspectRatio="none" fill="none" aria-hidden="true">
+                  <path
+                    d="M0 14V4a4 4 0 0 1 4-4h10M86 0h10a4 4 0 0 1 4 4v10M100 86v10a4 4 0 0 1-4 4H86M14 100H4a4 4 0 0 1-4-4V86"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    vectorEffect="non-scaling-stroke"
+                    strokeLinecap="round"
+                  />
+                </svg>
               </div>
             </div>
 
-            {/* Top bar */}
-            <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 pt-10 pb-4 bg-gradient-to-b from-black/60 to-transparent">
-              <button
-                onClick={() => {
-                  streamRef.current?.getTracks().forEach((t) => t.stop());
-                  onClose();
-                }}
-                aria-label="Isira ang camera"
-                className="w-10 h-10 bg-black/40 backdrop-blur rounded-full flex items-center justify-center"
+            <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-3 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3">
+              <Button type="button" size="icon" variant="ink" className="bg-ink/85 text-paper" onClick={close} aria-label={s.cameraClose}>
+                <X aria-hidden="true" />
+              </Button>
+              <p className="min-w-0 flex-1 rounded-full bg-ink/85 px-3 py-1.5 text-center text-sm font-bold">{s.cameraGuide}</p>
+              <Button
+                type="button"
+                size="icon"
+                variant="ink"
+                className="bg-ink/85 text-paper"
+                onClick={() => setFacing((f) => (f === "environment" ? "user" : "environment"))}
+                aria-label={s.cameraFlip}
               >
-                <X size={20} className="text-white" />
-              </button>
-              <div className="text-center">
-                <p className="text-white text-xs font-semibold">
-                  Ibutang ang libro sa loob sang parisukat
-                </p>
-              </div>
-              <button
-                onClick={handleFlipCamera}
-                aria-label="I-flip ang camera"
-                className="w-10 h-10 bg-black/40 backdrop-blur rounded-full flex items-center justify-center"
-              >
-                <SwitchCamera size={18} className="text-white" />
-              </button>
+                <SwitchCamera aria-hidden="true" />
+              </Button>
             </div>
 
-            {/* Loading overlay before stream is ready */}
             {!ready && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black gap-3">
-                <Mascot size={48} />
-                <p className="text-white/60 text-sm">
-                  Ginabuksan ang camera...
-                </p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-ink" role="status">
+                <Mascot mood="think" size={64} />
+                <p className="text-base text-paper/80">{s.cameraStarting}</p>
               </div>
             )}
           </div>
 
-          {/* Bottom controls */}
-          <div className="bg-black flex items-center justify-between px-10 py-6 safe-bottom">
-            {/* Gallery button */}
-            <button
+          <div className="flex items-center justify-between bg-ink px-8 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <Button
+              type="button"
+              size="icon-lg"
+              variant="ink"
+              className="bg-paper/15 text-paper hover:bg-paper/25"
               onClick={() => fileInputRef.current?.click()}
-              aria-label="Pilion sa Gallery"
-              className="w-12 h-12 bg-white/15 rounded-xl flex items-center justify-center"
+              aria-label={s.cameraGallery}
             >
-              <ImagePlus size={22} className="text-white" />
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleGallery}
-            />
-
-            {/* Shutter button */}
+              <ImagePlus aria-hidden="true" />
+            </Button>
             <button
-              onClick={capturePhoto}
+              type="button"
+              onClick={capture}
               disabled={!ready}
-              aria-label="Kuha ng larawan"
-              aria-disabled={!ready}
-              className={`w-20 h-20 rounded-full border-4 border-white flex items-center justify-center transition-all active:scale-95 ${
-                ready ? "bg-white/20" : "bg-white/10 opacity-50"
-              }`}
+              aria-label={s.cameraShutter}
+              className="grid size-20 cursor-pointer place-items-center rounded-full border-4 border-paper outline-none focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-paper disabled:opacity-40 motion-safe:active:scale-95"
             >
-              <Circle
-                size={48}
-                className="text-white fill-white"
-                strokeWidth={0}
-              />
+              <span className="size-14 rounded-full bg-sunrise" />
             </button>
-
-            {/* Placeholder for symmetry */}
-            <div className="w-12 h-12" />
+            <span className="size-14" aria-hidden="true" />
           </div>
         </>
       )}
