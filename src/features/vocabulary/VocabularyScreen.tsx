@@ -172,10 +172,10 @@ export default function VocabularyScreen() {
                         onClick={() => setSelectedKey(w.key)}
                         aria-label={t.vocabulary.openWord(w.word)}
                         aria-current={w.key === selectedKey ? "true" : undefined}
-                        className="flex h-full min-w-0 flex-1 cursor-pointer touch-manipulation items-center justify-between gap-3 pl-[var(--pad-gutter)] text-left outline-none transition-colors hover:bg-secondary/60 active:bg-secondary aria-[current=true]:bg-secondary aria-[current=true]:shadow-[inset_0_0_0_2px_var(--line-strong)] focus-visible:outline-solid focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ring"
+                        className="group flex h-full min-w-0 flex-1 cursor-pointer touch-manipulation items-center justify-between gap-3 pl-[var(--pad-gutter)] text-left outline-none transition-colors hover:bg-secondary/60 active:bg-secondary aria-[current=true]:bg-marker/40 focus-visible:outline-solid focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ring"
                       >
                         <span className="min-w-0">
-                          <span className="block truncate font-heading text-xl leading-[var(--pitch)] font-bold tracking-normal">{w.word}</span>
+                          <span className="block truncate font-heading text-xl leading-[var(--pitch)] font-bold tracking-normal group-aria-[current=true]:underline group-aria-[current=true]:decoration-sunrise group-aria-[current=true]:decoration-2 group-aria-[current=true]:underline-offset-4">{w.word}</span>
                           <span className="block truncate leading-[var(--pitch)] text-ink-2">{w.translation}</span>
                         </span>
                       </button>

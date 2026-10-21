@@ -102,13 +102,13 @@ function BottomNav() {
             href={item.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "pressable flex min-h-[3.25rem] flex-col items-center justify-end gap-[3px] rounded-lg pb-1.5 text-xs font-bold outline-none hover:text-ink",
+              "pressable flex min-h-[3.25rem] min-w-0 flex-col items-center justify-end gap-[3px] rounded-lg px-0.5 pb-1.5 text-center text-xs leading-tight font-bold outline-none hover:text-ink",
               FOCUS,
               active ? "text-ink" : "text-ink-2",
             )}
           >
-            <Icon aria-hidden="true" className="size-[22px]" />
-            {label}
+            <Icon aria-hidden="true" className="size-[22px] shrink-0" />
+            <span className="line-clamp-2 max-w-full [word-spacing:0] text-balance [overflow-wrap:anywhere] [letter-spacing:0] [html.font-large_&]:text-[0.5625rem]">{label}</span>
             <span
               aria-hidden="true"
               className={cn("mt-px h-[3px] w-[18px] rounded-full", active ? "bg-primary" : "bg-transparent")}

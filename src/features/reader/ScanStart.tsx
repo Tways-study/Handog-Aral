@@ -56,7 +56,7 @@ function Tile({ icon: TileIcon, label, help, onClick, primary = false }: TilePro
       <span className="grid gap-1">
         <span
           id={`${id}-label`}
-          className={cn("font-heading leading-tight font-extrabold [overflow-wrap:anywhere]", primary ? "text-2xl" : "text-lg")}
+          className={cn("font-heading font-extrabold [overflow-wrap:anywhere]", primary ? "text-2xl" : "text-lg", "leading-tight")}
         >
           {label}
         </span>
