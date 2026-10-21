@@ -20,16 +20,16 @@ export function moodPose(mood: OwlMood): OwlPose {
   const p = { ...NEUTRAL_POSE };
   switch (mood) {
     case "cheer":
-      Object.assign(p, { wingL: 2.45, wingR: 2.45, lidL: 0.62, beak: 1, pupScale: 1.08, pupY: -0.1 });
+      Object.assign(p, { wingL: 2.45, wingR: 2.45, lidU: 1, arc: 1, beak: 1 });
       break;
     case "think":
-      Object.assign(p, { tilt: 0.17, lookX: 0.35, lookY: 0.6, pupX: 0.75, pupY: 0.8, wingRFwd: 1.15, wingR: -0.55, lidU: 0.12 });
+      Object.assign(p, { tilt: 0.17, lookX: 0.35, lookY: 0.6, pupX: 0.75, pupY: 0.8, wingRFwd: 1.45, wingR: -0.6, lidU: 0.12 });
       break;
     case "wave":
-      Object.assign(p, { wingR: 1.9, beak: 0.25, tilt: -0.05 });
+      Object.assign(p, { wingR: 1.7, beak: 0.25, tilt: -0.05 });
       break;
     case "sleep":
-      Object.assign(p, { lidU: 1, lean: 0.07, tilt: 0.08 });
+      Object.assign(p, { lidU: 1, arc: 1, arcFlip: 1, lean: 0.07, tilt: 0.08 });
       break;
     default:
       break;
@@ -111,9 +111,9 @@ export function createOwlMotion(host: OwlMotionHost) {
     );
   };
   const waveWing = (tl: gsap.core.Timeline, times = 3) => {
-    tl.to(pose, { wingR: 1.55, duration: 0.2, ease: "power2.out" });
+    tl.to(pose, { wingR: 1.45, duration: 0.2, ease: "power2.out" });
     for (let i = 0; i < times; i++) {
-      tl.to(pose, { wingR: 2.25, duration: 0.17, ease: "sine.inOut" }).to(pose, { wingR: 1.55, duration: 0.17, ease: "sine.inOut" });
+      tl.to(pose, { wingR: 2.05, duration: 0.17, ease: "sine.inOut" }).to(pose, { wingR: 1.45, duration: 0.17, ease: "sine.inOut" });
     }
     tl.to(pose, { wingR: base.wingR, duration: 0.3, ease: "power2.inOut" });
     return tl;
@@ -125,14 +125,14 @@ export function createOwlMotion(host: OwlMotionHost) {
     },
     cheer() {
       const tl = hopInto(timeline(), 0.62);
-      tl.to(pose, { beak: 1, lidL: 0.62, pupScale: 1.1, duration: 0.18, ease: "back.out(2)" }, 0.12);
+      tl.to(pose, { beak: 1, lidU: 1, arc: 1, duration: 0.12, ease: "power2.out" }, 0.12);
       wingsUpAndBack(tl, 0.12);
-      tl.to(pose, { beak: base.beak, lidL: base.lidL, pupScale: base.pupScale, duration: 0.3 }, ">0.2");
+      tl.to(pose, { beak: base.beak, lidU: base.lidU, arc: base.arc, duration: 0.2 }, ">0.2");
       return tl;
     },
     think() {
       const tl = timeline();
-      tl.to(pose, { tilt: 0.2, lookX: 0.4, lookY: 0.7, pupX: 0.8, pupY: 0.85, wingRFwd: 1.15, wingR: -0.55, duration: 0.4, ease: "power2.out" })
+      tl.to(pose, { tilt: 0.2, lookX: 0.4, lookY: 0.7, pupX: 0.8, pupY: 0.85, wingRFwd: 1.45, wingR: -0.6, duration: 0.4, ease: "power2.out" })
         .to({}, { duration: 1.1 })
         .to(pose, {
           tilt: base.tilt, lookX: base.lookX, lookY: base.lookY, pupX: base.pupX, pupY: base.pupY,

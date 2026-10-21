@@ -43,7 +43,7 @@ const C = {
   cheek: "#F29A8A",
   mouth: "#B83A1B",
   gold: "#F5C542",
-  bow: "#E0457B",
+  bow: "#3F4FB8",
 } as const;
 
 /** Every animatable number. owlMotion tweens this; `applyPose` maps it onto the meshes. */
@@ -66,6 +66,9 @@ export interface OwlPose {
   /** Right wing swung forward (towards the chin). */
   wingRFwd: number;
   breathe: number;
+  /** Closed-eye line (0..1 size) and its direction: 0 = happy arch, 1 = sleepy smile. */
+  arc: number;
+  arcFlip: number;
 }
 
 export const NEUTRAL_POSE: OwlPose = {
@@ -86,6 +89,8 @@ export const NEUTRAL_POSE: OwlPose = {
   wingR: 0,
   wingRFwd: 0,
   breathe: 0,
+  arc: 0,
+  arcFlip: 0,
 };
 
 export interface OwlModel {
@@ -162,10 +167,10 @@ export function buildOwl(): OwlModel {
   // ----- scene, camera, lights -----
   const scene = new Scene();
   const camera = new PerspectiveCamera(28, 1, 1, 20);
-  camera.position.set(0, 1.55, 6.3);
+  camera.position.set(0, 1.6, 6.6);
   camera.lookAt(0, 1.18, 0);
-  scene.add(new AmbientLight(0xffffff, 1.55));
-  const sun = new DirectionalLight(0xffffff, 2.1);
+  scene.add(new AmbientLight(0xffffff, 1.15));
+  const sun = new DirectionalLight(0xffffff, 2.6);
   sun.position.set(2.2, 3.2, 4.5);
   scene.add(sun);
 
@@ -272,17 +277,17 @@ export function buildOwl(): OwlModel {
   body.add(face);
 
   // ear tufts
-  const tuftGeo = geo(new ConeGeometry(0.17, 0.5, 10));
+  const tuftGeo = geo(new ConeGeometry(0.22, 0.62, 12));
   for (const s of [-1, 1]) {
     const t = mesh(tuftGeo, C.wing, 1.07);
-    t.position.set(s * 0.44, 0.93, -0.02);
+    t.position.set(s * 0.45, 0.92, -0.02);
     t.rotation.z = -s * 0.5;
     t.rotation.x = 0.15;
     face.add(t);
   }
 
   // eyes
-  type Eye = { group: Group; pupil: Group; up: Mesh; low: Mesh };
+  type Eye = { group: Group; pupil: Group; up: Mesh; low: Mesh; arc: Mesh };
   const eyes: Eye[] = [];
   const scleraGeo = sphere(0.34, 22, 16);
   const lidUpGeo = geo(new SphereGeometry(0.385, 18, 8, 0, Math.PI * 2, 0, Math.PI / 2));
@@ -291,6 +296,8 @@ export function buildOwl(): OwlModel {
   const glintBig = sphere(0.062, 8, 6);
   const glintSmall = sphere(0.032, 8, 6);
   const glintMat = basic("#ffffff");
+  const arcGeo = geo(new TorusGeometry(0.22, 0.05, 6, 14, Math.PI));
+  arcGeo.translate(0, 0, 0);
   const EYE_Y = 0.3;
   for (const s of [-1, 1]) {
     const g = new Group();
@@ -317,8 +324,12 @@ export function buildOwl(): OwlModel {
     const up = mesh(lidUpGeo, C.body);
     const low = mesh(lidLowGeo, C.body);
     inner.add(up, low);
+    const arc = new Mesh(arcGeo, toon(C.ink));
+    arc.position.z = 0.3;
+    arc.visible = false;
+    g.add(arc);
     face.add(g);
-    eyes.push({ group: g, pupil, up, low });
+    eyes.push({ group: g, pupil, up, low, arc });
   }
 
   // beak (upper + hinged lower) and the little mouth inside
@@ -354,49 +365,57 @@ export function buildOwl(): OwlModel {
 
   // ----- accessories -----
   const glasses = new Group();
-  const rimGeo = geo(new TorusGeometry(0.3, 0.038, 8, 28));
+  const rimGeo = geo(new TorusGeometry(0.3, 0.04, 8, 28));
   for (const e of eyes) {
     const rim = mesh(rimGeo, C.ink);
-    rim.position.copy(e.group.position);
-    rim.position.z += 0.13;
-    rim.rotation.y = e.group.rotation.y;
-    glasses.add(rim);
+    rim.position.set(0, 0, 0.25);
+    const holder = new Group();
+    holder.position.copy(e.group.position);
+    holder.rotation.copy(e.group.rotation);
+    holder.add(rim);
+    glasses.add(holder);
   }
-  const bridge = mesh(geo(new CylinderGeometry(0.028, 0.028, 0.12, 6)), C.ink);
+  const bridge = mesh(geo(new CylinderGeometry(0.028, 0.028, 0.14, 6)), C.ink);
   bridge.rotation.z = Math.PI / 2;
-  bridge.position.set(0, EYE_Y + 0.04, surfaceZ(0, EYE_Y) + 0.17);
+  bridge.position.set(0, EYE_Y + 0.05, surfaceZ(0, EYE_Y) + 0.14);
   glasses.add(bridge);
 
   const cap = new Group();
   const skull = mesh(geo(new CylinderGeometry(0.46, 0.5, 0.26, 18)), C.ink);
-  skull.position.y = 0.9;
-  const board = mesh(geo(new BoxGeometry(1.25, 0.07, 1.25)), C.ink);
-  board.position.y = 1.04;
+  skull.position.y = 0.93;
+  const board = mesh(geo(new BoxGeometry(1.1, 0.09, 1.1)), C.ink);
+  board.position.y = 1.07;
   board.rotation.y = Math.PI / 4;
   const button = mesh(sphere(0.06, 8, 6), C.gold);
-  button.position.y = 1.1;
+  button.position.y = 1.13;
   const cord = mesh(geo(new CylinderGeometry(0.014, 0.014, 0.55, 5)), C.gold);
   cord.rotation.z = Math.PI / 2 - 0.12;
-  cord.position.set(0.3, 1.08, 0);
+  cord.position.set(0.28, 1.11, 0);
   const tassel = mesh(sphere(0.07, 8, 6), C.gold);
   tassel.scale.set(1, 1.5, 1);
-  tassel.position.set(0.57, 0.97, 0);
+  tassel.position.set(0.55, 1.0, 0);
   const tail = mesh(geo(new CylinderGeometry(0.05, 0.025, 0.2, 6)), C.gold);
-  tail.position.set(0.57, 0.85, 0);
+  tail.position.set(0.55, 0.88, 0);
   cap.add(skull, board, button, cord, tassel, tail);
-  cap.rotation.set(0.12, 0, -0.07);
+  cap.children.forEach((c) => {
+    c.position.y -= 1;
+  });
+  cap.position.y = 1;
+  cap.rotation.x = 0.28;
+  
 
   const bow = new Group();
   const bowGeo = geo(new ConeGeometry(0.14, 0.26, 10));
   bowGeo.rotateZ(Math.PI / 2);
   for (const s of [-1, 1]) {
     const b = mesh(bowGeo, C.bow, 1.1);
-    b.scale.x = -s;
+    b.scale.x = s;
     b.position.set(s * 0.15, 0, 0);
     bow.add(b);
   }
   bow.add(mesh(sphere(0.075, 10, 8), C.bow, 1.12));
-  bow.position.set(0, -0.62, 0.93);
+  bow.position.set(0, -0.3, 0.97);
+  bow.scale.setScalar(1.5);
 
   face.add(glasses);
   face.add(cap);
@@ -425,13 +444,18 @@ export function buildOwl(): OwlModel {
       e.pupil.position.x = p.pupX * 0.1;
       e.pupil.position.y = p.pupY * 0.1;
       e.pupil.scale.setScalar(p.pupScale);
+      e.pupil.visible = p.lidU < 0.9;
       e.up.rotation.x = lerp(-Math.PI / 2 - 0.35, Math.PI / 2, p.lidU);
       e.low.rotation.x = lerp(Math.PI / 2 + 0.35, -Math.PI / 2, p.lidL);
+      e.arc.visible = p.arc > 0.02 && p.lidU > 0.9;
+      e.arc.scale.setScalar(Math.max(0.01, p.arc) * 1.1);
+      e.arc.rotation.z = p.arcFlip > 0.5 ? Math.PI : 0;
+      e.arc.position.y = p.arcFlip > 0.5 ? 0.07 : -0.07;
     }
     jaw.rotation.x = p.beak * 0.55;
     mouth.scale.y = 0.001 + p.beak * 0.05;
     wingLHinge.rotation.set(0, 0, -(WING_REST + p.wingL));
-    wingRHinge.rotation.set(-p.wingRFwd, -p.wingRFwd * 0.5, WING_REST + p.wingR);
+    wingRHinge.rotation.set(-p.wingRFwd, 0, WING_REST + p.wingR);
   };
   applyPose(NEUTRAL_POSE);
 
