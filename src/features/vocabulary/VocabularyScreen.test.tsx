@@ -88,7 +88,7 @@ describe("VocabularyScreen", () => {
     await waitFor(() => expect(screen.getAllByTestId("word-row")).toHaveLength(2));
     expect(useProgress.getState().savedWordCount).toBe(2);
 
-    fireEvent.click(screen.getByRole("button", { name: "Buksi ang cat" }));
+    fireEvent.click(screen.getByText("cat").closest("button")!);
     const drawer = await screen.findByTestId("drawer");
     fireEvent.click(within(drawer).getByRole("button", { name: "Listen" }));
     expect(speak).toHaveBeenCalledWith("cat", expect.objectContaining({ rate: expect.any(Number) }));

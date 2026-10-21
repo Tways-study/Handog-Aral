@@ -220,14 +220,16 @@ export default function HomeScreen() {
                   <li key={b.id}>
                     <Link
                       href={`/read/${b.id}`}
-                      aria-label={`${b.title}. ${t.bookCard.progressText(bpct)}`}
                       className="group flex flex-col gap-3 rounded-lg outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ring lg:flex-row lg:items-center lg:gap-4"
                     >
                       <div className="w-full max-w-[9.5rem] shrink-0 transition-transform duration-150 motion-safe:group-hover:-translate-y-0.5 motion-safe:group-active:translate-y-0 motion-safe:group-active:scale-[0.98] lg:w-28">
                         <BookCover coverId={b.coverId} jacket={b.jacket} className="drop-shadow-md" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="font-heading text-[1.0625rem] leading-tight font-bold text-pretty">{b.title}</p>
+                        <p className="font-heading text-[1.0625rem] leading-tight font-bold text-pretty">
+                          {b.title}
+                          <span className="sr-only"> {t.bookCard.progressText(bpct)}</span>
+                        </p>
                         <div className="mt-2 flex items-center gap-2">
                           <ShelfBar pct={bpct} />
                           <span aria-hidden="true" className="w-11 shrink-0 text-right text-sm whitespace-nowrap font-bold text-ink-2 tabular-nums">

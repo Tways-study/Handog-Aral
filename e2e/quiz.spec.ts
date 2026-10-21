@@ -20,7 +20,7 @@ async function playQuiz(page: Page) {
   for (let i = 1; i <= 5; i++) {
     await expect(page.getByText(`${i} sang 5`).first()).toBeVisible();
     await expect(options(page)).toHaveCount(4);
-    const opts = await options(page).evaluateAll((els) => els.map((e) => (e.querySelector("span[aria-hidden]:nth-of-type(2)") ?? e).textContent ?? ""));
+    const opts = await options(page).evaluateAll((els) => els.map((e) => (e.querySelector("span.flex-1") ?? e).textContent ?? ""));
     const word = (await page.locator("main h2, h2").first().textContent()) ?? "";
     seen.push({ word, options: opts });
     await options(page).first().click();

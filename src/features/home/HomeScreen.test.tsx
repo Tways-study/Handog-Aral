@@ -77,9 +77,9 @@ describe("HomeScreen", () => {
   it("lists the other bundled books below the cover, each linking to its reader", () => {
     useProgress.setState({ currentBookId: "fox", bookProgress: { star: 40 } });
     render(<HomeScreen />);
-    const links = screen.getAllByRole("link").filter((a) => a.getAttribute("href")?.startsWith("/read/") && a.getAttribute("aria-label"));
+    const links = screen.getAllByRole("link").filter((a) => a.getAttribute("href")?.startsWith("/read/") && a.closest("section[aria-labelledby='other-books-heading']"));
     expect(links.map((a) => a.getAttribute("href"))).toEqual(["/read/star", "/read/pedro", "/read/rainbow", "/read/turtle", "/read/market"]);
-    expect(links[0].getAttribute("aria-label")).toContain("40% natapos na");
+    expect(links[0].textContent).toContain("40% natapos na");
     expect(screen.getByRole("heading", { name: "Iba pang libro" })).toBeTruthy();
   });
 

@@ -32,7 +32,7 @@ describe("BooksScreen", () => {
     expect(within(links[0]).getByText("Tapos")).toBeTruthy();
     expect(within(links[1]).getByText("Padayon")).toBeTruthy();
     expect(within(links[2]).getByText("Bag-o")).toBeTruthy();
-    expect(links[1].getAttribute("aria-label")).toContain("Padayon");
+    expect(links[1].textContent).toContain("Padayon");
   });
 
   it("shows the real saved-word count per book", () => {

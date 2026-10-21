@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, type ComponentType, type SVGProps } from "react";
+import { type ComponentType, type SVGProps } from "react";
 import { Camera, ImagePlus, Info, Keyboard } from "lucide-react";
 import Mascot from "@/components/Mascot";
 import { Button } from "@/components/ui/button";
@@ -22,18 +22,15 @@ interface TileProps {
 }
 
 /**
- * One way to start. The accessible name is the label alone (the helper is the description), so
- * "Buksa ang camera" stays the button's name. Primary is the sunrise camera tile; the others are
- * cream tiles lifted off the pad. Pressing sinks the tile 2px, it never shifts layout.
+ * One way to start. The accessible name comes from the visible text (label + helper), so what a
+ * voice-control user sees is exactly what they can say (WCAG 2.5.3). Primary is the sunrise camera
+ * tile; the others are cream tiles lifted off the pad. Pressing sinks the tile 2px, it never shifts layout.
  */
 function Tile({ icon: TileIcon, label, help, onClick, primary = false }: TileProps) {
-  const id = useId();
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-labelledby={`${id}-label`}
-      aria-describedby={`${id}-help`}
       data-slot="scan-tile"
       data-primary={primary || undefined}
       className={cn(
@@ -55,12 +52,11 @@ function Tile({ icon: TileIcon, label, help, onClick, primary = false }: TilePro
       </span>
       <span className="grid gap-1">
         <span
-          id={`${id}-label`}
           className={cn("font-heading font-extrabold [overflow-wrap:anywhere]", primary ? "text-2xl" : "text-lg", "leading-tight")}
         >
           {label}
         </span>
-        <span id={`${id}-help`} className={cn("text-[0.9375rem] leading-snug [overflow-wrap:anywhere]", primary ? "text-primary-foreground" : "text-ink-2")}>
+        <span className={cn("text-[0.9375rem] leading-snug [overflow-wrap:anywhere]", primary ? "text-primary-foreground" : "text-ink-2")}>
           {help}
         </span>
       </span>

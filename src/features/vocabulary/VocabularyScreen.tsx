@@ -170,7 +170,6 @@ export default function VocabularyScreen() {
                       <button
                         type="button"
                         onClick={() => setSelectedKey(w.key)}
-                        aria-label={t.vocabulary.openWord(w.word)}
                         aria-current={w.key === selectedKey ? "true" : undefined}
                         className="group flex h-full min-w-0 flex-1 cursor-pointer touch-manipulation items-center justify-between gap-3 pl-[var(--pad-gutter)] text-left outline-none transition-colors hover:bg-secondary/60 active:bg-secondary aria-[current=true]:bg-marker/40 focus-visible:outline-solid focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ring"
                       >

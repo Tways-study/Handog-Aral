@@ -10,11 +10,9 @@ const WORDS = ["brave", "forest", "quiet", "stone", "happy", "snow"].map((w, i) 
 async function scan(page: Page, label: string) {
   // Let route fades and sheet animations finish so contrast is measured on the settled page.
   await page.waitForTimeout(500);
-  // KNOWN ISSUE (reported, lives in V1/V2 screens): `label-content-name-mismatch` (WCAG 2.5.3) fires on aria-labels that do not
-  // contain the visible text. It is skipped by default so the gate is usable; run with A11Y_STRICT=1 to enforce it.
-  const builder = new AxeBuilder({ page }).withTags(TAGS);
-  if (!process.env.A11Y_STRICT) builder.disableRules(["label-content-name-mismatch"]);
-  const results = await builder.analyze();
+  // `label-content-name-mismatch` (WCAG 2.5.3, label in name) is enforced: accessible names come from the visible text
+  // so voice-control users can say what they see. Do not re-add an aria-label that omits or reorders visible text.
+  const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
   const counts: Record<string, number> = {};
   for (const v of results.violations) counts[v.impact ?? "n/a"] = (counts[v.impact ?? "n/a"] ?? 0) + v.nodes.length;
   console.log(`axe ${label}: ${JSON.stringify(counts)}`);

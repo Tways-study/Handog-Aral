@@ -39,7 +39,6 @@ export default function BooksScreen() {
             <li key={book.id}>
               <Link
                 href={`/read/${book.id}`}
-                aria-label={t.books.openBook(book.title, label[status], count)}
                 className="group flex flex-col gap-3 rounded-lg min-[26rem]:flex-row min-[26rem]:items-center min-[26rem]:gap-5 outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ring sm:flex-col sm:items-stretch sm:gap-3"
               >
                 <div className="@container relative w-[min(11.5rem,60%)] shrink-0 min-[26rem]:w-[min(11.5rem,42vw)] transition-transform duration-150 motion-safe:group-hover:-translate-y-0.5 motion-safe:group-active:translate-y-0 motion-safe:group-active:scale-[0.98] sm:mx-auto sm:w-full sm:max-w-[16rem]">

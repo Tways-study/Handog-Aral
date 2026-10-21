@@ -185,7 +185,6 @@ function QuestionView({
                   disabled={answered}
                   onClick={() => onChoose(i)}
                   data-state={state}
-                  aria-label={t.quiz.optionLabel(LETTERS[i], opt)}
                   className={cn(
                     "pressable group flex min-h-14 w-full items-center gap-3 rounded-2xl border-[1.5px] px-3 py-2 text-left text-lg font-bold text-ink outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring",
                     state === "right" && "border-success bg-success/15 disabled:border-success disabled:bg-success/15 disabled:text-ink",
@@ -195,7 +194,6 @@ function QuestionView({
                   )}
                 >
                   <span
-                    aria-hidden="true"
                     className={cn(
                       "grid size-9 shrink-0 place-items-center rounded-lg font-heading text-lg",
                       state === "right" ? "bg-success text-success-foreground" : state === "wrong" ? "bg-destructive text-destructive-foreground" : "bg-secondary group-enabled:group-hover:bg-card",
@@ -203,7 +201,7 @@ function QuestionView({
                   >
                     {LETTERS[i]}
                   </span>
-                  <span className="min-w-0 flex-1 [overflow-wrap:anywhere]" aria-hidden="true">
+                  <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
                     {opt}
                   </span>
                   {state === "right" && <Check aria-hidden="true" className="size-6 shrink-0 text-success" />}

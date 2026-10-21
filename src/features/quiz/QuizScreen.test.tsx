@@ -23,17 +23,21 @@ afterEach(cleanup);
 
 function playAll(correct: boolean) {
   for (let i = 0; i < 5; i++) {
-    const opts = screen.getAllByRole("button").filter((b) => /^[A-D]\. /.test(b.getAttribute("aria-label") ?? ""));
+    const opts = optionButtons();
     expect(opts).toHaveLength(4);
     // find the correct one through the known translations
     const answers: Record<string, string> = Object.fromEntries(FIVE.map((w) => [w.word, w.translation]));
     const word = screen.getByRole("heading", { level: 2 }).textContent!;
-    const right = opts.find((b) => b.getAttribute("aria-label")!.endsWith(answers[word]))!;
+    const right = opts.find((b) => b.textContent!.endsWith(answers[word]))!;
     const wrong = opts.find((b) => b !== right)!;
     fireEvent.click(correct ? right : wrong);
     fireEvent.click(screen.getByRole("button", { name: i === 4 ? /resulta/i : /^Sunod$/ }));
   }
 }
+
+// Options take their accessible name from the visible text: a letter tile followed by the translation.
+const optionButtons = () =>
+  screen.getAllByRole("button").filter((b) => ["idle", "right", "wrong"].includes(b.getAttribute("data-state") ?? "") && /^[A-D]/.test(b.textContent ?? ""));
 
 describe("QuizScreen", () => {
   it("shows the not-enough state with the count needed and a scan link", () => {
@@ -68,7 +72,7 @@ describe("QuizScreen", () => {
   it("marks the answer with icon and text, not colour alone", () => {
     mockWords = FIVE;
     render(<QuizScreen />);
-    const opts = screen.getAllByRole("button").filter((b) => /^[A-D]\. /.test(b.getAttribute("aria-label") ?? ""));
+    const opts = optionButtons();
     fireEvent.click(opts[0]);
     expect(screen.getByRole("status", { hidden: true }).textContent).toMatch(/Tama!|Indi pa tama/);
     expect(opts.some((b) => b.getAttribute("data-state") === "right")).toBe(true);
@@ -96,8 +100,8 @@ describe("QuizScreen", () => {
     render(<QuizScreen />);
     const answers: Record<string, string> = Object.fromEntries(FIVE.map((w) => [w.word, w.translation]));
     const word = screen.getByRole("heading", { level: 2 }).textContent!;
-    const opts = screen.getAllByRole("button").filter((b) => /^[A-D]\. /.test(b.getAttribute("aria-label") ?? ""));
-    fireEvent.click(opts.find((b) => b.getAttribute("aria-label")!.endsWith(answers[word]))!);
+    const opts = optionButtons();
+    fireEvent.click(opts.find((b) => b.textContent!.endsWith(answers[word]))!);
     expect(document.querySelector("[data-slot=stamp-check]")).toBeTruthy();
     expect(screen.getByRole("status", { hidden: true }).textContent).toContain("Tama!");
   });
