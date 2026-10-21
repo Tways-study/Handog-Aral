@@ -28,6 +28,8 @@ export const NAV_ITEMS: NavItem[] = [
   { id: "quiz", href: "/quiz", icon: SquareCheckBig },
 ];
 
+const FOCUS = "focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring";
+
 const LABEL_KEY = {
   home: "navHome",
   books: "navBooks",
@@ -51,7 +53,7 @@ export function SettingsLink({ className }: { className?: string }) {
       aria-label={t.shell.navSettings}
       aria-current={pathname.startsWith("/settings") ? "page" : undefined}
       className={cn(
-        "grid size-11 shrink-0 place-items-center rounded-[0.875rem] border-[1.5px] border-border bg-background text-foreground transition-colors hover:bg-secondary",
+        "pressable grid size-11 shrink-0 place-items-center rounded-[0.875rem] border-[1.5px] border-border bg-background text-foreground outline-none hover:bg-secondary active:bg-secondary focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className,
       )}
     >
@@ -81,12 +83,12 @@ function BottomNav() {
               href={item.href}
               aria-label={label}
               aria-current={active ? "page" : undefined}
-              className="flex min-h-[3.25rem] items-end justify-center pb-1.5"
+              className={cn("group flex min-h-[3.25rem] items-end justify-center pb-1.5 outline-none touch-manipulation", "[&:focus-visible>span]:outline-solid [&:focus-visible>span]:outline-3 [&:focus-visible>span]:outline-offset-2 [&:focus-visible>span]:outline-ring")}
             >
               <span
                 className={cn(
-                  "grid size-16 -translate-y-3.5 place-items-center rounded-[1.375rem] bg-primary text-primary-foreground shadow-cta transition-shadow",
-                  active && "outline-3 outline-offset-2 outline-ink",
+                  "grid size-16 -translate-y-3.5 place-items-center rounded-[1.375rem] bg-primary text-primary-foreground shadow-cta transition-[translate,box-shadow] duration-150 group-active:shadow-pressed motion-safe:group-active:-translate-y-3 hover:bg-primary/90",
+                  active && "outline-solid outline-3 outline-offset-2 outline-ink",
                 )}
               >
                 <Icon aria-hidden="true" className="size-7" strokeWidth={2.4} />
@@ -100,7 +102,8 @@ function BottomNav() {
             href={item.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex min-h-[3.25rem] flex-col items-center justify-end gap-[3px] pb-1.5 text-xs font-bold transition-colors",
+              "pressable flex min-h-[3.25rem] flex-col items-center justify-end gap-[3px] rounded-lg pb-1.5 text-xs font-bold outline-none hover:text-ink",
+              FOCUS,
               active ? "text-ink" : "text-ink-2",
             )}
           >
@@ -122,7 +125,8 @@ function Rail() {
   const t = useT();
   const railLink = (active: boolean) =>
     cn(
-      "flex min-h-16 w-[4.75rem] flex-col items-center justify-center gap-1 rounded-2xl text-[0.8125rem] font-bold transition-colors hover:bg-secondary/70",
+      "pressable flex min-h-16 w-[4.75rem] flex-col items-center justify-center gap-1 rounded-2xl text-[0.8125rem] font-bold outline-none hover:bg-secondary/70 active:bg-secondary",
+      FOCUS,
       active ? "bg-secondary text-ink" : "text-ink-2",
     );
   return (
@@ -144,8 +148,9 @@ function Rail() {
               aria-label={label}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "my-2 grid size-[3.75rem] place-items-center rounded-[1.25rem] bg-primary text-primary-foreground shadow-cta transition-shadow",
-                active && "outline-3 outline-offset-2 outline-ink",
+                "pressable my-2 grid size-[3.75rem] place-items-center rounded-[1.25rem] bg-primary text-primary-foreground shadow-cta outline-none hover:bg-primary/90 active:shadow-pressed",
+                FOCUS,
+                active && "outline-solid outline-3 outline-offset-2 outline-ink",
               )}
             >
               <Icon aria-hidden="true" className="size-7" strokeWidth={2.4} />

@@ -89,6 +89,9 @@
   --elev-lg: 0 2px 4px rgb(29 35 64 / 0.08), 0 14px 32px -14px rgb(29 35 64 / 0.4);
   --elev-sheet: 0 -12px 40px -16px rgb(29 35 64 / 0.45);
   --elev-cta: 0 1px 2px rgb(29 35 64 / 0.2), 0 10px 20px -10px rgb(29 35 64 / 0.55);
+  --elev-pressed: 0 1px 1px rgb(29 35 64 / 0.2), 0 2px 4px -2px rgb(29 35 64 / 0.35);
+  /* a tile lifted off the pad: cards you press (scan entry tiles, quiz options) */
+  --elev-tile: 0 1px 0 rgb(29 35 64 / 0.06), 0 2px 3px rgb(29 35 64 / 0.08), 0 8px 16px -10px rgb(29 35 64 / 0.28);
   --scrim: rgb(29 35 64 / 0.28);
 
   /* pad paper: one pitch, rem-based so it scales with html.font-* */
@@ -148,6 +151,9 @@
   --elev-lg: 0 2px 4px rgb(0 0 0 / 0.4), 0 14px 32px -14px rgb(0 0 0 / 0.7);
   --elev-sheet: 0 -12px 40px -16px rgb(0 0 0 / 0.7);
   --elev-cta: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 20px -10px rgb(0 0 0 / 0.7);
+  --elev-pressed: 0 1px 1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.6);
+  /* on the night pad a black shadow vanishes, so the tile also gets a faint light top edge */
+  --elev-tile: inset 0 1px 0 rgb(239 231 214 / 0.07), 0 1px 0 rgb(0 0 0 / 0.35), 0 2px 3px rgb(0 0 0 / 0.35), 0 8px 16px -10px rgb(0 0 0 / 0.7);
   --scrim: rgb(0 0 0 / 0.5);
 
   color-scheme: dark;
@@ -221,6 +227,8 @@
   --shadow-lg: var(--elev-lg);
   --shadow-sheet: var(--elev-sheet);
   --shadow-cta: var(--elev-cta);
+  --shadow-pressed: var(--elev-pressed);
+  --shadow-tile: var(--elev-tile);
 }
 
 /* Not inline: utilities read var(--font-*) at use, so body.dyslexia-font can swap them. */
@@ -258,7 +266,16 @@ body {
   overflow-wrap: break-word;
 }
 
-h1, h2, h3, h4, .font-heading { font-family: var(--font-heading); text-wrap: balance; }
+h1, h2, h3, h4, .font-heading {
+  font-family: var(--font-heading);
+  text-wrap: balance;
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+}
+/* OpenDyslexic brings its own (wide) letter-spacing from body; do not tighten it. */
+body.dyslexia-font :is(h1, h2, h3, h4, .font-heading) { letter-spacing: inherit; }
+/* No widows in short copy. */
+p, li, dd, figcaption, label { text-wrap: pretty; }
 
 a { text-underline-offset: 4px; }
 
@@ -378,7 +395,6 @@ a { text-underline-offset: 4px; }
 @keyframes ui-slide-out-top { from { transform: translateY(0); } to { transform: translateY(-100%); } }
 @keyframes ui-slide-in-bottom { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes ui-slide-out-bottom { from { transform: translateY(0); } to { transform: translateY(100%); } }
-@keyframes ui-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
 
 .ui-fade[data-state="open"] { animation: ui-fade-in 200ms var(--ease-out) both; }
 .ui-fade[data-state="closed"] { animation: ui-fade-out 150ms var(--ease-in) both; }
@@ -392,6 +408,30 @@ a { text-underline-offset: 4px; }
 .ui-slide-top[data-state="closed"] { animation: ui-slide-out-top 200ms var(--ease-in) both; }
 .ui-slide-bottom[data-state="open"] { animation: ui-slide-in-bottom 250ms var(--ease-out) both; }
 .ui-slide-bottom[data-state="closed"] { animation: ui-slide-out-bottom 200ms var(--ease-in) both; }
+
+
+/* ---------- tactile finish ---------- */
+
+/* Every pressable thing: pointer cursor, no 300ms tap delay, and a real pressed state.
+   The press moves the element 2px down (translate never touches layout) and, where the
+   element has a shadow, callers add active:shadow-pressed so it sinks into the page.
+   Hover colours come from Tailwind's hover: variant, which only matches on hover-capable pointers. */
+@utility pressable {
+  cursor: pointer;
+  touch-action: manipulation;
+  transition-property: background-color, color, border-color, box-shadow, translate;
+  transition-duration: 140ms;
+  transition-timing-function: var(--ease-out);
+  @media (prefers-reduced-motion: no-preference) {
+    &:active:not(:disabled, [aria-disabled="true"]) { translate: 0 2px; }
+  }
+}
+
+/* Static pad-paper placeholder: one gentle fade-in when it mounts, never a loop. */
+@keyframes skeleton-in { from { opacity: 0; } to { opacity: 1; } }
+@utility skeleton-in {
+  animation: skeleton-in 280ms var(--ease-out) both;
+}
 
 /* ---------- dyslexia mode: real OpenDyslexic ---------- */
 

@@ -1,13 +1,8 @@
 import { cn } from "@/lib/utils"
 
+/** A static placeholder bar. It fades in once when it mounts (reduced motion: instant) and never loops. */
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="skeleton"
-      className={cn("rounded-md bg-accent motion-safe:animate-[ui-pulse_1.6s_ease-in-out_infinite]", className)}
-      {...props}
-    />
-  )
+  return <div data-slot="skeleton" aria-hidden="true" className={cn("skeleton-in rounded-md bg-line", className)} {...props} />
 }
 
 export { Skeleton }

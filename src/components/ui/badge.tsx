@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import { Slot } from "radix-ui"
 
 const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-full border-[1.5px] border-transparent px-3 py-1 text-sm font-bold whitespace-nowrap transition-colors focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring [&>svg]:pointer-events-none [&>svg]:size-4",
+  "inline-flex w-fit shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-full border-[1.5px] border-transparent px-3 py-1 text-sm font-bold whitespace-nowrap transition-colors [a&,button&]:pressable [a&,button&]:min-h-11 [a&,button&]:hover:bg-secondary focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring [&>svg]:pointer-events-none [&>svg]:size-4",
   {
     variants: {
       variant: {
@@ -15,7 +15,7 @@ const badgeVariants = cva(
         outline: "border-border text-foreground",
         ghost: "text-muted-foreground",
         // Tally chip on the home screen: line border, bold, icon + number.
-        chip: "h-[2.125rem] border-border bg-background px-3 text-[0.9375rem] text-foreground",
+        chip: "h-[2.125rem] border-border bg-background px-3 text-[0.9375rem] text-foreground tabular-nums",
         // Difficulty stamp label. Pair with <DifficultyStamp /> so shape + text carry the meaning.
         stamp: "gap-1.5 border-transparent bg-transparent px-0 py-0 text-sm text-muted-foreground",
       },

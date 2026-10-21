@@ -4,6 +4,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Progress as ProgressPrimitive } from "radix-ui"
 
+/** Determinate progress on a paper-2 track with a fine line, so ruled paper never shows through it. */
 function Progress({
   className,
   value,
@@ -12,8 +13,9 @@ function Progress({
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
+      value={value}
       className={cn(
-        "relative h-2.5 w-full overflow-hidden rounded-full bg-foreground/15",
+        "relative h-3 w-full overflow-hidden rounded-full border-[1.5px] border-line bg-secondary",
         className
       )}
       {...props}

@@ -75,6 +75,16 @@ describe("motion helpers honour prefers-reduced-motion", () => {
     expect(gsap.getTweensOf(node)).toHaveLength(0);
   });
 
+  it("stampIn staggers with a delay and still plays once", () => {
+    mockMatchMedia(false);
+    const node = el();
+    const cleanup = stampIn(node, { delay: 0.2 });
+    const [tween] = gsap.getTweensOf(node);
+    expect(tween.delay()).toBeCloseTo(0.2);
+    expect(tween.repeat()).toBe(0);
+    cleanup();
+  });
+
   it("is a safe no-op for a missing element", () => {
     mockMatchMedia(false);
     expect(() => enterPanel(null)()).not.toThrow();

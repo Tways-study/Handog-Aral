@@ -79,8 +79,11 @@ export function markWord(el: Target): Cleanup {
   });
 }
 
-/** A check mark or star stamp landing on the page: scale and rotate settle, played once. */
-export function stampIn(el: Target): Cleanup {
+/**
+ * A check mark or star stamp landing on the page: scale and rotate settle, played once.
+ * `delay` (seconds) staggers several stamps landing one after another, e.g. the quiz results.
+ */
+export function stampIn(el: Target, opts: { delay?: number } = {}): Cleanup {
   if (!el) return noop;
   return withMotion(() => {
     gsap.from(el, {
@@ -88,6 +91,7 @@ export function stampIn(el: Target): Cleanup {
       rotation: -16,
       opacity: 0,
       duration: DURATION.slow,
+      delay: opts.delay ?? 0,
       ease: EASE.out,
       transformOrigin: "50% 50%",
       clearProps: "transform,opacity",
