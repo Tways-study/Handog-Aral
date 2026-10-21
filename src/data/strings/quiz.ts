@@ -29,6 +29,17 @@ const hiligaynon = {
   retry: "Liwat",
   viewWords: "Tan-awa ang mga pulong",
   loading: "Ginahanda ang pasulit...",
+  intro: (n: number) => `Pasulit na! ${n} ka pulong, kaya mo ini!`,
+  streakCheer: "Tatlo ka sunod nga husto! Galing!",
+  tryAgainKind: "Wala ni, sige pa!",
+  optionsLabel: "Mga sabat",
+  rightTitle: "Nahibaluan mo",
+  retryTitle: "Liwat naton ini",
+  retryBody: "Tan-awa liwat kag pamatii.",
+  listenWord: (w: string) => `Pamatii ang ${w}`,
+  starsFilled: (n: number, total: number) => `${n} sang ${total} ka bituon`,
+  meansLabel: "Buot silingon",
+  pickOne: "Pili-a ang imo sabat",
 };
 
 const tagalog = {
@@ -61,6 +72,17 @@ const tagalog = {
   retry: "Ulitin",
   viewWords: "Tingnan ang mga salita",
   loading: "Inihahanda ang pagsusulit...",
+  intro: (n: number) => `Pagsusulit na! ${n} salita, kaya mo ito!`,
+  streakCheer: "Tatlong sunod na tama! Ang galing!",
+  tryAgainKind: "Okay lang, sige pa!",
+  optionsLabel: "Mga sagot",
+  rightTitle: "Alam mo na",
+  retryTitle: "Ulitin natin ito",
+  retryBody: "Tingnan ulit at pakinggan.",
+  listenWord: (w: string) => `Pakinggan ang ${w}`,
+  starsFilled: (n: number, total: number) => `${n} sa ${total} bituin`,
+  meansLabel: "Ibig sabihin",
+  pickOne: "Piliin ang sagot mo",
 } satisfies typeof hiligaynon;
 
 export const quizStrings = { hiligaynon, tagalog };

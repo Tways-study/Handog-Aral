@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/hooks/useT";
 import { useMotion } from "@/lib/motion";
+import { pulseOnce } from "@/lib/motionReader";
 import { realEnglish, realPhonetic } from "@/lib/phonetic";
 import { cn } from "@/lib/utils";
 import type { ResolvedExplanation } from "@/shared/schemas";
@@ -30,6 +31,8 @@ export interface WordPanelProps {
   speaking?: boolean;
   /** True while a better explanation is being fetched; the layout must not shift when it arrives. */
   pending?: boolean;
+  /** The first-ever tap: the home-language well glows and pulses once so the child sees where the meaning is. */
+  emphasize?: boolean;
 }
 
 /** Splits `text` around the first whole-word match of `word` so it can be marked. */
@@ -47,12 +50,13 @@ function markWordIn(text: string, word: string): ReactNode {
   );
 }
 
-export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, speaking = false, pending = false }: WordPanelProps) {
+export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, speaking = false, pending = false, emphasize = false }: WordPanelProps) {
   const t = useT();
   const { stampIn } = useMotion();
   const stampRef = useRef<HTMLSpanElement>(null);
   const saveIconRef = useRef<HTMLSpanElement>(null);
   const starRef = useRef<HTMLSpanElement>(null);
+  const wellRef = useRef<HTMLDivElement>(null);
   const prevSource = useRef(entry.source);
   const prevSaved = useRef(saved);
 
@@ -74,6 +78,10 @@ export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, spe
     prevSource.current = entry.source;
     if (was === "offline" && entry.source !== "offline") return stampIn(stampRef.current);
   }, [entry.source, stampIn]);
+
+  useEffect(() => {
+    if (emphasize) return pulseOnce(wellRef.current);
+  }, [emphasize]);
 
   useEffect(() => {
     const was = prevSaved.current;
@@ -114,7 +122,12 @@ export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, spe
         </Button>
       </div>
 
-      <div className={cn("mt-4 rounded-xl bg-paper-2 px-4 py-3.5", reserve && "min-h-[7rem]")}>
+      <div
+        ref={wellRef}
+        data-slot="home-well"
+        data-emphasis={emphasize || undefined}
+        className={cn("mt-4 rounded-xl bg-paper-2 px-4 py-3.5 transition-colors duration-300", reserve && "min-h-[7rem]", emphasize && "bg-marker/45")}
+      >
         <p className="text-[0.8125rem] font-bold text-ink-2">{p.translationLabel}</p>
         <p className="mt-1 text-xl leading-normal font-bold" lang={entry.language === "tagalog" ? "tl" : "hil"}>
           {loading ? <span className="font-normal text-ink-2">{p.pending}</span> : entry.translation}

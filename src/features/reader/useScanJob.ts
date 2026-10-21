@@ -17,8 +17,12 @@ export interface ScanState {
 const IDLE: ScanState = { status: "idle", progress: 0, text: "", source: null, error: null };
 
 /** Runs OCR with a per-scan AbortController and id so a stale scan can never overwrite a newer one. */
-export function useScanJob() {
+export function useScanJob(opts: { onDone?: (result: { text: string; source: "ai" | "offline" }) => void } = {}) {
   const [state, setState] = useState<ScanState>(IDLE);
+  const onDoneRef = useRef(opts.onDone);
+  useEffect(() => {
+    onDoneRef.current = opts.onDone;
+  });
   const idRef = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -46,6 +50,7 @@ export function useScanJob() {
       });
       if (id !== idRef.current) return;
       setState({ status: "done", progress: 100, text: res.text, source: res.source, error: null });
+      onDoneRef.current?.({ text: res.text, source: res.source });
     } catch (err) {
       if (id !== idRef.current) return;
       const code: OcrErrorCode = err instanceof OcrError ? err.code : "failed";

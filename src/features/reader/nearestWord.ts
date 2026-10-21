@@ -42,3 +42,19 @@ export function measureWords(root: ParentNode): WordRect[] {
 
 /** Targets that handle their own taps; the surface hit test leaves them alone. */
 export const INTERACTIVE_SELECTOR = "button, a, input, textarea, select, label, [role=button], [role=dialog]";
+
+/**
+ * Resolves a click on the reading surface to a token index, or null. Clicks on real controls (the word buttons
+ * themselves, links, the rescan buttons) are left to those controls. Keyboard activation (clientX/Y both 0) is
+ * never a surface tap. Runs on click, not pointer-down, so starting a scroll never opens a word.
+ */
+export function wordFromSurfaceClick(
+  e: { target: EventTarget | null; clientX: number; clientY: number },
+  root: ParentNode,
+  radius = NEAREST_WORD_RADIUS,
+): number | null {
+  const target = e.target as Element | null;
+  if (target && typeof target.closest === "function" && target.closest(INTERACTIVE_SELECTOR)) return null;
+  if (e.clientX === 0 && e.clientY === 0) return null;
+  return nearestWordIndex(measureWords(root), e.clientX, e.clientY, radius);
+}

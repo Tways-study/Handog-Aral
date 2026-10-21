@@ -24,6 +24,8 @@ const hiligaynon = {
   detailEmptyTitle: "Pili-a ang pulong",
   detailHint: "Pili-a ang pulong sa wala para makita diri ang kahulugan.",
   removed: (w: string) => `Gin-wala na ang "${w}"`,
+  owlTag: (n: number) => (n === 1 ? "1 ka pulong na ang natipon mo!" : `${n} ka pulong na ang natipon mo!`),
+  playLink: "Maglaro ta sang Pares",
 };
 
 const tagalog = {
@@ -51,6 +53,8 @@ const tagalog = {
   detailEmptyTitle: "Pumili ng salita",
   detailHint: "Pumili ng salita sa kaliwa para makita dito ang kahulugan.",
   removed: (w: string) => `Inalis na ang "${w}"`,
+  owlTag: (n: number) => `${n} salita na ang naipon mo!`,
+  playLink: "Maglaro tayo ng Pares",
 } satisfies typeof hiligaynon;
 
 export const vocabularyStrings = { hiligaynon, tagalog };

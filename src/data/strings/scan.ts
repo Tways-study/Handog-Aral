@@ -36,6 +36,11 @@ const hiligaynon = {
   openSettings: "Buksi ang Settings",
   emptyPanelTitle: "Pindota ang pulong",
   emptyPanelBody: "Ang kahulugan sang pulong makita diri.",
+  // moments (owl)
+  scanRead: "Nabasa mo na ang imo libro!",
+  owlHello: "Pindota ang pulong, tabangan ta ikaw!",
+  owlPageSaved: (n: number) => (n === 1 ? "1 ka pulong sa pahina nga ini ang natipigan mo na" : `${n} ka pulong sa pahina nga ini ang natipigan mo na`),
+  owlScanning: "Ginabasa ko ang pahina...",
   // camera
   cameraClose: "Isara ang camera",
   cameraFlip: "Ilisan ang camera",
@@ -91,6 +96,10 @@ const tagalog = {
   openSettings: "Buksan ang Settings",
   emptyPanelTitle: "I-tap ang salita",
   emptyPanelBody: "Dito lalabas ang kahulugan ng salita.",
+  scanRead: "Nabasa mo na ang aklat mo!",
+  owlHello: "I-tap ang salita, tutulungan kita!",
+  owlPageSaved: (n: number) => `${n} salita sa pahinang ito ang na-save mo na`,
+  owlScanning: "Binabasa ko ang pahina...",
   cameraClose: "Isara ang camera",
   cameraFlip: "Palitan ang camera",
   cameraShutter: "Kunan ang larawan",

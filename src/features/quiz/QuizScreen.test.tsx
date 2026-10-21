@@ -7,10 +7,14 @@ let mockWords: SavedWord[] | null = [];
 vi.mock("@/hooks/useSavedWords", () => ({ useSavedWords: () => mockWords }));
 vi.mock("next/navigation", () => ({ usePathname: () => "/quiz" }));
 vi.mock("@/lib/tts", () => ({ speak: vi.fn(), stop: vi.fn() }));
+let mockOnline = true;
+vi.mock("@/hooks/useOnlineStatus", () => ({ useOnlineStatus: () => ({ online: mockOnline }) }));
 vi.mock("next/link", () => ({ default: ({ href, children, ...r }: { href: string; children: React.ReactNode }) => <a href={href} {...r}>{children}</a> }));
 
 import QuizScreen from "./QuizScreen";
 import { useProgress } from "@/stores/progress";
+import { useMoments } from "@/stores/moments";
+import { useRewards } from "@/stores/rewards";
 
 const mk = (word: string, translation: string): SavedWord => ({
   key: word, word, translation, phonetic: `/${word}/`, english: `about ${word}`, emoji: "", difficulty: "easy", example: null,
@@ -18,7 +22,12 @@ const mk = (word: string, translation: string): SavedWord => ({
 }) as SavedWord;
 const FIVE = [mk("cat", "iring"), mk("dog", "ido"), mk("sun", "adlaw"), mk("moon", "bulan"), mk("fish", "isda")];
 
-beforeEach(() => useProgress.getState().resetAll());
+beforeEach(() => {
+  useProgress.getState().resetAll();
+  useMoments.getState().reset();
+  useRewards.getState().reset();
+  mockOnline = true;
+});
 afterEach(cleanup);
 
 function playAll(correct: boolean) {
@@ -36,8 +45,8 @@ function playAll(correct: boolean) {
 }
 
 // Options take their accessible name from the visible text: a letter tile followed by the translation.
-const optionButtons = () =>
-  screen.getAllByRole("button").filter((b) => ["idle", "right", "wrong"].includes(b.getAttribute("data-state") ?? "") && /^[A-D]/.test(b.textContent ?? ""));
+const optionButtons = () => screen.getAllByRole("radio");
+const owlMood = () => document.querySelector("[data-owl-mood]")?.getAttribute("data-owl-mood");
 
 describe("QuizScreen", () => {
   it("shows the not-enough state with the count needed and a scan link", () => {
@@ -74,8 +83,8 @@ describe("QuizScreen", () => {
     render(<QuizScreen />);
     const opts = optionButtons();
     fireEvent.click(opts[0]);
-    expect(screen.getByRole("status", { hidden: true }).textContent).toMatch(/Tama!|Indi pa tama/);
-    expect(opts.some((b) => b.getAttribute("data-state") === "right")).toBe(true);
+    expect(screen.getByTestId("quiz-feedback").textContent).toMatch(/Tama!|Indi pa tama/);
+    expect(opts.some((b) => b.getAttribute("data-answer") === "right")).toBe(true);
   });
 
   it("shows the saved entry's real phonetic and English, and never a placeholder phonetic or empty English", () => {
@@ -103,6 +112,116 @@ describe("QuizScreen", () => {
     const opts = optionButtons();
     fireEvent.click(opts.find((b) => b.textContent!.endsWith(answers[word]))!);
     expect(document.querySelector("[data-slot=stamp-check]")).toBeTruthy();
-    expect(screen.getByRole("status", { hidden: true }).textContent).toContain("Tama!");
+    expect(screen.getByTestId("quiz-feedback").textContent).toContain("Tama!");
+  });
+
+  it("answers are a radiogroup named by the prompt, with the letter in each name", () => {
+    mockWords = FIVE;
+    render(<QuizScreen />);
+    const group = screen.getByRole("radiogroup", { name: "Ano ang buot silingon sini sa Hiligaynon?" });
+    expect(group).toBeTruthy();
+    const radios = optionButtons();
+    expect(radios).toHaveLength(4);
+    radios.forEach((r, i) => expect(r.textContent).toMatch(new RegExp(`^${"ABCD"[i]}`)));
+    expect(radios.every((r) => r.getAttribute("aria-checked") === "false")).toBe(true);
+  });
+
+  it("keeps Sunod in a feedback bar from the start, disabled until an answer is in, and focuses it after", () => {
+    mockWords = FIVE;
+    render(<QuizScreen />);
+    const next = screen.getByRole("button", { name: "Sunod" }) as HTMLButtonElement;
+    expect(next.disabled).toBe(true);
+    expect(next.closest("[data-slot=feedback-bar]")).toBeTruthy();
+    fireEvent.click(optionButtons()[0]);
+    expect(next.disabled).toBe(false);
+    expect(document.activeElement).toBe(next);
+  });
+
+  it("the owl cheers on a right answer and tilts its head on a wrong one", () => {
+    mockWords = FIVE;
+    render(<QuizScreen />);
+    expect(owlMood()).toBe("wave"); // the first quiz greeting
+    const answers: Record<string, string> = Object.fromEntries(FIVE.map((w) => [w.word, w.translation]));
+    const word = screen.getByRole("heading", { level: 2 }).textContent!;
+    const opts = optionButtons();
+    const right = opts.find((b) => b.textContent!.endsWith(answers[word]))!;
+    fireEvent.click(opts.find((b) => b !== right)!);
+    expect(owlMood()).toBe("think");
+    expect(screen.getByTestId("quiz-feedback").textContent).toMatch(/Indi pa tama/);
+    // never a red wall: the wrong tile is warm, not destructive
+    expect(document.querySelector("[data-answer=wrong]")?.className).not.toMatch(/destructive/);
+    fireEvent.click(screen.getByRole("button", { name: "Sunod" }));
+    const w2 = screen.getByRole("heading", { level: 2 }).textContent!;
+    const o2 = optionButtons();
+    fireEvent.click(o2.find((b) => b.textContent!.endsWith(answers[w2]))!);
+    expect(owlMood()).toBe("cheer");
+  });
+
+  it("greets the very first quiz once, ever", () => {
+    mockWords = FIVE;
+    render(<QuizScreen />);
+    expect(screen.getByText("Pasulit na! 5 ka pulong, kaya mo ini!")).toBeTruthy();
+    cleanup();
+    render(<QuizScreen />);
+    expect(screen.queryByText("Pasulit na! 5 ka pulong, kaya mo ini!")).toBeNull();
+  });
+
+  it("three right in a row earns the owl's hop and a cheer line, once", () => {
+    mockWords = FIVE;
+    render(<QuizScreen />);
+    const answers: Record<string, string> = Object.fromEntries(FIVE.map((w) => [w.word, w.translation]));
+    for (let i = 0; i < 3; i++) {
+      const word = screen.getByRole("heading", { level: 2 }).textContent!;
+      fireEvent.click(optionButtons().find((b) => b.textContent!.endsWith(answers[word]))!);
+      if (i < 2) {
+        expect(screen.queryByText("Tatlo ka sunod nga husto! Galing!")).toBeNull();
+        fireEvent.click(screen.getByRole("button", { name: "Sunod" }));
+      }
+    }
+    expect(screen.getAllByText("Tatlo ka sunod nga husto! Galing!").length).toBeGreaterThan(0);
+  });
+
+  it("compacts the question card while offline", () => {
+    mockWords = FIVE.map((w) => ({ ...w, phonetic: `/${w.word}-x/` }));
+    mockOnline = false;
+    render(<QuizScreen />);
+    // phonetic and English share one ruled line
+    expect(screen.getByText(/\/.+-x\/ · about /)).toBeTruthy();
+  });
+
+  it("results lead with what the child got right, show missed words as retry cards, fill stars from the left, and emit quiz-finished once", () => {
+    vi.useFakeTimers();
+    try {
+      mockWords = FIVE;
+      render(<QuizScreen />);
+      const answers: Record<string, string> = Object.fromEntries(FIVE.map((w) => [w.word, w.translation]));
+      for (let i = 0; i < 5; i++) {
+        const word = screen.getByRole("heading", { level: 2 }).textContent!;
+        const opts = optionButtons();
+        const right = opts.find((b) => b.textContent!.endsWith(answers[word]))!;
+        // answer the first two right, the rest wrong
+        fireEvent.click(i < 2 ? right : opts.find((b) => b !== right)!);
+        fireEvent.click(screen.getByRole("button", { name: i === 4 ? /resulta/i : /^Sunod$/ }));
+      }
+      expect(screen.getByTestId("quiz-score").textContent).toMatch(/2 sang 5/);
+      const stamps = Array.from(document.querySelectorAll("[data-testid=quiz-stamps] [data-stamp]"), (n) => n.getAttribute("data-stamp"));
+      expect(stamps).toEqual(["earned", "earned", "missed", "missed", "missed"]);
+      expect(screen.getByTestId("quiz-right").querySelectorAll("li")).toHaveLength(2);
+      expect(screen.getAllByTestId("quiz-retry-card")).toHaveLength(3);
+      // no stacked red crosses
+      expect(document.querySelectorAll(".bg-destructive, .text-destructive-text")).toHaveLength(0);
+      expect(useRewards.getState().flags.quizzed).toBe(false);
+      vi.advanceTimersByTime(1600);
+      expect(useRewards.getState().flags.quizzed).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("owl cheers on 4 or 5 of 5", () => {
+    mockWords = FIVE;
+    render(<QuizScreen />);
+    playAll(true);
+    expect(owlMood()).toBe("cheer");
   });
 });

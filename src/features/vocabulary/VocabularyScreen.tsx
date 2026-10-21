@@ -1,13 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Search, Volume2 } from "lucide-react";
+import { Gamepad2, Search, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageContainer, PageHeader } from "@/components/PageLayout";
+import { EmptyWords } from "@/components/art";
 import DifficultyStamp, { StampShape } from "@/components/DifficultyStamp";
 import EmptyPanelPrompt from "@/components/EmptyPanelPrompt";
 import Mascot from "@/components/Mascot";
+import Owl from "@/components/owl/Owl";
 import PadSkeleton from "@/components/PadSkeleton";
 import WordPanel from "@/components/WordPanel";
 import { Button } from "@/components/ui/button";
@@ -24,7 +26,14 @@ import { speak, stop } from "@/lib/tts";
 import { forgetWord } from "@/lib/vocabulary";
 import { useSettings } from "@/stores/settings";
 import type { SavedWord } from "@/stores/db";
+import OwlTag from "@/features/reader/OwlTag";
+import { useMotion } from "@/lib/motion";
 import { useDesktop } from "./useDesktop";
+
+/** Saved less than this long ago counts as "just arrived" when the screen opens (ms). */
+const FRESH_MS = 90_000;
+/** Saved words needed before the memory game is offered. */
+const PLAY_MIN_WORDS = 3;
 
 type Filter = "all" | "easy" | "medium" | "hard";
 const LEVELS = ["easy", "medium", "hard"] as const;
@@ -47,6 +56,9 @@ export default function VocabularyScreen() {
   const [filter, setFilter] = useState<Filter>("all");
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [speakingKey, setSpeakingKey] = useState<string | null>(null);
+  const { wiggle } = useMotion();
+  const newestTileRef = useRef<HTMLSpanElement>(null);
+  const seenNewest = useRef<string | null | undefined>(undefined);
 
   const counts = useMemo(() => {
     const c = { easy: 0, medium: 0, hard: 0 };
@@ -73,6 +85,22 @@ export default function VocabularyScreen() {
   }
 
   const total = words?.length ?? 0;
+
+  // The newest word wiggles once when it arrives: a word that just came in while the screen is open, or one saved a moment
+  // ago when the child lands here from the Reader.
+  const newest = words && words.length ? words[0] : null;
+  const newestKey = newest?.key ?? null;
+  const newestAt = newest?.savedAt ?? 0;
+  useEffect(() => {
+    if (words === null) return;
+    const first = seenNewest.current === undefined;
+    const changed = seenNewest.current !== newestKey;
+    seenNewest.current = newestKey;
+    if (!changed || newestKey === null) return;
+    if (first && Date.now() - newestAt > FRESH_MS) return;
+    return wiggle(newestTileRef.current);
+  }, [words, newestKey, newestAt, wiggle]);
+
   const detail = selected && (
     <WordPanel
       entry={selected}
@@ -86,7 +114,7 @@ export default function VocabularyScreen() {
 
   return (
     <PageContainer>
-      <PageHeader title={t.vocabulary.title} subtitle={words === null ? undefined : total ? t.vocabulary.subtitleWords(total) : t.vocabulary.subtitleEmpty} />
+      <PageHeader title={t.vocabulary.title} subtitle={words === null || total ? undefined : t.vocabulary.subtitleEmpty} />
 
       {words === null ? (
         <div className="grid gap-3" data-testid="words-loading">
@@ -99,6 +127,12 @@ export default function VocabularyScreen() {
       ) : (
         <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_24rem] lg:gap-8">
           <div className="min-w-0">
+            <div className="mb-3 flex items-end gap-3" data-slot="words-owl">
+              <Owl mood="idle" size={80} priority="hero" className="-mb-1" />
+              <OwlTag tail="left" className="mb-3 min-w-0 flex-1 text-base leading-snug font-bold" role="status">
+                {t.vocabulary.owlTag(total)}
+              </OwlTag>
+            </div>
             <div className="grid gap-3">
               <div>
                 <Label htmlFor="word-search" className="sr-only">
@@ -145,6 +179,14 @@ export default function VocabularyScreen() {
                   </Link>
                 </p>
               )}
+              {total >= PLAY_MIN_WORDS && (
+                <Button asChild variant="secondary" className="w-fit">
+                  <Link href="/play">
+                    <Gamepad2 aria-hidden="true" />
+                    {t.vocabulary.playLink}
+                  </Link>
+                </Button>
+              )}
             </div>
 
             <div className="-mx-5 mt-4 lg:mx-0">
@@ -171,9 +213,10 @@ export default function VocabularyScreen() {
                         type="button"
                         onClick={() => setSelectedKey(w.key)}
                         aria-current={w.key === selectedKey ? "true" : undefined}
-                        className="group flex h-full min-w-0 flex-1 cursor-pointer touch-manipulation items-center justify-between gap-3 pl-[var(--pad-gutter)] text-left outline-none transition-colors hover:bg-secondary/60 active:bg-secondary aria-[current=true]:bg-marker/40 focus-visible:outline-solid focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ring"
+                        className="group flex h-full min-w-0 flex-1 cursor-pointer touch-manipulation items-center gap-3 pl-[var(--pad-gutter)] text-left outline-none transition-colors hover:bg-secondary/60 active:bg-secondary aria-[current=true]:bg-marker/40 focus-visible:outline-solid focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ring"
                       >
-                        <span className="min-w-0">
+                        <WordTile word={w.word} emoji={w.emoji} tileRef={w.key === newestKey ? newestTileRef : undefined} />
+                        <span className="min-w-0 flex-1">
                           <span className="block truncate font-heading text-xl leading-[var(--pitch)] font-bold tracking-normal group-aria-[current=true]:underline group-aria-[current=true]:decoration-sunrise group-aria-[current=true]:decoration-2 group-aria-[current=true]:underline-offset-4">{w.word}</span>
                           <span className="block truncate leading-[var(--pitch)] text-ink-2">{w.translation}</span>
                         </span>
@@ -230,19 +273,35 @@ function FilterItem({ value, label, count, level }: { value: Filter; label: stri
   );
 }
 
+/** A small tile per saved word: its emoji (content, not chrome), or the word's first letter when it has none. */
+function WordTile({ word, emoji, tileRef }: { word: string; emoji: string; tileRef?: React.Ref<HTMLSpanElement> }) {
+  const mark = emoji.trim();
+  return (
+    <span
+      ref={tileRef}
+      aria-hidden="true"
+      data-slot="word-tile"
+      data-kind={mark ? "emoji" : "letter"}
+      className="grid size-11 shrink-0 place-items-center rounded-xl border-[1.5px] border-line bg-card text-2xl leading-none shadow-sm"
+    >
+      {mark ? <span>{mark}</span> : <span className="font-heading text-xl font-extrabold text-ink-2">{word.charAt(0).toUpperCase()}</span>}
+    </span>
+  );
+}
+
 function EmptyState() {
   const t = useT();
   return (
-    <div className="flex flex-col items-center gap-4 rounded-xl bg-paper-2 px-6 py-12 text-center" data-testid="words-empty">
-      <Mascot size={110} />
+    <div className="flex flex-col items-center gap-4 rounded-xl bg-paper-2 px-6 py-10 text-center" data-testid="words-empty">
+      <EmptyWords size={200} />
       <h2 className="font-heading text-2xl font-bold">{t.vocabulary.emptyTitle}</h2>
       <p className="max-w-prose text-ink-2">{t.vocabulary.emptyBody}</p>
       <div className="flex flex-wrap justify-center gap-3">
-        <Button asChild size="lg">
-          <Link href="/scan">{t.vocabulary.emptyScan}</Link>
+        <Button asChild size="lg" variant="ink">
+          <Link href="/books">{t.vocabulary.emptyBooks}</Link>
         </Button>
         <Button asChild size="lg" variant="secondary">
-          <Link href="/books">{t.vocabulary.emptyBooks}</Link>
+          <Link href="/scan">{t.vocabulary.emptyScan}</Link>
         </Button>
       </div>
     </div>

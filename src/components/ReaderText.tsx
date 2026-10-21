@@ -22,6 +22,17 @@ export function sentenceIndexes(tokens: Token[]): number[] {
   return out;
 }
 
+/** Source line (split on newlines) of every token. A scanned page keeps the lines of the book it came from. */
+export function lineIndexes(tokens: Token[]): number[] {
+  const out: number[] = [];
+  let line = 0;
+  for (const tok of tokens) {
+    out.push(line);
+    if (tok.kind === "space") line += (tok.value.match(/\n/g) ?? []).length;
+  }
+  return out;
+}
+
 /** Groups tokens into whitespace runs and unbreakable word chunks. */
 function chunks(tokens: Token[]): Token[][] {
   const out: Token[][] = [];
@@ -41,12 +52,19 @@ export interface ReaderTextProps {
   savedWords: ReadonlySet<string>;
   /** Index of the sentence being read aloud. */
   readingSentence: number | null;
+  /** Token index of the word being spoken (read-along). Only engines with word boundaries ever set it. */
+  speakingToken?: number | null;
   onWordTap: (token: Token) => void;
   className?: string;
 }
 
-/** Tokenized page text. Every word is a real button; sentences are wrapped so listening can highlight one. */
-function ReaderTextImpl({ tokens, tappedIndex, savedWords, readingSentence, onWordTap, className }: ReaderTextProps) {
+/**
+ * Tokenized page text. Every word is a real button (keyboard and screen readers); sentences are wrapped so listening can
+ * highlight one, and the word being spoken gets a soft marker with an indigo underline (no layout shift). Taps that
+ * land near a word rather than on it are resolved by the reading surface (see nearestWord.ts).
+ */
+function ReaderTextImpl({ tokens, tappedIndex, savedWords, readingSentence, speakingToken = null, onWordTap, className }: ReaderTextProps) {
+  const lines = useMemo(() => lineIndexes(tokens), [tokens]);
   const groups = useMemo(() => {
     const idx = sentenceIndexes(tokens);
     const out: { sentence: number; tokens: Token[] }[] = [];
@@ -65,14 +83,14 @@ function ReaderTextImpl({ tokens, tappedIndex, savedWords, readingSentence, onWo
           key={g.tokens[0].index}
           data-sentence={g.sentence}
           data-reading={readingSentence === g.sentence ? "true" : undefined}
-          className="box-decoration-clone data-[reading=true]:bg-marker/35"
+          className={cn("box-decoration-clone", readingSentence === g.sentence && (speakingToken !== null ? "bg-marker/20" : "bg-marker/35"))}
         >
           {chunks(g.tokens).map((chunk) =>
             chunk[0].kind === "space" ? (
               chunk[0].value
             ) : (
               // Punctuation stays glued to its word, so a line never starts with a stray "." or ends on a lone quote.
-              <span key={chunk[0].index} className="whitespace-nowrap">
+              <span key={chunk[0].index} data-line={lines[chunk[0].index]} className="whitespace-nowrap">
                 {chunk.map((tok) => {
                   if (tok.kind !== "word") return tok.value;
                   const isSaved = savedWords.has(normalizeWord(tok.value));
@@ -84,10 +102,11 @@ function ReaderTextImpl({ tokens, tappedIndex, savedWords, readingSentence, onWo
                       data-token-index={tok.index}
                       data-state={state}
                       data-saved={isSaved ? "true" : undefined}
+                      data-speaking={tok.index === speakingToken ? "true" : undefined}
                       aria-label={tok.value}
                       aria-pressed={state === "tapped" ? true : undefined}
                       onClick={() => onWordTap(tok)}
-                      className="word-mark relative inline-block cursor-pointer align-baseline text-inherit outline-none after:absolute after:-inset-x-0.5 after:-inset-y-[0.35rem] after:content-[''] focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-ring"
+                      className="word-mark relative inline-block cursor-pointer align-baseline text-inherit outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-ring data-[speaking=true]:bg-marker data-[speaking=true]:after:pointer-events-none data-[speaking=true]:after:absolute data-[speaking=true]:after:inset-x-0.5 data-[speaking=true]:after:-bottom-px data-[speaking=true]:after:h-[3px] data-[speaking=true]:after:rounded-full data-[speaking=true]:after:bg-indigo data-[speaking=true]:after:content-['']"
                     >
                       {tok.value}
                     </button>
