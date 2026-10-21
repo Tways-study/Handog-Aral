@@ -1,13 +1,22 @@
 import { Capacitor } from "@capacitor/core";
 import { splitSentences } from "./sentences";
+import { globalWordOrdinal } from "./words";
 
 export { splitSentences };
+export { globalWordOrdinal, wordOrdinalAt, wordSpans } from "./words";
 
 export interface SpeakOptions {
   /** App ttsSpeed: 0.5 / 0.8 / 1.2 */
   rate?: number;
   lang?: string;
+  /** Called as each sentence starts (every engine). */
   onSentence?: (index: number) => void;
+  /**
+   * Read-along: called with the ordinal of the word being spoken, among all words of `text`. Needs Web Speech
+   * `boundary` events; engines without them (native Capacitor TTS, some Android voices) never call it, and callers fall
+   * back to `onSentence`.
+   */
+  onWord?: (ordinal: number) => void;
 }
 
 let speaking = false;
@@ -47,12 +56,25 @@ export function pickVoice(voices: SpeechSynthesisVoice[], lang = "en-US"): Speec
   return voices.find((x) => norm(x.lang).startsWith("en")) ?? null;
 }
 
-function speakSentence(text: string, voice: SpeechSynthesisVoice | null, lang: string, rate: number): Promise<void> {
+function speakSentence(
+  text: string,
+  voice: SpeechSynthesisVoice | null,
+  lang: string,
+  rate: number,
+  onBoundary?: (charIndex: number) => void,
+): Promise<void> {
   return new Promise((resolve) => {
     const u = new SpeechSynthesisUtterance(text);
     if (voice) u.voice = voice;
     u.lang = voice?.lang ?? lang;
     u.rate = rate;
+    if (onBoundary) {
+      u.onboundary = (e: SpeechSynthesisEvent) => {
+        // Chrome reports name "word"; Safari may omit it. "sentence" boundaries carry no word.
+        if (e.name === "sentence") return;
+        onBoundary(e.charIndex);
+      };
+    }
     u.onend = () => resolve();
     u.onerror = () => resolve();
     window.speechSynthesis.speak(u);
@@ -61,7 +83,7 @@ function speakSentence(text: string, voice: SpeechSynthesisVoice | null, lang: s
 
 /** Speaks text; resolves when finished or stopped. */
 export async function speak(text: string, opts: SpeakOptions = {}): Promise<void> {
-  const { rate = 1, lang = "en-US", onSentence } = opts;
+  const { rate = 1, lang = "en-US", onSentence, onWord } = opts;
   const sentences = splitSentences(text);
   if (!sentences.length || !isTtsAvailable()) return;
   await stop();
@@ -82,7 +104,20 @@ export async function speak(text: string, opts: SpeakOptions = {}): Promise<void
       const voice = pickVoice(await loadVoices(), lang);
       for (let i = 0; i < sentences.length && mine === session; i++) {
         onSentence?.(i);
-        await speakSentence(sentences[i], voice, lang, rate);
+        const sentence = i;
+        await speakSentence(
+          sentences[sentence],
+          voice,
+          lang,
+          rate,
+          onWord
+            ? (charIndex) => {
+                if (mine !== session) return;
+                const ordinal = globalWordOrdinal(sentences, sentence, charIndex);
+                if (ordinal !== null) onWord(ordinal);
+              }
+            : undefined,
+        );
       }
     }
   } finally {

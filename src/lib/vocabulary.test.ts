@@ -3,7 +3,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { closeDb, getDb } from "@/stores/db";
 import { useProgress } from "@/stores/progress";
 import type { ResolvedExplanation } from "@/shared/schemas";
-import { forgetWord, learnWord, WORDS_PER_BOOK } from "./vocabulary";
+import { useCelebrations } from "@/components/celebration/queue";
+import { useRewards } from "@/stores/rewards";
+import { forgetWord, learnWord, recordSaveRewards, WORDS_PER_BOOK } from "./vocabulary";
 
 const entry = (word: string): ResolvedExplanation => ({
   word,
@@ -54,5 +56,21 @@ describe("vocabulary service", () => {
     expect(p.savedWordCount).toBe(1);
     expect(Object.values(p.bookProgress).every((v) => v === 0)).toBe(true);
     await closeDb();
+  });
+
+  it("learnWord reports the total and the book progress", async () => {
+    expect(await learnWord(entry("fox"), "fox")).toEqual({ total: 1, pct: Math.round((1 / WORDS_PER_BOOK) * 100) });
+    expect(await learnWord(entry("typed"), null)).toEqual({ total: 2, pct: null });
+  });
+
+  it("recordSaveRewards passes the real difficulty so a hard word earns its sticker", async () => {
+    useRewards.getState().reset();
+    useCelebrations.getState().clear();
+    const hard = { ...entry("enormous"), difficulty: "hard" as const };
+    const result = await learnWord(hard, "fox");
+    recordSaveRewards(hard, "fox", result);
+    const earned = Object.keys(useRewards.getState().earned);
+    expect(earned).toContain("first-word");
+    expect(earned).toContain("hard-word");
   });
 });
