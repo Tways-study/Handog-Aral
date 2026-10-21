@@ -152,7 +152,7 @@ export default function HomeScreen() {
       <div ref={rootRef}>
         <div data-rise>
           <PageHeader title={greeting} subtitle={sub} />
-          <ul aria-label={t.home.tallyLabel} className="flex flex-wrap gap-2 pb-2 [html.font-large_&]:flex-col">
+          <ul aria-label={t.home.tallyLabel} className="flex flex-wrap gap-2 pb-2 [html.font-large_&]:grid [html.font-large_&]:grid-cols-2">
             <Chip icon={<StampStar size={26} seed={stars} className="-my-1" />}>{t.home.chipStars(stars)}</Chip>
             <Chip icon={<Flame className="size-[1.25rem] text-margin" aria-hidden="true" />}>{t.home.chipStreak(streak)}</Chip>
           </ul>
@@ -160,12 +160,12 @@ export default function HomeScreen() {
 
         <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-x-10 gap-y-8 pt-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:items-stretch lg:pt-2">
           {/* The owl and what it has to say: over the cover on a phone, the stage above the pad at lg+. */}
-          <div data-rise className="relative z-10 flex items-end justify-between gap-2 [html.font-large_&]:flex-col [html.font-large_&]:items-stretch lg:col-start-2 lg:row-start-1 lg:justify-start">
+          <div data-rise className="relative z-10 flex items-end justify-between gap-2 [@media(max-width:340px)]:[html.font-large_&]:flex-col [@media(max-width:340px)]:[html.font-large_&]:items-stretch lg:col-start-2 lg:row-start-1 lg:justify-start">
             <div className="min-w-0 flex-1 pb-1 lg:-mt-16 lg:-ml-5 lg:max-w-md lg:flex-none lg:pb-5">
               <SpeechTag tail={isDesktop ? "left" : "right"} className="px-3.5 py-2.5 lg:px-4 lg:py-3">
                 {newest ? (
                   <>
-                    <p className="text-[0.9375rem] leading-snug font-bold [@media(max-height:700px)]:hidden">{t.home.growthWords(wordCount)}</p>
+                    <p className="text-[0.9375rem] leading-snug font-bold [@media(max-height:700px)]:hidden [html.font-large_&]:hidden">{t.home.growthWords(wordCount)}</p>
                     <button
                       type="button"
                       onClick={listenNewest}
@@ -219,7 +219,7 @@ export default function HomeScreen() {
 
             {/* A phone has no room for the big cover, so a small tilted one sits beside the progress bar. Large text and dyslexia mode drop it. */}
             <div className="mt-2 flex items-end gap-3 text-[0.9375rem] font-bold lg:mt-0 lg:block">
-              <div aria-hidden="true" className="order-last -mt-7 shrink-0 lg:hidden [html.font-large_&]:hidden [body.dyslexia-font_&]:hidden">
+              <div aria-hidden="true" className="order-last -mt-5 shrink-0 lg:hidden [html.font-large_&]:hidden [body.dyslexia-font_&]:hidden">
                 <BookCover coverId={book.coverId} jacket={book.jacket} label={false} className="w-24 rotate-3 drop-shadow-lg" />
               </div>
               <div className="flex min-w-0 flex-1 items-center gap-2.5 pb-1 lg:pb-0">

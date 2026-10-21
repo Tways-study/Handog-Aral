@@ -396,11 +396,11 @@ function ResultStamp({ index, earned }: { index: number; earned: boolean }) {
     if (earned) return stampIn(ref.current, { delay: 0.3 + index * 0.14 });
   }, [earned, index, stampIn]);
   return earned ? (
-    <span ref={ref} className="inline-grid size-12 place-items-center" data-stamp="earned">
+    <span ref={ref} className="inline-grid size-[min(3rem,13vw)] place-items-center" data-stamp="earned">
       <StampStar size={46} seed={index} />
     </span>
   ) : (
-    <span className="inline-grid size-12 place-items-center" data-stamp="missed">
+    <span className="inline-grid size-[min(3rem,13vw)] place-items-center" data-stamp="missed">
       <span className="size-9 rounded-full border-[1.5px] border-dashed border-line-strong" />
     </span>
   );
@@ -437,7 +437,7 @@ function QuizResults({ quiz, picks, onRetry }: { quiz: Quiz; picks: number[]; on
     <div className="px-5 lg:px-8">
       <div className="max-w-2xl">
         <section className="rounded-xl bg-paper-2 px-5 py-6" aria-label={t.quiz.scoreLine(score, total)}>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 [html.font-large_&]:flex-col [html.font-large_&]:items-start">
             <Owl mood={mood} size={112} priority="hero" reaction={{ kind: mood === "cheer" ? "cheer" : "hop", key: 1 }} className="shrink-0" />
             <div className="min-w-0">
               <h2 className="flex flex-wrap items-baseline gap-x-2 font-heading leading-none font-extrabold" data-testid="quiz-score">

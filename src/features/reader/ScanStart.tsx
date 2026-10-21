@@ -3,7 +3,7 @@
 import { type ReactNode } from "react";
 import { Info } from "lucide-react";
 import Owl from "@/components/owl/Owl";
-import { LensDoodle, PencilDoodle, PhotoDoodle, ScanPageDoodle, ViewfinderDoodle } from "@/components/art/ScanDoodles";
+import { PencilDoodle, PhotoDoodle, ScanPageDoodle, ViewfinderDoodle } from "@/components/art/ScanDoodles";
 import Mascot from "@/components/Mascot";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -49,7 +49,7 @@ function Tile({ label, help, onClick, doodle, className }: TileProps) {
 
 /**
  * The three ways to start. The camera is the hero: an indigo book-jacket tile with a sunrise lens, and the page's hero
- * owl perched on its edge holding that lens up. Gallery and typing are cream tiles with authored pad-paper doodles.
+ * owl perched on its edge. Gallery and typing are cream tiles with authored pad-paper doodles.
  * At lg the camera tile is tall and the other two stack beside it, so the stage is filled instead of ending halfway.
  */
 export function ScanTiles({ onCamera, onGallery, onType }: { onCamera: () => void; onGallery: () => void; onType: () => void }) {
@@ -64,7 +64,6 @@ export function ScanTiles({ onCamera, onGallery, onType }: { onCamera: () => voi
           <div aria-hidden="true" className="pointer-events-none absolute right-8 -top-[4.25rem] z-0 lg:right-14 lg:-top-[6.5rem]">
             <Owl mood="idle" size={desktop ? 136 : 96} priority="hero" />
           </div>
-          <LensDoodle size={desktop ? 76 : 54} className="pointer-events-none absolute right-[8.25rem] -top-[1.35rem] z-20 -rotate-6 lg:right-[11.75rem] lg:-top-[2.1rem]" />
           <button
             type="button"
             onClick={onCamera}

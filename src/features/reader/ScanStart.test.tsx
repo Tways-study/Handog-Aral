@@ -22,11 +22,12 @@ describe("ScanTiles", () => {
     expect([onCamera, onGallery, onType].map((f) => f.mock.calls.length)).toEqual([1, 1, 1]);
   });
 
-  it("draws the lens, the photo and the pencil as decorative art, with exactly one owl", () => {
+  it("draws the photo, the pencil and the scan page as decorative art, with exactly one owl and no floating lens badge", () => {
     const { container } = render(<ScanTiles onCamera={() => {}} onGallery={() => {}} onType={() => {}} />);
-    for (const slot of ["lens-doodle", "photo-doodle", "pencil-doodle", "scan-page-doodle"]) {
+    for (const slot of ["photo-doodle", "pencil-doodle", "scan-page-doodle"]) {
       expect(container.querySelector(`[data-slot=${slot}]`)?.getAttribute("aria-hidden")).toBe("true");
     }
+    expect(container.querySelector("[data-slot=lens-doodle]")).toBeNull();
     expect(container.querySelectorAll("[data-owl-renderer]")).toHaveLength(1);
     // no icon-in-a-circle: the tiles carry no lucide icon
     expect(container.querySelectorAll("[data-slot=scan-tile] svg.lucide")).toHaveLength(0);
