@@ -26,7 +26,7 @@ export function moodPose(mood: OwlMood): OwlPose {
       Object.assign(p, { tilt: 0.17, lookX: 0.35, lookY: 0.6, pupX: 0.75, pupY: 0.8, wingRFwd: 1.45, wingR: -0.6, lidU: 0.12 });
       break;
     case "wave":
-      Object.assign(p, { wingR: 1.7, beak: 0.25, tilt: -0.05 });
+      Object.assign(p, { wingRFwd: 0.45, wingR: 1.95, beak: 0.25, tilt: -0.05 });
       break;
     case "sleep":
       Object.assign(p, { lidU: 1, arc: 1, arcFlip: 1, lean: 0.07, tilt: 0.08 });
@@ -111,11 +111,11 @@ export function createOwlMotion(host: OwlMotionHost) {
     );
   };
   const waveWing = (tl: gsap.core.Timeline, times = 3) => {
-    tl.to(pose, { wingR: 1.45, duration: 0.2, ease: "power2.out" });
+    tl.to(pose, { wingRFwd: 0.45, wingR: 1.75, duration: 0.2, ease: "power2.out" });
     for (let i = 0; i < times; i++) {
-      tl.to(pose, { wingR: 2.05, duration: 0.17, ease: "sine.inOut" }).to(pose, { wingR: 1.45, duration: 0.17, ease: "sine.inOut" });
+      tl.to(pose, { wingR: 2.3, duration: 0.17, ease: "sine.inOut" }).to(pose, { wingR: 1.75, duration: 0.17, ease: "sine.inOut" });
     }
-    tl.to(pose, { wingR: base.wingR, duration: 0.3, ease: "power2.inOut" });
+    tl.to(pose, { wingR: base.wingR, wingRFwd: base.wingRFwd, duration: 0.3, ease: "power2.inOut" });
     return tl;
   };
 
