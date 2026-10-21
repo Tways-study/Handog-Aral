@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { Download, Trash2, Volume2, Wifi, WifiOff } from "lucide-react";
+import { Check, Download, Trash2, Volume2, Wifi, WifiOff } from "lucide-react";
 import { toast } from "sonner";
 import { PageContainer, PageHeader } from "@/components/PageLayout";
+import InstallAppButton from "@/components/InstallAppButton";
 import Mascot from "@/components/Mascot";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -16,6 +17,7 @@ import { useT } from "@/hooks/useT";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { offlinePackStatus, warmOfflinePack } from "@/lib/ocr/tesseract";
 import { speak } from "@/lib/tts";
+import { cn } from "@/lib/utils";
 import { syncVocabularyProgress } from "@/lib/vocabulary";
 import { clearAllData, queueSize } from "@/stores/db";
 import { useProgress } from "@/stores/progress";
@@ -23,19 +25,33 @@ import { useSettings, type ColorOverlay, type FontSize, type Theme } from "@/sto
 import type { Language } from "@/shared/schemas";
 import { APP_VERSION } from "./version";
 
-/** A settings group: heading, then rows divided by rules. No cards. */
-function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
+/** A settings group: one calm paper surface, heading, then rows divided by fine rules. */
+function Section({ id, title, children, className }: { id: string; title: string; children: ReactNode; className?: string }) {
   return (
-    <section aria-labelledby={id} className="py-6 first:pt-2">
-      <h2 id={id} className="mb-1 font-heading text-2xl font-bold">
+    <section aria-labelledby={id} className={cn("rounded-lg border-[1.5px] border-line bg-card shadow-sm", className)}>
+      <h2 id={id} className="px-5 pt-5 font-heading text-xl font-bold">
         {title}
       </h2>
-      <div className="divide-y divide-line">{children}</div>
+      <div className="divide-y divide-line px-5">{children}</div>
     </section>
   );
 }
 
-function Row({ label, help, htmlFor, children, id }: { label: string; help?: string; htmlFor?: string; children: ReactNode; id?: string }) {
+function Row({
+  label,
+  help,
+  htmlFor,
+  children,
+  id,
+  preview,
+}: {
+  label: string;
+  help?: string;
+  htmlFor?: string;
+  children: ReactNode;
+  id?: string;
+  preview?: ReactNode;
+}) {
   return (
     <div className="grid gap-3 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-6">
       <div className="min-w-0">
@@ -51,7 +67,40 @@ function Row({ label, help, htmlFor, children, id }: { label: string; help?: str
         {help && <p className="mt-1 text-[0.9375rem] text-ink-2">{help}</p>}
       </div>
       <div className="min-w-0">{children}</div>
+      {preview && <div className="sm:col-span-2">{preview}</div>}
     </div>
+  );
+}
+
+/** The one choice control for the screen: same height, radius and selected state (fill plus a check) everywhere. */
+function Segmented<T extends string>({
+  value,
+  onChange,
+  options,
+  labelledBy,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  options: { value: T; label: string }[];
+  labelledBy: string;
+}) {
+  return (
+    <ToggleGroup
+      type="single"
+      variant="outline"
+      spacing={2}
+      value={value}
+      onValueChange={(v) => v && onChange(v as T)}
+      aria-labelledby={labelledBy}
+      className="w-full flex-wrap sm:w-auto"
+    >
+      {options.map((o) => (
+        <ToggleGroupItem key={o.value} value={o.value} className="h-auto min-h-12 shrink flex-1 px-4 py-2 text-center leading-tight whitespace-normal sm:flex-none">
+          {value === o.value && <Check aria-hidden="true" />}
+          {o.label}
+        </ToggleGroupItem>
+      ))}
+    </ToggleGroup>
   );
 }
 
@@ -63,7 +112,7 @@ export default function SettingsScreen() {
   return (
     <PageContainer>
       <PageHeader title={t.settings.title} subtitle={t.settings.subtitle} hideSettings />
-      <div className="max-w-2xl divide-y divide-line">
+      <div className="flex max-w-2xl flex-col gap-6 pt-2">
         <Section id="sec-child" title={t.settings.childHeading}>
           <Row label={t.settings.nameLabel} help={t.settings.nameHelp} htmlFor="child-name">
             <Input
@@ -80,10 +129,15 @@ export default function SettingsScreen() {
 
         <Section id="sec-language" title={t.settings.languageHeading}>
           <Row label={t.settings.languageLabel} help={t.settings.languageHelp} id="lbl-language">
-            <ToggleGroup type="single" variant="outline" value={s.language} onValueChange={(v) => v && s.setLanguage(v as Language)} aria-labelledby="lbl-language">
-              <ToggleGroupItem value="hiligaynon">{t.settings.hiligaynon}</ToggleGroupItem>
-              <ToggleGroupItem value="tagalog">{t.settings.tagalog}</ToggleGroupItem>
-            </ToggleGroup>
+            <Segmented<Language>
+              value={s.language}
+              onChange={s.setLanguage}
+              labelledBy="lbl-language"
+              options={[
+                { value: "hiligaynon", label: t.settings.hiligaynon },
+                { value: "tagalog", label: t.settings.tagalog },
+              ]}
+            />
           </Row>
         </Section>
 
@@ -91,21 +145,36 @@ export default function SettingsScreen() {
 
         <Section id="sec-appearance" title={t.settings.appearanceHeading}>
           <Row label={t.settings.themeLabel} help={t.settings.themeHelp} id="lbl-theme">
-            <ToggleGroup type="single" variant="outline" value={s.theme} onValueChange={(v) => v && s.setTheme(v as Theme)} aria-labelledby="lbl-theme" className="flex-wrap">
-              <ToggleGroupItem value="light">{t.settings.light}</ToggleGroupItem>
-              <ToggleGroupItem value="dark">{t.settings.dark}</ToggleGroupItem>
-              <ToggleGroupItem value="system">{t.settings.system}</ToggleGroupItem>
-            </ToggleGroup>
+            <Segmented<Theme>
+              value={s.theme}
+              onChange={s.setTheme}
+              labelledBy="lbl-theme"
+              options={[
+                { value: "light", label: t.settings.light },
+                { value: "dark", label: t.settings.dark },
+                { value: "system", label: t.settings.system },
+              ]}
+            />
           </Row>
         </Section>
+
+        {/* Hidden while the install control renders nothing (already installed, native app, unsupported browser). */}
+        <section aria-labelledby="sec-app" className="rounded-lg border-[1.5px] border-line bg-card shadow-sm has-[.install-slot:empty]:hidden">
+          <h2 id="sec-app" className="px-5 pt-5 font-heading text-xl font-bold">
+            {t.settings.appHeading}
+          </h2>
+          <div className="install-slot px-5 py-4">
+            <InstallAppButton />
+          </div>
+        </section>
 
         <OfflineSection />
         <DataSection />
 
         <Section id="sec-about" title={t.settings.aboutHeading}>
           <div className="flex items-center gap-4 py-4">
-            <Mascot size={72} />
-            <div>
+            <Mascot size={72} className="shrink-0" />
+            <div className="min-w-0">
               <p className="font-heading text-xl font-bold">{t.settings.appName}</p>
               <p>{t.settings.tagline}</p>
               <p className="text-[0.9375rem] text-ink-2">{t.settings.version(APP_VERSION)}</p>
@@ -117,8 +186,6 @@ export default function SettingsScreen() {
     </PageContainer>
   );
 }
-
-const SPEEDS = [0.5, 0.8, 1.2] as const;
 
 function ReadingSection() {
   const t = useT();
@@ -134,59 +201,78 @@ function ReadingSection() {
   return (
     <Section id="sec-reading" title={t.settings.readingHeading}>
       <Row label={t.settings.fontSizeLabel} help={t.settings.fontSizeHelp} id="lbl-size">
-        <ToggleGroup type="single" variant="outline" value={fontSize} onValueChange={(v) => v && setFontSize(v as FontSize)} aria-labelledby="lbl-size">
-          <ToggleGroupItem value="small">{t.settings.small}</ToggleGroupItem>
-          <ToggleGroupItem value="medium">{t.settings.medium}</ToggleGroupItem>
-          <ToggleGroupItem value="large">{t.settings.large}</ToggleGroupItem>
-        </ToggleGroup>
+        <Segmented<FontSize>
+          value={fontSize}
+          onChange={setFontSize}
+          labelledBy="lbl-size"
+          options={[
+            { value: "small", label: t.settings.small },
+            { value: "medium", label: t.settings.medium },
+            { value: "large", label: t.settings.large },
+          ]}
+        />
       </Row>
 
-      <Row label={t.settings.dyslexiaLabel} help={t.settings.dyslexiaHelp} htmlFor="dyslexia-font">
+      <Row
+        label={t.settings.dyslexiaLabel}
+        help={t.settings.dyslexiaHelp}
+        htmlFor="dyslexia-font"
+        preview={
+          <p
+            data-testid="dyslexia-preview"
+            data-dyslexic={dyslexiaFont ? "on" : "off"}
+            className="rounded-lg bg-paper-2 px-4 py-3 text-lg"
+            style={{
+              fontFamily: dyslexiaFont ? "var(--font-opendyslexic), var(--font-atkinson), system-ui, sans-serif" : "var(--font-atkinson), system-ui, sans-serif",
+              wordSpacing: dyslexiaFont ? "0.3em" : undefined,
+              letterSpacing: dyslexiaFont ? "0.05em" : undefined,
+            }}
+          >
+            {t.settings.dyslexiaPreview}
+          </p>
+        }
+      >
         <Switch id="dyslexia-font" checked={dyslexiaFont} onCheckedChange={setDyslexiaFont} />
       </Row>
-      <p
-        data-testid="dyslexia-preview"
-        data-dyslexic={dyslexiaFont ? "on" : "off"}
-        className="rounded-lg bg-paper-2 px-4 py-3 text-lg"
-        style={{
-          fontFamily: dyslexiaFont ? "var(--font-opendyslexic), var(--font-atkinson), system-ui, sans-serif" : "var(--font-atkinson), system-ui, sans-serif",
-          wordSpacing: dyslexiaFont ? "0.3em" : undefined,
-          letterSpacing: dyslexiaFont ? "0.05em" : undefined,
-        }}
-      >
-        {t.settings.dyslexiaPreview}
-      </p>
 
-      <div>
-        <Row label={t.settings.overlayLabel} help={t.settings.overlayHelp} id="lbl-overlay">
-          <ToggleGroup type="single" variant="outline" value={overlay} onValueChange={(v) => v && setOverlay(v as ColorOverlay)} aria-labelledby="lbl-overlay" className="flex-wrap">
-            <ToggleGroupItem value="none">{t.settings.overlayNone}</ToggleGroupItem>
-            <ToggleGroupItem value="yellow">{t.settings.overlayYellow}</ToggleGroupItem>
-            <ToggleGroupItem value="blue">{t.settings.overlayBlue}</ToggleGroupItem>
-            <ToggleGroupItem value="pink">{t.settings.overlayPink}</ToggleGroupItem>
-          </ToggleGroup>
-        </Row>
-        <p
-          data-testid="overlay-preview"
-          className={`mb-4 rounded-lg border-[1.5px] border-line px-4 py-3 text-lg ${overlay === "none" ? "bg-paper" : `overlay-${overlay}`}`}
-        >
-          {t.settings.overlayPreview}
-        </p>
-      </div>
+      <Row
+        label={t.settings.overlayLabel}
+        help={t.settings.overlayHelp}
+        id="lbl-overlay"
+        preview={
+          <p
+            data-testid="overlay-preview"
+            className={`rounded-lg border-[1.5px] border-line px-4 py-3 text-lg ${overlay === "none" ? "bg-paper" : `overlay-${overlay}`}`}
+          >
+            {t.settings.overlayPreview}
+          </p>
+        }
+      >
+        <Segmented<ColorOverlay>
+          value={overlay}
+          onChange={setOverlay}
+          labelledBy="lbl-overlay"
+          options={[
+            { value: "none", label: t.settings.overlayNone },
+            { value: "yellow", label: t.settings.overlayYellow },
+            { value: "blue", label: t.settings.overlayBlue },
+            { value: "pink", label: t.settings.overlayPink },
+          ]}
+        />
+      </Row>
 
       <Row label={t.settings.speedLabel} help={t.settings.speedHelp} id="lbl-speed">
-        <div className="flex flex-wrap items-center gap-3">
-          <ToggleGroup
-            type="single"
-            variant="outline"
-            value={String(ttsSpeed)}
-            onValueChange={(v) => v && setTtsSpeed(Number(v))}
-            aria-labelledby="lbl-speed"
-          >
-            <ToggleGroupItem value="0.5">{t.settings.slow}</ToggleGroupItem>
-            <ToggleGroupItem value="0.8">{t.settings.normal}</ToggleGroupItem>
-            <ToggleGroupItem value="1.2">{t.settings.fast}</ToggleGroupItem>
-          </ToggleGroup>
+        <div className="flex flex-col gap-3 sm:items-end">
+          <Segmented<"0.5" | "0.8" | "1.2">
+            value={String(ttsSpeed) as "0.5" | "0.8" | "1.2"}
+            onChange={(v) => setTtsSpeed(Number(v))}
+            labelledBy="lbl-speed"
+            options={[
+              { value: "0.5", label: t.settings.slow },
+              { value: "0.8", label: t.settings.normal },
+              { value: "1.2", label: t.settings.fast },
+            ]}
+          />
           <Button variant="ink" size="sm" onClick={() => void speak(t.settings.listenSample, { rate: ttsSpeed })}>
             <Volume2 aria-hidden="true" />
             {t.settings.listen}
@@ -262,7 +348,7 @@ function OfflineSection() {
           </div>
         )}
         <div className="mt-3 flex flex-wrap items-center gap-3">
-          <Button variant={ready ? "secondary" : "ink"} disabled={!online || downloading} onClick={() => void download()}>
+          <Button className="h-auto min-h-12 max-w-full shrink py-2 whitespace-normal" variant={ready ? "secondary" : "ink"} disabled={!online || downloading} onClick={() => void download()}>
             <Download aria-hidden="true" />
             {downloading ? t.settings.downloading : ready ? t.settings.downloadAgain : t.settings.download}
           </Button>
@@ -301,7 +387,7 @@ function DataSection() {
   return (
     <Section id="sec-data" title={t.settings.dataHeading}>
       <Row label={t.settings.resetLabel} help={t.settings.resetHelp}>
-        <Button variant="outline" onClick={() => setOpen(true)}>
+        <Button className="h-auto min-h-12 max-w-full shrink py-2 whitespace-normal" variant="outline" onClick={() => setOpen(true)}>
           <Trash2 aria-hidden="true" />
           {t.settings.resetButton}
         </Button>

@@ -2,6 +2,9 @@ import "fake-indexeddb/auto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 
+// Radix radio items inside a form observe a hidden input's size; jsdom has no ResizeObserver.
+vi.stubGlobal("ResizeObserver", class { observe() {} unobserve() {} disconnect() {} });
+
 const replace = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace, push: vi.fn() }) }));
 
@@ -32,6 +35,14 @@ describe("WelcomeScreen", () => {
     expect(useSettings.getState().language).toBe("tagalog");
     expect(screen.getByLabelText("Ano ang pangalan mo?")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Magsimula tayo" })).toBeTruthy();
+  });
+
+  it("offers the two languages as one radio group with the chosen notebook checked", () => {
+    render(<WelcomeScreen />);
+    const group = screen.getByRole("radiogroup");
+    expect(group.getAttribute("aria-labelledby")).toBe("language-label");
+    expect(screen.getByRole("radio", { name: "Hiligaynon" }).getAttribute("aria-checked")).toBe("true");
+    expect(screen.getByRole("radio", { name: "Filipino" }).getAttribute("aria-checked")).toBe("false");
   });
 
   it("start writes the trimmed name, onboarded, and routes home", () => {

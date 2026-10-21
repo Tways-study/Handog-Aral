@@ -4,7 +4,8 @@ const hiligaynon = {
   subtitleDone: (n: number) => `${n} ka libro ang natapos mo na.`,
   subtitleNew: "Pili-a ang imo basahon.",
   shelfLabel: "Mga libro",
-  openBook: (title: string, status: string) => `${title}, ${status}. Abri-a ang libro.`,
+  openBook: (title: string, status: string, words: number) => `${title}, ${status}, ${words} ka pulong. Abri-a ang libro.`,
+  wordCount: (n: number) => `${n} ka pulong`,
 };
 
 const tagalog = {
@@ -12,7 +13,8 @@ const tagalog = {
   subtitleDone: (n: number) => `${n} aklat na ang natapos mo.`,
   subtitleNew: "Piliin ang babasahin mo.",
   shelfLabel: "Mga aklat",
-  openBook: (title: string, status: string) => `${title}, ${status}. Buksan ang aklat.`,
+  openBook: (title: string, status: string, words: number) => `${title}, ${status}, ${words} salita. Buksan ang aklat.`,
+  wordCount: (n: number) => `${n} salita`,
 } satisfies typeof hiligaynon;
 
 export const booksStrings = { hiligaynon, tagalog };

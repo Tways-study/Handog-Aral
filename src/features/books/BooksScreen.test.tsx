@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/books" }));
+let saved: { bookId: string | null }[] | null = [];
+vi.mock("@/hooks/useSavedWords", () => ({ useSavedWords: () => saved }));
 import { cleanup, render, screen, within } from "@testing-library/react";
 import BooksScreen from "./BooksScreen";
 import { bookStatus } from "./status";
@@ -31,6 +33,16 @@ describe("BooksScreen", () => {
     expect(within(links[1]).getByText("Padayon")).toBeTruthy();
     expect(within(links[2]).getByText("Bag-o")).toBeTruthy();
     expect(links[1].getAttribute("aria-label")).toContain("Padayon");
+  });
+
+  it("shows the real saved-word count per book", () => {
+    saved = [{ bookId: "fox" }, { bookId: "fox" }, { bookId: "star" }, { bookId: null }];
+    render(<BooksScreen />);
+    const links = within(screen.getByRole("list", { name: "Mga libro" })).getAllByRole("link");
+    expect(within(links[0]).getByText("2 ka pulong")).toBeTruthy();
+    expect(within(links[1]).getByText("1 ka pulong")).toBeTruthy();
+    expect(within(links[2]).getByText("0 ka pulong")).toBeTruthy();
+    saved = [];
   });
 
   it("counts finished books in the subtitle and uses Tagalog when set", () => {

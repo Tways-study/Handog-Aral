@@ -48,6 +48,8 @@ const english = {
   dark: "Dark",
   system: "Same as device",
 
+  appHeading: "App",
+
   offlineHeading: "Offline",
   connectionLabel: "Connection",
   online: "Online",

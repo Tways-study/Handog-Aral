@@ -2,6 +2,9 @@ import "fake-indexeddb/auto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 
+// InstallAppButton reads display-mode media queries; jsdom has no matchMedia.
+vi.stubGlobal("matchMedia", (q: string) => ({ matches: false, media: q, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, onchange: null, dispatchEvent: () => false }));
+
 let online = true;
 vi.mock("next/navigation", () => ({ usePathname: () => "/settings" }));
 vi.mock("@/hooks/useOnlineStatus", () => ({ useOnlineStatus: () => ({ online }) }));

@@ -22,6 +22,10 @@ const hiligaynon = {
   emptyBody: "I-scan ang pahina sang imo libro ukon abri-a ang isa ka istorya. Pindota ang pulong nga indi mo kilala kag tipigi.",
   quizNudge: "Handa ka na sa pasulit?",
   quizCta: "Mag-pasulit",
+  otherBooksTitle: "Iba pang libro",
+  otherBooksViewAll: "Tanan",
+  otherBooksViewAllLabel: "Tan-awa ang tanan nga libro",
+  otherBooksLabel: "Iba pang mga libro",
 };
 
 const tagalog = {
@@ -47,6 +51,10 @@ const tagalog = {
   emptyBody: "I-scan ang pahina ng iyong aklat o magbukas ng kuwento. Pindutin ang salitang hindi mo kilala at itabi ito.",
   quizNudge: "Handa ka na ba sa pagsusulit?",
   quizCta: "Magpasulit",
+  otherBooksTitle: "Iba pang aklat",
+  otherBooksViewAll: "Lahat",
+  otherBooksViewAllLabel: "Tingnan ang lahat ng aklat",
+  otherBooksLabel: "Iba pang mga aklat",
 } satisfies typeof hiligaynon;
 
 export const homeStrings = { hiligaynon, tagalog };

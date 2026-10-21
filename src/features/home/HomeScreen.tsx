@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Flame, ScanLine } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/PageLayout";
 import DifficultyStamp from "@/components/DifficultyStamp";
+import BookCover from "@/components/BookCover";
 import Mascot from "@/components/Mascot";
 import StampStar from "@/components/StampStar";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import { useMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { selectTotalStars, useProgress, useProgressHydrated } from "@/stores/progress";
 import { useSettings, useSettingsHydrated } from "@/stores/settings";
+import ShelfBar from "@/features/books/ShelfBar";
 import { JACKET_CLASS } from "./jacket";
 import { needsWelcome } from "./onboarding";
 
@@ -81,6 +83,7 @@ export default function HomeScreen() {
         : [t.home.greetingEvening(childName), t.home.subEvening];
   const wordCount = Math.max(savedWordCount, words.length);
   const recent = words.slice(0, RECENT_COUNT);
+  const otherBooks = sampleBooks.filter((b) => b.id !== book.id);
 
   return (
     <PageContainer>
@@ -91,7 +94,7 @@ export default function HomeScreen() {
           <Chip icon={<Flame className="size-[1.25rem] text-margin" aria-hidden="true" />}>{t.home.chipStreak(streak)}</Chip>
         </ul>
 
-        <div className="grid items-start gap-8 pt-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-stretch lg:gap-10">
+        <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-8 pt-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-stretch lg:gap-10">
           <section
             aria-label={t.home.coverLabel}
             className={cn(
@@ -133,7 +136,7 @@ export default function HomeScreen() {
               <span aria-hidden="true">{pct}%</span>
             </div>
 
-            <Button asChild size="xl" className="mt-4 w-full">
+            <Button asChild size="xl" className="mt-4 h-auto min-h-[3.75rem] w-full py-2 text-center whitespace-normal">
               <Link href="/scan">
                 <ScanLine aria-hidden="true" />
                 {t.home.scanCta}
@@ -141,7 +144,7 @@ export default function HomeScreen() {
             </Button>
             <Link
               href={`/read/${book.id}`}
-              className="mt-2 flex min-h-11 items-center justify-center text-[0.9375rem] font-bold underline underline-offset-4 outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="mt-2 flex min-h-11 items-center justify-center text-[0.9375rem] font-bold underline underline-offset-4 outline-none transition-opacity focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring motion-safe:active:opacity-70"
             >
               {t.home.continueReading}
             </Link>
@@ -186,7 +189,7 @@ export default function HomeScreen() {
               )}
             </div>
             {words.length >= QUIZ_MIN_WORDS && (
-              <div className="flex items-center justify-between gap-3 border-t border-line bg-paper-2 px-4 py-1.5">
+              <div className="flex flex-wrap items-center justify-between gap-x-3 border-t border-line bg-paper-2 px-4 py-1.5">
                 <p className="text-[0.9375rem] text-ink-2">{t.home.quizNudge}</p>
                 <Button asChild variant="secondary" size="sm" className="shrink-0">
                   <Link href="/quiz">{t.home.quizCta}</Link>
@@ -195,6 +198,50 @@ export default function HomeScreen() {
             )}
           </section>
         </div>
+
+        {otherBooks.length > 0 && (
+          <section aria-labelledby="other-books-heading" className="pt-12 lg:pt-14">
+            <div className="flex items-center justify-between gap-3 pb-3">
+              <h2 id="other-books-heading" className="font-heading text-xl font-bold lg:text-2xl">
+                {t.home.otherBooksTitle}
+              </h2>
+              <Link
+                href="/books"
+                aria-label={t.home.otherBooksViewAllLabel}
+                className="inline-flex min-h-11 items-center text-[0.9375rem] font-bold underline underline-offset-4 outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-ring"
+              >
+                {t.home.otherBooksViewAll}
+              </Link>
+            </div>
+            <ul aria-label={t.home.otherBooksLabel} className="grid grid-cols-2 gap-x-5 gap-y-7 lg:grid-cols-3 lg:gap-x-8">
+              {otherBooks.map((b) => {
+                const bpct = Math.max(0, Math.min(100, bookProgress[b.id] ?? 0));
+                return (
+                  <li key={b.id}>
+                    <Link
+                      href={`/read/${b.id}`}
+                      aria-label={`${b.title}. ${t.bookCard.progressText(bpct)}`}
+                      className="group flex flex-col gap-3 rounded-lg outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ring lg:flex-row lg:items-center lg:gap-4"
+                    >
+                      <div className="w-full max-w-[9.5rem] shrink-0 transition-transform duration-150 motion-safe:group-hover:-translate-y-0.5 motion-safe:group-active:translate-y-0 motion-safe:group-active:scale-[0.98] lg:w-28">
+                        <BookCover coverId={b.coverId} jacket={b.jacket} className="drop-shadow-md" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-heading text-[1.0625rem] leading-tight font-bold text-pretty">{b.title}</p>
+                        <div className="mt-2 flex items-center gap-2">
+                          <ShelfBar pct={bpct} />
+                          <span aria-hidden="true" className="w-11 shrink-0 text-right text-sm whitespace-nowrap font-bold text-ink-2 tabular-nums">
+                            {bpct}%
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
       </div>
     </PageContainer>
   );
