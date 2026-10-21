@@ -31,7 +31,7 @@ const hiligaynon = {
   loading: "Ginahanda ang pasulit...",
   intro: (n: number) => `Pasulit na! ${n} ka pulong, kaya mo ini!`,
   streakCheer: "Tatlo ka sunod nga husto! Galing!",
-  tryAgainKind: "Wala ni, sige pa!",
+  tryAgainKind: "Sige pa, kaya mo ini!",
   optionsLabel: "Mga sabat",
   rightTitle: "Nahibaluan mo",
   retryTitle: "Liwat naton ini",

@@ -51,7 +51,7 @@ test("keyboard focus shows a visible ring on buttons, links, inputs and word tok
   // Tailwind v4: `outline-none` sets --tw-outline-style:none, which silently turned `focus-visible:outline-3` into
   // "3px of no outline" everywhere. Every stop below must have a real outline.
   const routes: [string, RegExp[]][] = [
-    ["/", [/Padayon sa pagbasa/, /I-scan ang pahina/]],
+    ["/", [/Padayon sa pagbasa|Umpisahan ta/, /I-scan ang pahina/]],
     ["/books", [/The Brave Little Fox/]],
     ["/settings", [/^Medium$/, /Dyslexia-friendly font|^$/]],
     ["/read/fox", [/^The$/, /^small$/]],

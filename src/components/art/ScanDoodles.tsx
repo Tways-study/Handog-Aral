@@ -1,9 +1,15 @@
 import { useId } from "react";
+import { OWL } from "@/components/art/OwlGroup";
 import { cn } from "@/lib/utils";
 
 interface DoodleProps {
   size?: number;
   className?: string;
+}
+
+interface LensProps extends DoodleProps {
+  /** Two owl wing tips grip the lens, so an owl standing behind it looks like it is holding it up. */
+  held?: boolean;
 }
 
 const INK = "var(--label-ink)";
@@ -15,7 +21,7 @@ const PAPER = "var(--label-paper)";
  */
 
 /** A camera lens with a sunrise in the glass: the camera tile's hero graphic. */
-export function LensDoodle({ size = 72, className }: DoodleProps) {
+export function LensDoodle({ size = 72, className, held = false }: LensProps) {
   const clip = `lens-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   return (
     <svg viewBox="0 0 72 72" width={size} height={size} aria-hidden="true" focusable="false" data-slot="lens-doodle" className={cn("shrink-0", className)}>
@@ -37,6 +43,12 @@ export function LensDoodle({ size = 72, className }: DoodleProps) {
       </g>
       <path d="M26.500 24.500c2.500-3.400 6.200-5 9.500-5" fill="none" stroke={PAPER} strokeWidth="3" strokeLinecap="round" />
       <circle cx="49.500" cy="46" r="2.200" fill={PAPER} />
+      {held && (
+        <g data-part="grip" fill={OWL.shade} stroke={OWL.contour} strokeWidth="2.600" strokeLinejoin="round">
+          <ellipse cx="9" cy="47" rx="6.500" ry="10.500" transform="rotate(24 9 47)" />
+          <ellipse cx="63" cy="47" rx="6.500" ry="10.500" transform="rotate(-24 63 47)" />
+        </g>
+      )}
     </svg>
   );
 }
@@ -65,6 +77,21 @@ export function PencilDoodle({ size = 56, className }: DoodleProps) {
         <path d="M23 45h18l-9 15z" fill="var(--marker)" stroke={INK} strokeWidth="2.800" strokeLinejoin="round" />
         <path d="M29.500 54.500h5L32 60z" fill={INK} />
       </g>
+    </svg>
+  );
+}
+
+/** Four rounded viewfinder corners: the camera tile's frame, so its big area reads as "aim here". */
+export function ViewfinderDoodle({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false" data-slot="viewfinder-doodle" className={cn("pointer-events-none", className)} fill="none">
+      <path
+        d="M0 16V6a6 6 0 0 1 6-6h10M84 0h10a6 6 0 0 1 6 6v10M100 84v10a6 6 0 0 1-6 6H84M16 100H6a6 6 0 0 1-6-6V84"
+        stroke="currentColor"
+        strokeWidth="3"
+        vectorEffect="non-scaling-stroke"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }

@@ -8,6 +8,8 @@ import OwlTag from "./OwlTag";
 /** How long the mobile owl's one-line tag stays before it fades, in ms. */
 export const PEEK_TAG_MS = 4000;
 export const PEEK_OWL_SIZE = 72;
+/** How far the owl sinks behind the nav, in px: it peeks over the edge, it does not stand on it. */
+const PEEK_SINK = 14;
 
 /**
  * Mobile Reader: the hero owl peeks over the bottom nav with a one-line tag that fades after ~4 s (once per mount, not
@@ -35,6 +37,22 @@ export function PeekOwl({
   useEffect(() => {
     const id = setTimeout(() => setTagOn(false), PEEK_TAG_MS);
     return () => clearTimeout(id);
+  }, []);
+
+  // Sit on the real bottom nav, whatever its height is at this text size (its raised Scan tile makes it taller than --nav-h).
+  useEffect(() => {
+    const nav = document.querySelector<HTMLElement>("[data-slot=bottom-nav]");
+    const place = () => {
+      if (nav && owlRef.current) owlRef.current.style.bottom = `${nav.offsetHeight - PEEK_SINK}px`;
+    };
+    place();
+    const ro = typeof ResizeObserver !== "undefined" && nav ? new ResizeObserver(place) : null;
+    if (ro && nav) ro.observe(nav);
+    window.addEventListener("resize", place);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener("resize", place);
+    };
   }, []);
 
   useEffect(() => {
@@ -73,11 +91,11 @@ export function PeekOwl({
         "pointer-events-none fixed right-3 z-30 flex items-end gap-1.5 transition-opacity duration-200 lg:hidden",
         shown ? "opacity-100" : "opacity-0",
       )}
-      style={{ bottom: "calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) - 14px)" }}
+      style={{ bottom: `calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) - ${PEEK_SINK}px)` }}
     >
       <OwlTag
         tail="right"
-        className={cn("mb-5 max-w-[11.5rem] py-1.5 text-[0.8125rem] leading-snug font-bold transition-opacity duration-300", tagOn ? "opacity-100" : "opacity-0")}
+        className={cn("mb-[2.75rem] max-w-[11.5rem] py-1.5 text-[0.8125rem] leading-snug font-bold transition-opacity duration-300", tagOn ? "opacity-100" : "opacity-0")}
       >
         {tag}
       </OwlTag>

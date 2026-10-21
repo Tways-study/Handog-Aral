@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { gotoAs, isDesktop, stubApi, wordButton, wordExplanation } from "./helpers";
+import { settleCelebrations } from "./moments.helpers";
 
 const SEARCHED = wordExplanation("searched", {
   translation: "Nagpangita - gin-usisa ang tanan",
@@ -69,6 +70,8 @@ test("save underlines the word, lists it in /words, raises book progress; remove
   await expect(save).toHaveAttribute("aria-pressed", "false");
   await save.click();
   await expect(panel.getByRole("button", { name: "Natipigan na" })).toHaveAttribute("aria-pressed", "true");
+  // The first saved word earns a sticker; its dialog arrives after the stamp. Close it so the page is reachable again.
+  expect(await settleCelebrations(page)).toBeGreaterThan(0);
 
   // Move on to another word so the saved word is no longer "tapped": it must now be underlined.
   if (!isDesktop(page)) await page.keyboard.press("Escape");
@@ -128,4 +131,40 @@ test("tapping A then B quickly shows only B (stale guard)", async ({ context, pa
   await expect(p2.getByText("FAST-B-TRANSLATION")).toBeVisible();
   await expect(page.getByText("SLOW-A-TRANSLATION")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "searched", exact: true })).toHaveCount(0);
+});
+
+test("a tap near a word, between words or below a line, picks the nearest word", async ({ page }) => {
+  await gotoAs(page, "/read/fox");
+  const word = wordButton(page, "happy");
+  await expect(word).toBeVisible();
+  const box = (await word.boundingBox())!;
+  // 10 px under the last line of text, in the middle of "happy": no button is hit, the surface finds the nearest word.
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height + 10;
+  if (isDesktop(page)) await page.mouse.click(x, y);
+  else await page.touchscreen.tap(x, y);
+  await expect(panelRoot(page).getByRole("heading", { name: "happy", exact: true })).toBeVisible();
+});
+
+test("a tap far from any word does nothing", async ({ page }) => {
+  await gotoAs(page, "/read/fox");
+  await expect(wordButton(page, "happy")).toBeVisible();
+  const box = (await wordButton(page, "happy").boundingBox())!;
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height + 160;
+  if (isDesktop(page)) await page.mouse.click(x, y);
+  else await page.touchscreen.tap(x, y);
+  await page.waitForTimeout(400);
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  if (isDesktop(page)) await expect(page.locator("[data-slot=word-panel]")).toHaveCount(0);
+});
+
+test("a word button keeps its visible text as its name and stays a real button", async ({ page }) => {
+  await gotoAs(page, "/read/fox");
+  const word = wordButton(page, "searched");
+  await expect(word).toHaveAttribute("aria-label", "searched");
+  await expect(word).toHaveText("searched");
+  await word.focus();
+  await page.keyboard.press("Enter");
+  await expect(panelRoot(page).getByRole("heading", { name: "searched", exact: true })).toBeVisible();
 });

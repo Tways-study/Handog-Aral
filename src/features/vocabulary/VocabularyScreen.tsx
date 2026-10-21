@@ -180,7 +180,7 @@ export default function VocabularyScreen() {
                 </p>
               )}
               {total >= PLAY_MIN_WORDS && (
-                <Button asChild variant="secondary" className="w-fit">
+                <Button asChild variant="secondary" className="h-auto min-h-12 w-fit max-w-full py-2 whitespace-normal">
                   <Link href="/play">
                     <Gamepad2 aria-hidden="true" />
                     {t.vocabulary.playLink}
@@ -262,7 +262,7 @@ function FilterItem({ value, label, count, level }: { value: Filter; label: stri
   return (
     <ToggleGroupItem
       value={value}
-      className="h-auto min-h-14 w-full flex-col-reverse justify-center gap-0.5 rounded-xl px-1.5 py-1.5 leading-tight data-[state=on]:shadow-sm"
+      className="h-auto min-h-14 w-full min-w-0 flex-col-reverse justify-center gap-0.5 rounded-xl px-1.5 py-1.5 text-center leading-tight whitespace-normal data-[state=on]:shadow-sm"
     >
       <span className="text-[0.8125rem] font-bold [overflow-wrap:anywhere]">{label}</span>
       <span className="flex items-center gap-1.5 font-heading text-lg font-extrabold tabular-nums">

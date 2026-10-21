@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
-import { gotoAs, stubApi } from "./helpers";
+import { gotoAs, isDesktop, stubApi } from "./helpers";
+import { settleCelebrations } from "./moments.helpers";
 
 const LINES = ["The quick brown fox", "jumps over the lazy dog", "every morning at school"];
 
@@ -99,6 +100,7 @@ test("a stale scan never overwrites a newer one", async ({ page, context }) => {
 
   await expect(readerWord(page, "Fresh")).toBeVisible();
   await page.waitForTimeout(3500);
+  await settleCelebrations(page, 500); // the first scan earns a sticker; its dialog hides the page until closed
   await expect(readerWord(page, "Fresh")).toBeVisible();
   await expect(page.getByText("Stale", { exact: false })).toHaveCount(0);
   expect(await page.locator("[data-slot=reader-text]").innerText()).toContain("second scan");
@@ -122,4 +124,53 @@ test("a proxy that returns blank text falls back to the local engine, which repo
   await expect(page.getByText("Wala kami sang makita nga teksto")).toBeVisible({ timeout: 90_000 });
   await expect(page.getByRole("progressbar")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Buksa ang camera" })).toBeVisible();
+});
+
+test("start screen: the camera is the hero tile, the other two are real buttons with visible names, nothing scrolls sideways", async ({ page }) => {
+  await gotoAs(page, "/scan");
+  const camera = page.getByRole("button", { name: "Buksa ang camera Kuhaa sang retrato ang pahina." });
+  await expect(camera).toBeVisible();
+  await expect(camera).toHaveAttribute("data-primary", "true");
+  await expect(page.getByRole("button", { name: /^Pilia sa gallery/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^I-type o i-paste/ })).toBeVisible();
+  // the hero owl and the decorative doodles are not in the accessibility tree
+  await expect(page.locator("[data-slot=scan-tiles] [data-owl-renderer]")).toHaveCount(1);
+  for (const slot of ["lens-doodle", "photo-doodle", "pencil-doodle"]) {
+    await expect(page.locator(`[data-slot=${slot}]`)).toHaveAttribute("aria-hidden", "true");
+  }
+  // every tile is at least 44 px tall and inside the viewport width
+  for (const tile of await page.locator("[data-slot=scan-tile]").all()) {
+    const b = (await tile.boundingBox())!;
+    expect(b.height).toBeGreaterThanOrEqual(44);
+    expect(b.x).toBeGreaterThanOrEqual(0);
+    expect(b.x + b.width).toBeLessThanOrEqual((page.viewportSize()?.width ?? 0) + 1);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  // the camera tile is the ink-navy jacket (indigo), not the sunrise orange of the nav
+  const bg = await camera.evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(bg).toBe("rgb(43, 58, 140)");
+});
+
+test("a finished scan: the owl says it once, then the prompt; whoosh-time sticker; text develops and is fully visible after", async ({ page, context }) => {
+  await stubApi(context, { ocr: (route) => route.fulfill({ json: { text: "The small fox ran home.\nIt was happy.\nThe sun was warm.\nWhat a day." } }) });
+  await gotoAs(page, "/scan");
+  await upload(page, await textImage(page));
+  await expect(readerWord(page, "fox")).toBeVisible();
+  const intro = isDesktop(page) ? page.locator("[data-slot=pane-owl]") : page.locator("[data-slot=scan-moment]");
+  await expect(intro).toContainText("Nabasa mo na ang imo libro!");
+  // then the prompt
+  await expect(intro).toContainText("Pindota ang pulong nga indi mo kilala", { timeout: 6000 });
+  // the first scan earns its sticker after the reveal
+  await expect(page.getByTestId("celebration")).toBeVisible({ timeout: 4000 });
+  await expect(page.getByTestId("celebration")).toContainText("Una nga Scan");
+  await settleCelebrations(page, 500);
+  // every line ended up fully opaque
+  await expect.poll(() => page.locator("[data-slot=reader-text] [data-line]").evaluateAll((els) => els.every((e) => getComputedStyle(e).opacity === "1"))).toBe(true);
+
+  // a second scan never repeats the one-time line
+  await page.goto("/scan");
+  await upload(page, await textImage(page));
+  await expect(readerWord(page, "fox")).toBeVisible();
+  await page.waitForTimeout(800);
+  await expect(page.getByText("Nabasa mo na ang imo libro!")).toHaveCount(0);
 });

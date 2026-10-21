@@ -3,7 +3,7 @@
 import { type ReactNode } from "react";
 import { Info } from "lucide-react";
 import Owl from "@/components/owl/Owl";
-import { LensDoodle, PencilDoodle, PhotoDoodle } from "@/components/art/ScanDoodles";
+import { LensDoodle, PencilDoodle, PhotoDoodle, ViewfinderDoodle } from "@/components/art/ScanDoodles";
 import Mascot from "@/components/Mascot";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -57,25 +57,27 @@ export function ScanTiles({ onCamera, onGallery, onType }: { onCamera: () => voi
   const desktop = useMediaQuery("(min-width: 1024px)");
   return (
     <div className="mt-[5.5rem] px-3 lg:mt-24 lg:px-6" data-slot="scan-tiles">
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,8rem),1fr))] gap-3 lg:grid-cols-[1.5fr_1fr] lg:grid-rows-2">
+      <div className="grid grid-cols-1 gap-3 min-[340px]:grid-cols-2 lg:grid-cols-[1.5fr_1fr] lg:grid-rows-2">
         <div className="relative col-span-full flex lg:col-span-1 lg:row-span-2">
-          {/* The owl perches on the jacket's top edge; the lens hangs in front of its tummy. Both ignore pointers. */}
-          <div aria-hidden="true" className="pointer-events-none absolute right-6 -top-[5.25rem] z-10 lg:right-10 lg:-top-[7.5rem]">
-            <Owl mood="wave" size={desktop ? 136 : 96} priority="hero" />
-            <LensDoodle size={desktop ? 76 : 56} className="absolute -bottom-3.5 -left-5 lg:-left-6" />
+          {/* The owl peeks over the jacket's top edge (its feet stay behind the tile) and holds the sunrise lens up in front
+              of its tummy. Both ignore pointers; the lens straddles the edge. */}
+          <div aria-hidden="true" className="pointer-events-none absolute right-8 -top-[4.25rem] z-0 lg:right-14 lg:-top-[6.5rem]">
+            <Owl mood="idle" size={desktop ? 136 : 96} priority="hero" />
           </div>
+          <LensDoodle held size={desktop ? 84 : 62} className="pointer-events-none absolute right-[3.4rem] -top-[1.6rem] z-20 lg:right-[5.4rem] lg:-top-[2.6rem]" />
           <button
             type="button"
             onClick={onCamera}
             data-slot="scan-tile"
             data-primary
             className={cn(
-              "pressable group flex min-h-36 w-full min-w-0 flex-col items-start justify-end gap-1 rounded-[1.375rem] border-[1.5px] border-transparent bg-indigo p-5 text-left text-indigo-fg shadow-cta hover:brightness-110 active:shadow-pressed lg:min-h-80 lg:p-7",
+              "pressable group relative z-10 flex min-h-36 w-full min-w-0 flex-col items-start justify-end gap-1 overflow-hidden rounded-[1.375rem] border-[1.5px] border-transparent bg-indigo p-5 text-left text-indigo-fg shadow-cta hover:brightness-110 active:shadow-pressed lg:min-h-80 lg:p-10",
               FOCUS,
             )}
           >
-            <span className="font-heading text-2xl leading-tight font-extrabold [overflow-wrap:anywhere] lg:text-3xl">{s.openCamera}</span>
-            <span className="max-w-[24ch] text-[0.9375rem] leading-snug lg:text-base">{s.openCameraHelp}</span>
+            <ViewfinderDoodle className="absolute inset-5 hidden size-[calc(100%-2.5rem)] text-indigo-fg/30 lg:block" />
+            <span className="relative font-heading text-2xl leading-tight font-extrabold [overflow-wrap:anywhere] lg:text-3xl">{s.openCamera}</span>
+            <span className="relative max-w-[24ch] text-[0.9375rem] leading-snug lg:text-base">{s.openCameraHelp}</span>
           </button>
         </div>
         <Tile label={s.pickGallery} help={s.pickGalleryHelp} onClick={onGallery} doodle={<PhotoDoodle />} />

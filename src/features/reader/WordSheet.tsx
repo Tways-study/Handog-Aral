@@ -43,9 +43,11 @@ export default function WordSheet({
         >
           {moment && (
             <div data-slot="sheet-moment" className="pointer-events-none absolute -top-[3.25rem] right-3 flex items-end gap-1.5" role="status">
-              <OwlTag tail="right" className="mb-3 max-w-[14rem] py-1.5 text-[0.9375rem] leading-tight font-bold">
-                {moment.text}
-              </OwlTag>
+              {moment.text && (
+                <OwlTag tail="right" className="mb-3 max-w-[14rem] py-1.5 text-[0.9375rem] leading-tight font-bold">
+                  {moment.text}
+                </OwlTag>
+              )}
               <Owl mood={moment.mood} size={64} reaction={{ kind: moment.mood === "cheer" ? "cheer" : "hop", key: moment.key }} />
             </div>
           )}

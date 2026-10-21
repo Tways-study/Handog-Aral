@@ -89,3 +89,12 @@ describe("WordPanel", () => {
     expect(screen.getByRole("img", { name: "Nakakuha ka sang bituon" })).toBeTruthy();
   });
 });
+
+describe("WordPanel first-tap emphasis", () => {
+  it("marks the home-language well only when emphasised", () => {
+    const { container, rerender } = render(<WordPanel entry={entry()} saved={false} onSave={noop} onRemove={noop} onSpeak={vi.fn()} />);
+    expect(container.querySelector("[data-slot=home-well]")?.getAttribute("data-emphasis")).toBeNull();
+    rerender(<WordPanel entry={entry()} saved={false} emphasize onSave={noop} onRemove={noop} onSpeak={vi.fn()} />);
+    expect(container.querySelector("[data-slot=home-well]")?.getAttribute("data-emphasis")).toBe("true");
+  });
+});

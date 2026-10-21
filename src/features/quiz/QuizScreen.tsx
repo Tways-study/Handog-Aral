@@ -65,7 +65,7 @@ function QuizSkeleton() {
           <Skeleton className="h-5 w-16" />
           <Skeleton className="h-3 flex-1 rounded-full" />
         </div>
-        <div className="pad mt-12 rounded-xl border-[1.5px] border-line py-[calc(var(--pitch)*0.5)]">
+        <div className="pad mt-[5.5rem] rounded-xl border-[1.5px] border-line py-[calc(var(--pitch)*0.5)]">
           <div className="pad-line flex items-center">
             <Skeleton className="h-8 w-40" />
           </div>
@@ -184,6 +184,8 @@ function QuestionView({
   const desktop = useMediaQuery(DESKTOP);
   const { online } = useOnlineStatus();
   const nextRef = useRef<HTMLButtonElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
+  const [barH, setBarH] = useState(104);
   const stampRef = useRef<HTMLSpanElement>(null);
   const q = quiz.questions[index];
   const total = quiz.questions.length;
@@ -194,6 +196,15 @@ function QuestionView({
   const english = realEnglish(q.english);
   // While the offline banner is showing the page is shorter: the question card tightens up.
   const compact = !online;
+
+  // The bar is fixed above the nav, so the page keeps exactly its height free at the bottom (it grows when the bar wraps).
+  useEffect(() => {
+    const el = barRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setBarH(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // Moving on is the one thing left to do, so focus goes straight to "Sunod" once an answer is in.
   useEffect(() => {
@@ -207,7 +218,6 @@ function QuestionView({
   const mood: OwlMood = !answered ? (index === 0 && intro ? "wave" : "idle") : correct ? "cheer" : "think";
   // A new key each step: a small wave when a new question arrives, the owl's reply when the child answers.
   const reaction: OwlReaction = { kind: !answered ? "wave" : (reply?.kind ?? "cheer"), key: index * 2 + (answered ? 1 : 0) };
-  const streakNow = reply?.streak ?? 0;
   const tag = answered
     ? correct && reply?.kind === "hop"
       ? t.quiz.streakCheer
@@ -232,12 +242,13 @@ function QuestionView({
 
   const bar = (
     <div
+      ref={barRef}
       data-slot="feedback-bar"
-      className="fixed inset-x-0 z-30 border-t-[1.5px] border-line bg-background px-5 pt-2.5 pb-6 lg:static lg:z-auto lg:mt-4 lg:border-t-0 lg:bg-transparent lg:p-0"
+      className="fixed inset-x-0 z-30 border-t-[1.5px] border-line bg-background px-5 pt-2.5 pb-7 lg:static lg:z-auto lg:mt-4 lg:border-t-0 lg:bg-transparent lg:p-0"
       style={desktop ? undefined : { bottom: "calc(var(--nav-h) + env(safe-area-inset-bottom, 0px))" }}
     >
-      <div className="mx-auto flex max-w-2xl items-center gap-3 lg:max-w-none">
-        <div className="flex min-h-14 min-w-0 flex-1 items-center gap-3" role="status" aria-live="polite" data-testid="quiz-feedback">
+      <div className="mx-auto flex max-w-2xl flex-wrap items-center gap-x-3 gap-y-2 lg:max-w-none lg:flex-nowrap">
+        <div className="flex min-h-14 min-w-0 flex-[1_1_10rem] items-center gap-3" role="status" aria-live="polite" data-testid="quiz-feedback">
           {answered ? (
             <>
               {correct && (
@@ -258,7 +269,7 @@ function QuestionView({
           ref={nextRef}
           size="lg"
           variant="ink"
-          className="w-36 shrink-0 disabled:border-input disabled:text-ink-2 lg:w-44"
+          className="min-w-28 flex-[1_0_auto] disabled:border-input disabled:text-ink-2 lg:w-44 lg:flex-none"
           disabled={!answered}
           onClick={onNext}
         >
@@ -269,7 +280,7 @@ function QuestionView({
   );
 
   return (
-    <div className="px-5 pb-24 lg:px-8 lg:pb-0">
+    <div className="px-5 lg:px-8">
       <div className="lg:grid lg:grid-cols-[minmax(0,42rem)_1fr] lg:gap-10">
         <div className="min-w-0">
           <div className="mb-3 flex items-center gap-3">
@@ -279,8 +290,13 @@ function QuestionView({
             <Progress value={(index / total) * 100} aria-label={t.quiz.progress(index + 1, total)} />
           </div>
 
-          <div className={cn("relative lg:mt-0", compact ? "mt-14" : "mt-16")}>
-            {!desktop && <div className="pointer-events-none absolute right-2 z-10" style={{ top: -(owlSize - 8) }}>{owl}</div>}
+          <div className="relative">
+            {/* The owl perches on the card's top edge. In flow, so a long speech tag (dyslexia, Large) pushes the card down instead of covering the progress. */}
+            {!desktop && (
+              <div className="pointer-events-none relative z-10 -mb-2 flex items-end justify-end pr-2" style={{ minHeight: owlSize }}>
+                {owl}
+              </div>
+            )}
             <div className={cn("pad rounded-xl border-[1.5px] border-line", compact ? "py-[calc(var(--pitch)*0.25)]" : "py-[calc(var(--pitch)*0.5)]")}>
               <div className="pad-line flex items-center justify-between gap-3">
                 <h2 className={cn("font-heading leading-none font-extrabold break-words [overflow-wrap:anywhere]", compact ? "text-3xl" : "text-4xl")}>{q.word}</h2>
@@ -352,8 +368,8 @@ function QuestionView({
               );
             })}
           </RadioGroup>
-          {streakNow >= HOP_STREAK && answered && correct && <span className="sr-only">{t.quiz.streakCheer}</span>}
           {bar}
+          {!desktop && <div aria-hidden="true" style={{ height: barH }} />}
         </div>
         {desktop && (
           <div className="hidden pt-12 lg:flex lg:flex-col lg:items-center" data-slot="quiz-owl">

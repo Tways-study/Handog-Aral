@@ -138,12 +138,14 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
   }, [tokens, savedSet]);
 
   /** The owl reacts for a moment: its tag text, its mood, and one reaction. Desktop shows it in the pane, mobile on the sheet. */
-  const showMoment = (text: string, mood: OwlMood, ms: number) => {
+  const showMoment = (text: string, mood: OwlMood, ms: number, tagDelay = 0) => {
     if (momentTimer.current) clearTimeout(momentTimer.current);
     const key = ++keyRef.current;
-    setMoment({ key, text, mood });
+    // `tagDelay`: the owl pops at once but its words wait (the big stamp is landing and must not be talked over).
+    setMoment({ key, text: tagDelay ? "" : text, mood });
     setReaction({ kind: mood === "cheer" ? "cheer" : "hop", key });
-    momentTimer.current = setTimeout(() => setMoment(null), ms);
+    if (tagDelay) setTimeout(() => setMoment((m) => (m && m.key === key ? { ...m, text } : m)), tagDelay);
+    momentTimer.current = setTimeout(() => setMoment(null), ms + tagDelay);
   };
 
   /** A scan just came back: whoosh, the owl cheers, the child is told once, and a moment later the rewards engine hears about it. */
@@ -260,7 +262,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
     if (box) setStamp({ key: ++keyRef.current, left: box.left, top: box.top, width: box.width, height: box.height });
     play("stamp");
     buzz("success");
-    if (first) showMoment(p.firstSave, "cheer", 2200);
+    if (first) showMoment(p.firstSave, "cheer", 2200, 1000);
     setTimeout(() => {
       flyToTab(box ?? null, visibleTab("/words"), { onArrive: () => popTab("words") });
     }, 650);
@@ -387,7 +389,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
   const backHref = book ? "/books" : "/";
   const listenLabel = listening ? s.stopListen : isDesktop ? s.listen : s.listenShort;
   const ListenIcon = listening ? Square : Volume2;
-  const paneTag = moment?.text ?? (pageSavedCount > 0 ? s.owlPageSaved(pageSavedCount) : s.owlHello);
+  const paneTag = moment?.text || (pageSavedCount > 0 ? s.owlPageSaved(pageSavedCount) : ((scanned && scanLine?.text) || s.owlHello));
   const peekTag = pageSavedCount > 0 ? s.owlPageSaved(pageSavedCount) : s.owlHello;
 
   return (

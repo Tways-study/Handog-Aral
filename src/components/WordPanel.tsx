@@ -102,7 +102,7 @@ export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, spe
     <div data-slot="word-panel" data-source={entry.source} data-pending={loading || undefined} data-reserve={reserve || undefined}>
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
-          <h2 className="font-heading text-[2.25rem] leading-none font-extrabold break-words [overflow-wrap:anywhere] lg:text-[2.75rem]">{entry.word}</h2>
+          <h2 className="font-heading text-[min(2.25rem,9.5vw)] leading-none font-extrabold break-words [overflow-wrap:anywhere] lg:text-[2.75rem]">{entry.word}</h2>
           {(phonetic || reserve) && <p className={cn("mt-1 text-base text-ink-2 [overflow-wrap:anywhere]", reserve && "min-h-6")}>{phonetic}</p>}
           <div className={cn("mt-2", reserve && "min-h-[1.625rem]")}>
             {!loading && (

@@ -12,7 +12,7 @@ async function seed(page: Page, rows = WORDS) {
   await page.goto("/quiz");
 }
 
-const options = (page: Page) => page.getByRole("list", { name: "Ano ang buot silingon sini sa Hiligaynon?" }).getByRole("button");
+const options = (page: Page) => page.getByRole("radiogroup", { name: "Ano ang buot silingon sini sa Hiligaynon?" }).getByRole("radio");
 
 /** Plays a whole quiz picking the first option every time. Returns what each question showed. */
 async function playQuiz(page: Page) {

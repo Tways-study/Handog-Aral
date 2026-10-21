@@ -69,7 +69,7 @@ test.describe("prefers-reduced-motion: reduce", () => {
     await expect(page.getByRole("heading", { name: /Maayong/ })).toBeVisible();
     await seedWords(page, WORDS);
     await page.goto("/quiz");
-    const options = page.getByRole("list", { name: /Hiligaynon/ }).getByRole("button");
+    const options = page.getByRole("radiogroup", { name: /Hiligaynon/ }).getByRole("radio");
     await expect(options).toHaveCount(4);
     await watchTweens(page);
     for (let i = 1; i <= 4; i++) {
