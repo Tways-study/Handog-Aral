@@ -39,3 +39,26 @@ describe("settings onboarded", () => {
     expect(useSettings.getState().onboarded).toBe(false);
   });
 });
+
+describe("settings owl, sound and haptics", () => {
+  it("defaults: 3D owl on, no outfit, sound off, haptics on", () => {
+    const s = useSettings.getState();
+    expect([s.owl3d, s.owlOutfit, s.sound, s.haptics]).toEqual([true, "none", false, true]);
+  });
+
+  it("setters write each field", () => {
+    const s = useSettings.getState();
+    s.setOwl3d(false);
+    s.setOwlOutfit("glasses");
+    s.setSound(true);
+    s.setHaptics(false);
+    expect(useSettings.getState()).toMatchObject({ owl3d: false, owlOutfit: "glasses", sound: true, haptics: false });
+  });
+
+  it("migrates v2 data: existing choices stay, new fields get their defaults", async () => {
+    const v2 = { childName: "Ana", language: "tagalog", fontSize: "large", dyslexiaFont: true, ttsSpeed: 1.2, colorOverlay: "blue", theme: "dark", onboarded: true };
+    await idbSet(SETTINGS_STORAGE_NAME, JSON.stringify({ state: v2, version: 2 }));
+    await useSettings.persist.rehydrate();
+    expect(useSettings.getState()).toMatchObject({ childName: "Ana", fontSize: "large", dyslexiaFont: true, theme: "dark", owl3d: true, owlOutfit: "none", sound: false, haptics: true });
+  });
+});
