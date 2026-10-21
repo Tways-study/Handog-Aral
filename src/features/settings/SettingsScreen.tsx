@@ -63,7 +63,7 @@ export default function SettingsScreen() {
   return (
     <PageContainer>
       <PageHeader title={t.settings.title} subtitle={t.settings.subtitle} hideSettings />
-      <div className="mx-auto max-w-2xl divide-y divide-line">
+      <div className="max-w-2xl divide-y divide-line">
         <Section id="sec-child" title={t.settings.childHeading}>
           <Row label={t.settings.nameLabel} help={t.settings.nameHelp} htmlFor="child-name">
             <Input

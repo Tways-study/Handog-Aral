@@ -178,9 +178,12 @@ export default function VocabularyScreen() {
                           <span className="block truncate font-heading text-xl leading-[var(--pitch)] font-bold">{w.word}</span>
                           <span className="block truncate leading-[var(--pitch)] text-ink-2">{w.translation}</span>
                         </span>
-                        <DifficultyStamp level={w.difficulty} showLabel={false} />
+                        {/* paper backing: the rule under the row never strikes through the icon */}
+                        <span className="grid shrink-0 place-items-center rounded-md bg-paper p-1">
+                          <DifficultyStamp level={w.difficulty} showLabel={false} />
+                        </span>
                       </button>
-                      <Button variant="ghost" size="icon" onClick={() => void say(w)} aria-label={t.vocabulary.speakWord(w.word)}>
+                      <Button variant="ghost" size="icon" className="bg-paper hover:bg-paper-2" onClick={() => void say(w)} aria-label={t.vocabulary.speakWord(w.word)}>
                         <Volume2 aria-hidden="true" />
                       </Button>
                     </li>
@@ -205,7 +208,7 @@ export default function VocabularyScreen() {
           <DrawerContent>
             <DrawerTitle className="sr-only">{selected?.word ?? t.vocabulary.detailTitle}</DrawerTitle>
             <DrawerDescription className="sr-only">{t.vocabulary.detailTitle}</DrawerDescription>
-            <div className="overflow-y-auto px-5 pt-3 pb-6">{detail}</div>
+            <div className="max-h-[calc(60dvh-1rem)] overflow-y-auto overscroll-contain px-5 pt-3" data-vaul-no-drag>{detail}</div>
           </DrawerContent>
         </Drawer>
       )}
