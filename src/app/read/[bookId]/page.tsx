@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { sampleBooks } from "@/data/books";
 import ReaderScreen from "@/features/reader/ReaderScreen";
+
+export const metadata: Metadata = { title: "Read" };
 
 export const dynamicParams = false;
 

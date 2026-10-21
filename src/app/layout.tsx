@@ -3,10 +3,15 @@ import type { ReactNode } from "react";
 import { atkinson, baloo, openDyslexic } from "@/lib/fonts";
 import Providers from "@/components/Providers";
 import "./globals.css";
+import "./native.css";
+
+const DESCRIPTION = "A reading companion for Filipino children. Scan a page, tap a word, understand it in your own language.";
 
 export const metadata: Metadata = {
-  title: "Handog Aral",
-  description: "A reading companion for Filipino children. Scan a page, tap a word, understand it in your own language.",
+  // Absolute base for the social-card images. Set NEXT_PUBLIC_SITE_URL to the deployed origin (see .env.example).
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  title: { default: "Handog Aral", template: "%s \u00b7 Handog Aral" },
+  description: DESCRIPTION,
   applicationName: "Handog Aral",
   icons: {
     icon: [
@@ -16,6 +21,14 @@ export const metadata: Metadata = {
     apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
   },
   appleWebApp: { capable: true, title: "Handog Aral", statusBarStyle: "default" },
+  openGraph: {
+    type: "website",
+    siteName: "Handog Aral",
+    title: "Handog Aral",
+    description: DESCRIPTION,
+    locale: "en_PH",
+  },
+  twitter: { card: "summary_large_image", title: "Handog Aral", description: DESCRIPTION },
 };
 
 // Pinch-zoom stays enabled on purpose (no maximum-scale / user-scalable).
