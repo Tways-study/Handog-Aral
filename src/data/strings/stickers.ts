@@ -34,7 +34,7 @@ const hiligaynon = {
     "first-listen": "Una nga Pamati",
     "first-quiz": "Una nga Pasulit",
     "quiz-perfect": "Perpekto nga Pasulit",
-    "match-first": "Una nga Daog sa Duyog-Duyog",
+    "match-first": "Una nga Daog sa Pares", // REVIEW: native speaker
     "streak-3": "Tatlo ka Adlaw",
     "streak-7": "Isa ka Semana",
     "first-book": "Una nga Libro",
@@ -50,7 +50,7 @@ const hiligaynon = {
     "first-listen": "Pamatii ang isa ka pulong o pahina.",
     "first-quiz": "Tapusa ang isa ka pasulit.",
     "quiz-perfect": "Tama ang tanan nga sabat sa pasulit.",
-    "match-first": "Daog-a ang duyog-duyog nga ulin.",
+    "match-first": "Daog-a ang Pares nga ulin.", // REVIEW: native speaker
     "streak-3": "Magbasa sa tatlo ka adlaw nga sunod-sunod.",
     "streak-7": "Magbasa sa pito ka adlaw nga sunod-sunod.",
     "first-book": "Tapusa basahon ang isa ka libro.",
@@ -91,7 +91,7 @@ const tagalog = {
     "first-listen": "Unang Pakikinig",
     "first-quiz": "Unang Pagsusulit",
     "quiz-perfect": "Perpektong Pagsusulit",
-    "match-first": "Unang Panalo sa Tugma-Tugma",
+    "match-first": "Unang Panalo sa Pares", // REVIEW: native speaker
     "streak-3": "Tatlong Araw",
     "streak-7": "Isang Linggo",
     "first-book": "Unang Aklat",
@@ -107,7 +107,7 @@ const tagalog = {
     "first-listen": "Pakinggan ang isang salita o pahina.",
     "first-quiz": "Tapusin ang isang pagsusulit.",
     "quiz-perfect": "Tama ang lahat ng sagot sa pagsusulit.",
-    "match-first": "Ipanalo ang larong tugma-tugma.",
+    "match-first": "Ipanalo ang larong Pares.", // REVIEW: native speaker
     "streak-3": "Magbasa nang tatlong araw na sunod-sunod.",
     "streak-7": "Magbasa nang pitong araw na sunod-sunod.",
     "first-book": "Tapusin basahin ang isang aklat.",

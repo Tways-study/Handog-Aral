@@ -24,7 +24,7 @@ describe("ScanTiles", () => {
 
   it("draws the lens, the photo and the pencil as decorative art, with exactly one owl", () => {
     const { container } = render(<ScanTiles onCamera={() => {}} onGallery={() => {}} onType={() => {}} />);
-    for (const slot of ["lens-doodle", "photo-doodle", "pencil-doodle"]) {
+    for (const slot of ["lens-doodle", "photo-doodle", "pencil-doodle", "scan-page-doodle"]) {
       expect(container.querySelector(`[data-slot=${slot}]`)?.getAttribute("aria-hidden")).toBe("true");
     }
     expect(container.querySelectorAll("[data-owl-renderer]")).toHaveLength(1);

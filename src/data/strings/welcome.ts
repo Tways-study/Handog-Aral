@@ -16,6 +16,7 @@ const hiligaynon = {
   // Step 2, "Una nga Superpower". REVIEW: native speaker (Hiligaynon) for every line below.
   superTitle: "Imo Una nga Superpower",
   superPrompt: "Pindota ang pulong nga indi mo kilala!",
+  superHint: "Pindota ang pulong nga may tuldok",
   superCheer: "Nabasa mo na!",
   superSaved: "Natipigan na! Imo ini nga una nga pulong.",
   superPaperLabel: "Sample nga pahina",
@@ -39,6 +40,7 @@ const tagalog = {
   // REVIEW: native speaker (Filipino) for every line below.
   superTitle: "Ang Una Mong Superpower",
   superPrompt: "Pindutin ang salitang hindi mo kilala!",
+  superHint: "Pindutin ang salitang may tuldok",
   superCheer: "Nabasa mo na!",
   superSaved: "Naitabi na! Ito ang una mong salita.",
   superPaperLabel: "Sample na pahina",

@@ -63,15 +63,18 @@ function Eye({ cx, mood, side }: { cx: number; mood: OwlGroupMood; side: "left" 
   );
 }
 
-function Outfit({ outfit }: { outfit: OwlGroupOutfit }) {
-  if (outfit === "glasses")
+function Outfit({ outfit, mood }: { outfit: OwlGroupOutfit; mood: OwlGroupMood }) {
+  if (outfit === "glasses") {
+    // Closed-eye moods push the glasses up onto the forehead so no arc ever crosses a lens ring.
+    const up = mood === "cheer" || mood === "sleep";
     return (
-      <g data-part="outfit-glasses" fill="none" stroke="#3B2412" strokeWidth={2.8} strokeLinecap="round">
+      <g data-part="outfit-glasses" data-up={up ? "true" : undefined} transform={up ? "translate(60 27) rotate(-5) scale(0.8) translate(-60 -50)" : undefined} fill="none" stroke="#3B2412" strokeWidth={2.8} strokeLinecap="round">
         <circle cx={42} cy={50} r={17.5} fill="#fff" fillOpacity={0.08} />
         <circle cx={78} cy={50} r={17.5} fill="#fff" fillOpacity={0.08} />
         <path d="M59 49q1-3 2 0M25 45l-7-3M95 45l7-3" />
       </g>
     );
+  }
   if (outfit === "cap")
     return (
       <g data-part="outfit-cap" stroke={OWL.contour} strokeWidth={SW} strokeLinejoin="round">
@@ -137,7 +140,7 @@ export default function OwlGroup({ mood = "idle", outfit = "none" }: OwlGroupPro
       </g>
       <Wing side="left" angle={wingL} />
       <Wing side="right" angle={wingR} />
-      <Outfit outfit={outfit} />
+      <Outfit outfit={outfit} mood={mood} />
       {cheer && (
         <g data-part="sparkles" fill={OWL.gold} stroke={OWL.contour} strokeWidth={1.4}>
           <path d="M8 26l2.200 5.300L15.500 33.500 10.200 35.700 8 41 5.800 35.700.5 33.500 5.800 31.300z" />

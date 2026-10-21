@@ -26,6 +26,8 @@ import { speak, stop } from "@/lib/tts";
 import { forgetWord } from "@/lib/vocabulary";
 import { useSettings } from "@/stores/settings";
 import type { SavedWord } from "@/stores/db";
+import { JACKET_CLASS } from "@/features/home/jacket";
+import { cn } from "@/lib/utils";
 import OwlTag from "@/features/reader/OwlTag";
 import { useMotion } from "@/lib/motion";
 import { useDesktop } from "./useDesktop";
@@ -215,7 +217,7 @@ export default function VocabularyScreen() {
                         aria-current={w.key === selectedKey ? "true" : undefined}
                         className="group flex h-full min-w-0 flex-1 cursor-pointer touch-manipulation items-center gap-3 pl-[var(--pad-gutter)] text-left outline-none transition-colors hover:bg-secondary/60 active:bg-secondary aria-[current=true]:bg-marker/40 focus-visible:outline-solid focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ring"
                       >
-                        <WordTile word={w.word} emoji={w.emoji} tileRef={w.key === newestKey ? newestTileRef : undefined} />
+                        <WordTile word={w.word} difficulty={w.difficulty} tileRef={w.key === newestKey ? newestTileRef : undefined} />
                         <span className="min-w-0 flex-1">
                           <span className="block truncate font-heading text-xl leading-[var(--pitch)] font-bold tracking-normal group-aria-[current=true]:underline group-aria-[current=true]:decoration-sunrise group-aria-[current=true]:decoration-2 group-aria-[current=true]:underline-offset-4">{w.word}</span>
                           <span className="block truncate leading-[var(--pitch)] text-ink-2">{w.translation}</span>
@@ -273,18 +275,26 @@ function FilterItem({ value, label, count, level }: { value: Filter; label: stri
   );
 }
 
-/** A small tile per saved word: its emoji (content, not chrome), or the word's first letter when it has none. */
-function WordTile({ word, emoji, tileRef }: { word: string; emoji: string; tileRef?: React.Ref<HTMLSpanElement> }) {
-  const mark = emoji.trim();
+/** Difficulty keeps its shape-coded stamp; the tile borrows the matching notebook-jacket colour. */
+const TILE_JACKET = { easy: "kangkong", medium: "indigo", hard: "gumamela" } as const;
+
+/**
+ * A small tile per saved word: its first letter on a jacket-coloured square. Emoji stand in for icons and the
+ * AI returns the same book glyph for most words, so the list never shows them.
+ */
+function WordTile({ word, difficulty, tileRef }: { word: string; difficulty: SavedWord["difficulty"]; tileRef?: React.Ref<HTMLSpanElement> }) {
   return (
     <span
       ref={tileRef}
       aria-hidden="true"
       data-slot="word-tile"
-      data-kind={mark ? "emoji" : "letter"}
-      className="grid size-11 shrink-0 place-items-center rounded-xl border-[1.5px] border-line bg-card text-2xl leading-none shadow-sm"
+      data-kind="letter"
+      className={cn(
+        "grid size-11 shrink-0 place-items-center rounded-xl border-[1.5px] border-black/10 font-heading text-xl leading-none font-extrabold shadow-sm",
+        JACKET_CLASS[TILE_JACKET[difficulty] ?? "indigo"],
+      )}
     >
-      {mark ? <span>{mark}</span> : <span className="font-heading text-xl font-extrabold text-ink-2">{word.charAt(0).toUpperCase()}</span>}
+      {word.charAt(0).toUpperCase()}
     </span>
   );
 }

@@ -60,3 +60,16 @@ test("Laktawan on the first step skips everything", async ({ page }) => {
   await expect(page).toHaveURL(/\/$/);
   expect((await readPersisted(page, "handog-settings"))?.state).toMatchObject({ onboarded: true });
 });
+
+test("tappable words show a dotted underline, the first unknown word gets one nudge, and a hint chip is visible", async ({ page }) => {
+  await gotoAs(page, "/welcome", { onboarded: false });
+  await page.getByRole("button", { name: "Magsugod kita" }).click();
+  const paper = page.locator("[data-super-paper]");
+  const the = paper.getByRole("button", { name: "girl", exact: true });
+  await expect(the).toBeVisible();
+  expect(await the.evaluate((el) => getComputedStyle(el).textDecorationStyle)).toBe("dotted");
+  await expect(paper.getByRole("button", { name: "enormous", exact: true })).toHaveAttribute("data-nudge", "true");
+  await expect(page.locator("[data-slot=tap-hint]")).toBeVisible();
+  // "Sige" stays paper (secondary) until the first tap
+  await expect(page.getByRole("button", { name: "Sige, kadi ta na!" })).toHaveAttribute("data-variant", "secondary");
+});

@@ -100,3 +100,13 @@ test("Tagalog sticker book", async ({ page }) => {
   await open(page, { earned, seen: [], flags, bonusStars: 0 }, { language: "tagalog" }, "Aklat ng Sticker");
   await expect(page.locator("li[data-sticker=first-word]")).toContainText("Unang Salita");
 });
+
+test("locked stickers show their own washed art with a lock chip; earned come first, then the nearest", async ({ page }) => {
+  await open(page, { earned, seen: [], flags, bonusStars: 0 });
+  const ids = await page.locator("li[data-sticker]").evaluateAll((els) => els.map((e) => `${e.getAttribute("data-state")}:${e.getAttribute("data-sticker")}`));
+  expect(ids.slice(0, 2).every((x) => x.startsWith("earned:"))).toBe(true);
+  expect(ids.slice(2).every((x) => x.startsWith("locked:"))).toBe(true);
+  const locked = page.locator("li[data-sticker=hard-word] svg");
+  await expect(locked.locator("[data-washed=true]")).toHaveCount(1);
+  await expect(page.locator("li[data-sticker=hard-word]")).toContainText("Wala pa makuha");
+});

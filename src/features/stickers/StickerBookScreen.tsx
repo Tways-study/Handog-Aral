@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Ban, Camera, Check, GraduationCap, Gamepad2, Glasses, Lock, Ribbon, Sparkles, Star, type LucideIcon } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/PageLayout";
@@ -13,9 +13,10 @@ import { useT } from "@/hooks/useT";
 import { buzz } from "@/lib/haptics";
 import { popIn, wiggle } from "@/lib/motion";
 import { play } from "@/lib/sound";
-import { isOutfitUnlocked, OUTFITS, OUTFIT_UNLOCKS, stickerTitle } from "@/lib/stickers/catalog";
+import { isOutfitUnlocked, orderStickers, OUTFITS, OUTFIT_UNLOCKS, stickerTitle } from "@/lib/stickers/catalog";
 import { STICKER_IDS, type StickerId } from "@/lib/stickers/ids";
 import { cn } from "@/lib/utils";
+import { useProgress } from "@/stores/progress";
 import { selectUnseen, useRewards, useRewardsHydrated } from "@/stores/rewards";
 import { useSettings, type OwlOutfit } from "@/stores/settings";
 
@@ -71,6 +72,9 @@ function StickerPage() {
   const markSeen = useRewards((s) => s.markSeen);
   const looked = useRef(false);
   const count = Object.keys(earned).length;
+  const words = useProgress((p) => p.savedWordCount);
+  const streak = useProgress((p) => p.streak);
+  const order = useMemo(() => orderStickers(earned, { words, streak }), [earned, words, streak]);
 
   // The NEW markers stay while the child is on the page; they clear once she has really looked
   // (the page was open long enough) and then left. A flash visit keeps them.
@@ -120,7 +124,7 @@ function StickerPage() {
         className="pad grid grid-cols-2 gap-3 rounded-xl border-[1.5px] border-line p-3 before:hidden sm:grid-cols-3 sm:gap-4 sm:p-4 lg:grid-cols-4 [&>li]:min-w-0"
         data-testid="sticker-grid"
       >
-        {STICKER_IDS.map((id, i) => {
+        {order.map((id, i) => {
           const at = earned[id];
           const isNew = at !== undefined && !seen.includes(id);
           return at !== undefined ? (
@@ -179,10 +183,7 @@ function LockedSticker({ id }: { id: StickerId }) {
     <li data-sticker={id} data-state="locked">
       <div className="flex h-full flex-col items-center gap-2 rounded-2xl border-[1.5px] border-dashed border-line-strong bg-paper/80 px-2 pt-4 pb-3 text-center">
         <StickerArt id={id} locked size={96} />
-        <span className="inline-flex items-center gap-1 text-sm font-bold text-ink-2">
-          <Lock aria-hidden="true" className="size-4" />
-          {t.stickers.locked}
-        </span>
+        <span className="text-sm font-bold text-ink-2">{t.stickers.locked}</span>
         <span className="text-sm text-ink [overflow-wrap:anywhere]">{t.stickers.hints[id]}</span>
         <span className="sr-only">{stickerTitle(id, language)}</span>
       </div>

@@ -3,7 +3,7 @@
 import { type ReactNode } from "react";
 import { Info } from "lucide-react";
 import Owl from "@/components/owl/Owl";
-import { LensDoodle, PencilDoodle, PhotoDoodle, ViewfinderDoodle } from "@/components/art/ScanDoodles";
+import { LensDoodle, PencilDoodle, PhotoDoodle, ScanPageDoodle, ViewfinderDoodle } from "@/components/art/ScanDoodles";
 import Mascot from "@/components/Mascot";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -59,12 +59,12 @@ export function ScanTiles({ onCamera, onGallery, onType }: { onCamera: () => voi
     <div className="mt-[5.5rem] px-3 lg:mt-24 lg:px-6" data-slot="scan-tiles">
       <div className="grid grid-cols-1 gap-3 min-[340px]:grid-cols-2 lg:grid-cols-[1.5fr_1fr] lg:grid-rows-2">
         <div className="relative col-span-full flex lg:col-span-1 lg:row-span-2">
-          {/* The owl peeks over the jacket's top edge (its feet stay behind the tile) and holds the sunrise lens up in front
-              of its tummy. Both ignore pointers; the lens straddles the edge. */}
+          {/* The owl peeks over the jacket's top edge (its feet stay behind the tile). The sunrise lens stands on the edge
+              beside its wing, clear of the face. Both ignore pointers. */}
           <div aria-hidden="true" className="pointer-events-none absolute right-8 -top-[4.25rem] z-0 lg:right-14 lg:-top-[6.5rem]">
             <Owl mood="idle" size={desktop ? 136 : 96} priority="hero" />
           </div>
-          <LensDoodle held size={desktop ? 84 : 62} className="pointer-events-none absolute right-[3.4rem] -top-[1.6rem] z-20 lg:right-[5.4rem] lg:-top-[2.6rem]" />
+          <LensDoodle size={desktop ? 76 : 54} className="pointer-events-none absolute right-[8.25rem] -top-[1.35rem] z-20 -rotate-6 lg:right-[11.75rem] lg:-top-[2.1rem]" />
           <button
             type="button"
             onClick={onCamera}
@@ -76,6 +76,7 @@ export function ScanTiles({ onCamera, onGallery, onType }: { onCamera: () => voi
             )}
           >
             <ViewfinderDoodle className="absolute inset-5 hidden size-[calc(100%-2.5rem)] text-indigo-fg/30 lg:block" />
+            <ScanPageDoodle className="pointer-events-none absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-[68%] lg:block" />
             <span className="relative font-heading text-2xl leading-tight font-extrabold [overflow-wrap:anywhere] lg:text-3xl">{s.openCamera}</span>
             <span className="relative max-w-[24ch] text-[0.9375rem] leading-snug lg:text-base">{s.openCameraHelp}</span>
           </button>

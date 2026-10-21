@@ -135,7 +135,7 @@ test("start screen: the camera is the hero tile, the other two are real buttons 
   await expect(page.getByRole("button", { name: /^I-type o i-paste/ })).toBeVisible();
   // the hero owl and the decorative doodles are not in the accessibility tree
   await expect(page.locator("[data-slot=scan-tiles] [data-owl-renderer]")).toHaveCount(1);
-  for (const slot of ["lens-doodle", "photo-doodle", "pencil-doodle"]) {
+  for (const slot of ["lens-doodle", "photo-doodle", "pencil-doodle", "scan-page-doodle"]) {
     await expect(page.locator(`[data-slot=${slot}]`)).toHaveAttribute("aria-hidden", "true");
   }
   // every tile is at least 44 px tall and inside the viewport width

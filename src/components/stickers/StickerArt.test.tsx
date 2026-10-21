@@ -16,7 +16,7 @@ describe("StickerArt", () => {
       cleanup();
       const locked = render(<StickerArt id={id} locked />).container.querySelector("svg")!;
       expect(locked.getAttribute("data-locked")).toBe("true");
-      expect(locked.querySelector("[stroke-dasharray]")).toBeTruthy();
+      expect(locked.querySelector("[data-washed=true]")?.querySelectorAll("path,rect,circle,ellipse").length).toBeGreaterThan(8);
       expect(locked.querySelector("svg.lucide-lock")).toBeTruthy();
     });
 

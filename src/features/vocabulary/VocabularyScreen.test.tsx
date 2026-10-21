@@ -100,14 +100,14 @@ describe("VocabularyScreen", () => {
     await waitFor(() => expect(useProgress.getState().savedWordCount).toBe(1));
   });
 
-  it("the header owl says how many words were collected, and each word has an emoji or letter tile", async () => {
+  it("the header owl says how many words were collected, and every word has a letter tile (never an emoji)", async () => {
     await learnWord({ ...entry("cat", "iring", "easy"), emoji: "🐱" }, null);
     await learnWord({ ...entry("dog", "ido", "easy"), emoji: "" }, null);
     render(<VocabularyScreen />);
     await waitFor(() => expect(screen.getAllByTestId("word-row")).toHaveLength(2));
     expect(screen.getByText("2 ka pulong na ang natipon mo!")).toBeTruthy();
     const tiles = Array.from(document.querySelectorAll("[data-slot=word-tile]"), (n) => [n.getAttribute("data-kind"), n.textContent]);
-    expect(tiles).toEqual(expect.arrayContaining([["emoji", "🐱"], ["letter", "D"]]));
+    expect(tiles).toEqual(expect.arrayContaining([["letter", "C"], ["letter", "D"]]));
     // decorative: the word is read from its own text, never from the tile
     expect(document.querySelectorAll("[data-slot=word-tile][aria-hidden=true]")).toHaveLength(2);
   });

@@ -18,6 +18,7 @@ import { useSavedWords } from "@/hooks/useSavedWords";
 import { buzz } from "@/lib/haptics";
 import { pageIn } from "@/lib/motionPages";
 import { play } from "@/lib/sound";
+import { orderStickers } from "@/lib/stickers/catalog";
 import { STICKER_IDS, type StickerId } from "@/lib/stickers/ids";
 import { speak } from "@/lib/tts";
 import { cn } from "@/lib/utils";
@@ -97,9 +98,9 @@ export default function HomeScreen() {
 
   const stickerPreview = useMemo(() => {
     const got = (Object.keys(earned) as StickerId[]).sort((a, b) => (earned[b] ?? 0) - (earned[a] ?? 0));
-    const rest = STICKER_IDS.filter((id) => earned[id] === undefined);
+    const rest = orderStickers(earned, { words: savedWordCount, streak }).filter((id) => earned[id] === undefined);
     return { count: got.length, ids: [...got, ...rest].slice(0, 3) };
-  }, [earned]);
+  }, [earned, savedWordCount, streak]);
 
   if (!ready) return <PageContainer><div ref={rootRef} aria-busy="true" className="min-h-[60vh]" /></PageContainer>;
 
@@ -129,6 +130,23 @@ export default function HomeScreen() {
     useRewards.getState().recordEvent({ type: "listen" });
   };
 
+  const owl = (
+    <Owl
+      priority="hero"
+      size={isDesktop ? 148 : 100}
+      mood={pct >= 100 ? "cheer" : "idle"}
+      interactive
+      title={t.home.owlName}
+      reaction={reaction}
+      onTap={() => {
+        cheer();
+        play("pop");
+        buzz("tap");
+      }}
+      className={isDesktop ? undefined : "-mb-10 mr-1 shrink-0 [html.font-large_&]:self-end"}
+    />
+  );
+
   return (
     <PageContainer>
       <div ref={rootRef}>
@@ -142,8 +160,8 @@ export default function HomeScreen() {
 
         <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-x-10 gap-y-8 pt-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:items-stretch lg:pt-2">
           {/* The owl and what it has to say: over the cover on a phone, the stage above the pad at lg+. */}
-          <div data-rise className="relative z-10 flex items-end justify-between gap-2 lg:col-start-2 lg:row-start-1 lg:flex-row-reverse lg:justify-end lg:gap-5">
-            <div className="min-w-0 flex-1 pb-1 lg:pb-5">
+          <div data-rise className="relative z-10 flex items-end justify-between gap-2 [html.font-large_&]:flex-col [html.font-large_&]:items-stretch lg:col-start-2 lg:row-start-1 lg:justify-start">
+            <div className="min-w-0 flex-1 pb-1 lg:-mt-16 lg:-ml-5 lg:max-w-md lg:flex-none lg:pb-5">
               <SpeechTag tail={isDesktop ? "left" : "right"} className="px-3.5 py-2.5 lg:px-4 lg:py-3">
                 {newest ? (
                   <>
@@ -165,20 +183,7 @@ export default function HomeScreen() {
                 )}
               </SpeechTag>
             </div>
-            <Owl
-              priority="hero"
-              size={isDesktop ? 168 : 100}
-              mood={pct >= 100 ? "cheer" : "idle"}
-              interactive
-              title={t.home.owlName}
-              reaction={reaction}
-              onTap={() => {
-                cheer();
-                play("pop");
-                buzz("tap");
-              }}
-              className="-mb-10 mr-1 shrink-0 lg:mb-0 lg:mr-0"
-            />
+            {!isDesktop && owl}
           </div>
 
           <section
@@ -190,6 +195,8 @@ export default function HomeScreen() {
             )}
           >
             <span aria-hidden="true" className="absolute inset-y-0 left-0 w-4 rounded-l-[0.375rem] bg-black/25 lg:w-5" />
+            {/* Desktop: the owl perches on the cover's top edge, in the gutter beside the greeting. */}
+            {isDesktop && <div className="absolute -top-[8.75rem] right-3 z-10">{owl}</div>}
 
             <div className="rounded-[0.625rem] border-2 border-black/10 bg-label-paper px-3.5 py-2.5 text-label-ink lg:px-4 lg:py-3">
               <p className="flex items-baseline gap-1.5 text-[0.8125rem] text-label-ink-2">
@@ -210,18 +217,24 @@ export default function HomeScreen() {
               <BookCover coverId={book.coverId} jacket={book.jacket} label={false} className="w-44 -rotate-3 drop-shadow-xl" />
             </div>
 
-            <div className="mt-4 flex items-center gap-2.5 text-[0.9375rem] font-bold lg:mt-0">
-              <div
-                role="progressbar"
-                aria-label={t.bookCard.progressText(pct)}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={pct}
-                className="h-2.5 flex-1 overflow-hidden rounded-full bg-current/25"
-              >
-                <div className="h-full rounded-full bg-current" style={{ width: `${pct}%` }} />
+            {/* A phone has no room for the big cover, so a small tilted one sits beside the progress bar. Large text and dyslexia mode drop it. */}
+            <div className="mt-2 flex items-end gap-3 text-[0.9375rem] font-bold lg:mt-0 lg:block">
+              <div aria-hidden="true" className="order-last -mt-7 shrink-0 lg:hidden [html.font-large_&]:hidden [body.dyslexia-font_&]:hidden">
+                <BookCover coverId={book.coverId} jacket={book.jacket} label={false} className="w-24 rotate-3 drop-shadow-lg" />
               </div>
-              <span aria-hidden="true">{pct}%</span>
+              <div className="flex min-w-0 flex-1 items-center gap-2.5 pb-1 lg:pb-0">
+                <div
+                  role="progressbar"
+                  aria-label={t.bookCard.progressText(pct)}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={pct}
+                  className="h-2.5 flex-1 overflow-hidden rounded-full bg-current/25"
+                >
+                  <div className="h-full rounded-full bg-current" style={{ width: `${pct}%` }} />
+                </div>
+                <span aria-hidden="true">{pct}%</span>
+              </div>
             </div>
 
             <Button asChild size="xl" className="mt-4 h-auto min-h-[3.75rem] w-full py-2 text-center whitespace-normal">

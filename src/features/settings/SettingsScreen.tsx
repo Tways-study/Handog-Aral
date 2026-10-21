@@ -119,6 +119,7 @@ export default function SettingsScreen() {
         title={t.settings.title}
         subtitle={t.settings.subtitle}
         hideSettings
+        className="max-w-2xl"
         trailing={<Owl size={64} outfit="glasses" mood="idle" className="-mt-1" />}
       />
       <div className="flex max-w-2xl flex-col gap-6 pt-2">

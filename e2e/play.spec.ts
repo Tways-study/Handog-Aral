@@ -8,7 +8,7 @@ async function open(page: Page, rows: ReturnType<typeof savedWordRow>[]) {
   await expect(page.getByRole("heading", { name: /Maayong/ })).toBeVisible(); // Dexie is open
   if (rows.length) await seedWords(page, rows);
   await page.goto("/play");
-  await expect(page.getByRole("heading", { name: "Duyog-Duyog" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Pares" })).toBeVisible();
 }
 
 const cards = (page: Page) => page.getByTestId("board").locator("button");
@@ -86,7 +86,7 @@ test("a perfect game: matches stay up, the win gives 2 stars and the sticker, th
   }
   await expect(page.getByTestId("play-win")).toBeVisible();
   await expect(page.getByTestId("win-stars")).toContainText("2 ka bituon");
-  const dialog = page.getByRole("dialog", { name: "Una nga Daog sa Duyog-Duyog" });
+  const dialog = page.getByRole("dialog", { name: "Una nga Daog sa Pares" });
   await expect(dialog).toBeVisible();
   await dialog.getByRole("button", { name: "Sige!" }).click();
   await expect(dialog).toHaveCount(0);
@@ -117,6 +117,21 @@ test("Tagalog", async ({ page }) => {
   await gotoAs(page, "/", { language: "tagalog" });
   await seedWords(page, WORDS.map((w) => ({ ...w, language: "tagalog" })));
   await page.goto("/play");
-  await expect(page.getByRole("heading", { name: "Tugma-Tugma" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Pares" })).toBeVisible();
   await expect(page.getByText("Mga galaw:")).toBeVisible();
+});
+
+test("all twelve cards fit above the nav on a phone, the owl reacts to a miss, and the card back is drawn art", async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) >= 1024, "phone layout");
+  await open(page, WORDS);
+  const nav = (await page.locator("[data-slot=bottom-nav]").boundingBox())!;
+  const last = (await cards(page).nth(11).boundingBox())!;
+  expect(last.y + last.height).toBeLessThanOrEqual(nav.y);
+  await expect(page.locator("[data-art=card-back]").first()).toHaveAttribute("aria-hidden", "true");
+  await expect(page.getByTestId("owl-says")).toContainText("Pangitaa");
+  const pairs = await pairsOf(page);
+  const odd = pairs.find((p) => p[0] !== pairs[0][0])![0];
+  await press(page, pairs[0][0]);
+  await press(page, odd);
+  await expect(page.getByTestId("owl-says")).toContainText("indi pa");
 });

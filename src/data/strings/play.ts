@@ -1,6 +1,6 @@
 /** Memory match strings. Hiligaynon is the shape; Tagalog must match it key for key. */
 const hiligaynon = {
-  title: "Duyog-Duyog",
+  title: "Pares", // REVIEW: native speaker
   subtitle: "Pangitaa ang pulong kag ang kahulugan.",
   loading: "Ginahanda ang ulin...",
   notEnoughTitle: "Kulang pa ang mga pulong",
@@ -23,10 +23,14 @@ const hiligaynon = {
   playAgain: "Liwat",
   backToWords: "Balik sa mga pulong",
   reshuffle: "Bag-o nga ulin",
+  // REVIEW: native speaker (owl voice)
+  owlStart: "Pangitaa ang pulong kag ang kahulugan!",
+  owlMatch: "Pares! Maayo gid!",
+  owlMiss: "Hmm, indi pa. Probahi liwat!",
 };
 
 const tagalog = {
-  title: "Tugma-Tugma",
+  title: "Pares", // REVIEW: native speaker
   subtitle: "Hanapin ang salita at ang kahulugan nito.",
   loading: "Inihahanda ang laro...",
   notEnoughTitle: "Kulang pa ang mga salita",
@@ -49,6 +53,10 @@ const tagalog = {
   playAgain: "Ulit",
   backToWords: "Balik sa mga salita",
   reshuffle: "Bagong laro",
+  // REVIEW: native speaker (owl voice)
+  owlStart: "Hanapin ang salita at ang kahulugan!",
+  owlMatch: "Pares! Galing!",
+  owlMiss: "Hmm, hindi pa. Subukan ulit!",
 } satisfies typeof hiligaynon;
 
 export const playStrings = { hiligaynon, tagalog };

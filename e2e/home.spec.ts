@@ -56,3 +56,16 @@ test("tab pop event and /play, /stickers keep Pulong lit", async ({ page }) => {
   });
   await page.evaluate(() => window.dispatchEvent(new CustomEvent("handog:pop-tab", { detail: "words" })));
 });
+
+test("phone: the cover shows its illustration and stays compact; Large text drops it", async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) >= 1024, "phone layout");
+  await gotoAs(page, "/", { childName: "Ana" }, PROGRESS);
+  const cover = page.getByRole("region", { name: /./ }).filter({ has: page.getByRole("link", { name: "Padayon sa pagbasa" }) });
+  await expect(cover.locator("[data-cover]:visible")).toHaveCount(1);
+  const box = (await cover.boundingBox())!;
+  expect(box.height).toBeLessThanOrEqual(812 * 0.46);
+  const cta = (await page.getByRole("link", { name: "Padayon sa pagbasa" }).boundingBox())!;
+  expect(cta.y + cta.height).toBeLessThan(812);
+  await gotoAs(page, "/", { childName: "Ana", fontSize: "large" }, PROGRESS);
+  await expect(cover.locator("[data-cover]:visible")).toHaveCount(0);
+});

@@ -19,3 +19,13 @@ describe("art components", () => {
       expect(screen.getByRole("img", { name: "hello" })).toBeTruthy();
     });
 });
+
+describe("CardBack", () => {
+  it("is a decorative owl-face emblem", async () => {
+    const { CardBack } = await import("@/components/art");
+    const { container } = render(<CardBack className="w-10" />);
+    const svg = container.querySelector("svg")!;
+    expect(svg.getAttribute("aria-hidden")).toBe("true");
+    expect(svg.getAttribute("data-art")).toBe("card-back");
+  });
+});

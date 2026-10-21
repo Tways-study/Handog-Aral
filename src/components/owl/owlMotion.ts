@@ -20,7 +20,7 @@ export function moodPose(mood: OwlMood): OwlPose {
   const p = { ...NEUTRAL_POSE };
   switch (mood) {
     case "cheer":
-      Object.assign(p, { wingL: 2.45, wingR: 2.45, lidU: 1, arc: 1, beak: 1 });
+      Object.assign(p, { wingL: 2.45, wingR: 2.45, lidU: 1, arc: 1, beak: 1, glassesUp: 1 });
       break;
     case "think":
       Object.assign(p, { tilt: 0.17, lookX: 0.35, lookY: 0.6, pupX: 0.75, pupY: 0.8, wingRFwd: 1.45, wingR: -0.6, lidU: 0.12 });
@@ -29,7 +29,7 @@ export function moodPose(mood: OwlMood): OwlPose {
       Object.assign(p, { wingRFwd: 0.45, wingR: 1.95, beak: 0.25, tilt: -0.05 });
       break;
     case "sleep":
-      Object.assign(p, { lidU: 1, arc: 1, arcFlip: 1, lean: 0.07, tilt: 0.08 });
+      Object.assign(p, { lidU: 1, arc: 1, arcFlip: 1, lean: 0.07, tilt: 0.08, glassesUp: 1 });
       break;
     default:
       break;
@@ -125,9 +125,9 @@ export function createOwlMotion(host: OwlMotionHost) {
     },
     cheer() {
       const tl = hopInto(timeline(), 0.62);
-      tl.to(pose, { beak: 1, lidU: 1, arc: 1, duration: 0.12, ease: "power2.out" }, 0.12);
+      tl.to(pose, { beak: 1, lidU: 1, arc: 1, glassesUp: 1, duration: 0.12, ease: "power2.out" }, 0.12);
       wingsUpAndBack(tl, 0.12);
-      tl.to(pose, { beak: base.beak, lidU: base.lidU, arc: base.arc, duration: 0.2 }, ">0.2");
+      tl.to(pose, { beak: base.beak, lidU: base.lidU, arc: base.arc, glassesUp: base.glassesUp, duration: 0.2 }, ">0.2");
       return tl;
     },
     think() {

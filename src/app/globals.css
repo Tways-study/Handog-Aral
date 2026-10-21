@@ -370,6 +370,21 @@ a { text-underline-offset: 4px; }
   text-underline-offset: 5px;
 }
 
+/* Welcome superpower: every tappable word wears a dotted underline, and the first unknown one nudges once. */
+[data-super-paper] .word-mark:not([data-state], [data-saved]) {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--ink-2);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+@keyframes word-nudge {
+  0%, 100% { background-color: transparent; transform: scale(1); }
+  45% { background-color: var(--marker); transform: scale(1.08); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-super-paper] .word-mark[data-nudge="true"] { animation: word-nudge 1100ms var(--ease-out) 700ms 1 both; }
+}
+
 /* Colour overlays: the tint is mixed into the paper, text keeps full contrast. */
 .overlay-yellow { --pad-bg: color-mix(in srgb, var(--tint-yellow) 16%, var(--paper)); background-color: var(--pad-bg); }
 .overlay-blue   { --pad-bg: color-mix(in srgb, var(--tint-blue) 16%, var(--paper)); background-color: var(--pad-bg); }

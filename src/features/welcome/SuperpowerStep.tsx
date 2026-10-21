@@ -29,6 +29,9 @@ import SpeechTag from "@/features/home/SpeechTag";
 /** Every word is in the curated dictionary (src/data/fallbackWords.ts), so the real explanation works offline. */
 export const SUPERPOWER_SENTENCE = "The girl walked through the enormous, quiet forest.";
 
+/** The first word of the sample sentence a six-year-old may not know. */
+const NUDGE_WORD = "enormous";
+
 const DESKTOP_QUERY = "(min-width: 1024px)";
 
 type Stage = "start" | "tapped" | "saved";
@@ -73,6 +76,15 @@ export default function SuperpowerStep({ name, onDone, onSkip }: { name: string;
     const el = textRef.current?.querySelector<HTMLElement>(`[data-token-index="${tappedIndex}"]`);
     return markWord(el);
   }, [tappedIndex, markWord]);
+
+  // One gentle nudge on the first word a child is unlikely to know, only while nothing has been tapped (CSS plays it once and respects reduced motion).
+  useEffect(() => {
+    if (stage !== "start") return;
+    const target = tokens.find((tok) => tok.kind === "word" && tok.value.toLowerCase() === NUDGE_WORD);
+    const el = target && textRef.current?.querySelector<HTMLElement>(`[data-token-index="${target.index}"]`);
+    el?.setAttribute("data-nudge", "true");
+    return () => el?.removeAttribute("data-nudge");
+  }, [stage, tokens]);
 
   // The continue button becomes the page's one orange the moment there is something to continue from.
   useEffect(() => {
@@ -149,35 +161,46 @@ export default function SuperpowerStep({ name, onDone, onSkip }: { name: string;
       ref={rootRef}
       className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:max-w-4xl lg:justify-center lg:py-10"
     >
-      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start lg:gap-10">
-        <div className="flex min-w-0 flex-col">
+      <div className="flex flex-1 flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start lg:gap-10">
+        <div className="flex min-w-0 flex-1 flex-col">
           <h1 ref={headingRef} tabIndex={-1} className="font-heading text-3xl leading-[1.05] font-extrabold outline-none lg:text-4xl">
             {w.superTitle}
           </h1>
 
-          <div className="mt-5 flex items-end gap-2 lg:gap-4">
-            <Owl
-              priority="hero"
-              size={isDesktop ? 148 : 120}
-              mood={stage === "start" ? "idle" : "cheer"}
-              reaction={reaction}
-              className="mr-1 shrink-0"
-            />
-            <SpeechTag tail="left" className="mb-3 min-w-0 flex-1 px-4 py-3">
-              <p aria-live="polite" className="text-[1.0625rem] leading-snug font-bold">
-                {stage === "start" && <span className="mb-0.5 block font-heading text-xl leading-tight">{t.welcome.owlHelloName(name)}</span>}
-                {line}
-              </p>
-            </SpeechTag>
+          <div className="flex flex-1 flex-col justify-center gap-6 py-6 lg:flex-none lg:justify-start lg:gap-5 lg:py-0 lg:pt-5">
+            <div className="flex items-end gap-2 lg:gap-4">
+              <Owl
+                priority="hero"
+                size={isDesktop ? 148 : 136}
+                mood={stage === "start" ? "idle" : "cheer"}
+                reaction={reaction}
+                className="mr-1 shrink-0"
+              />
+              <SpeechTag tail="left" className="mb-3 min-w-0 flex-1 px-4 py-3">
+                <p aria-live="polite" className="text-[1.0625rem] leading-snug font-bold">
+                  {stage === "start" && <span className="mb-0.5 block font-heading text-xl leading-tight">{t.welcome.owlHelloName(name)}</span>}
+                  {line}
+                </p>
+              </SpeechTag>
+            </div>
+
+            <section
+              aria-label={w.superPaperLabel}
+              data-super-paper
+              className="pad rounded-xl border-[1.5px] border-line pt-0 pb-2 [--pad-text-size:1.5rem] [--pitch:2.875rem] lg:[--pad-text-size:1.625rem] lg:[--pitch:3.125rem]"
+            >
+              <div ref={textRef} className="pad-text">
+                <ReaderText tokens={tokens} tappedIndex={tappedIndex} savedWords={savedSet} readingSentence={null} onWordTap={onWordTap} />
+              </div>
+            </section>
+
+            <p data-slot="tap-hint" className="inline-flex min-h-[2.125rem] items-center gap-2 self-center rounded-full border-[1.5px] border-line bg-paper-2 px-3.5 text-[0.9375rem] font-bold">
+              <Pointer aria-hidden="true" className="size-[1.125rem]" />
+              {w.superHint}
+            </p>
           </div>
 
-          <section aria-label={w.superPaperLabel} data-super-paper className="pad mt-5 rounded-xl border-[1.5px] border-line py-3">
-            <div ref={textRef} className="pad-text pt-[calc(var(--pitch)*0.22)]">
-              <ReaderText tokens={tokens} tappedIndex={tappedIndex} savedWords={savedSet} readingSentence={null} onWordTap={onWordTap} />
-            </div>
-          </section>
-
-          <div className="mt-auto flex flex-col gap-1 pt-8">
+          <div className="mt-auto flex flex-col gap-1 pt-2">
             <div ref={continueRef} data-super-rest>
               <Button
                 type="button"

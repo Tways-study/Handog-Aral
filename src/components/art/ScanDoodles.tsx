@@ -81,6 +81,26 @@ export function PencilDoodle({ size = 56, className }: DoodleProps) {
   );
 }
 
+/** A ruled page held in sunrise viewfinder corners with a scan line across it: the camera tile's drawing on a desktop. */
+export function ScanPageDoodle({ size = 190, className }: DoodleProps) {
+  return (
+    <svg viewBox="0 0 120 140" width={size} height={(size * 140) / 120} aria-hidden="true" focusable="false" data-slot="scan-page-doodle" className={cn("shrink-0", className)}>
+      <g transform="rotate(-4 60 70)">
+        <rect x="22" y="14" width="76" height="102" rx="6" fill="rgba(0,0,0,0.25)" transform="translate(3 4)" />
+        <rect x="22" y="14" width="76" height="102" rx="6" fill={PAPER} stroke={INK} strokeWidth="3" />
+        <path d="M34 14v102" stroke="var(--gumamela)" strokeWidth="2" opacity="0.7" />
+        <path d="M42 38h46M42 54h46M42 70h46M42 86h30" stroke="var(--label-rule)" strokeWidth="2.4" strokeLinecap="round" />
+        <path d="M44 33h18M44 49h26M44 65h14" stroke={INK} strokeWidth="3.4" strokeLinecap="round" />
+        <circle cx="82" cy="92" r="8" fill="var(--sunrise)" stroke={INK} strokeWidth="2.4" />
+      </g>
+      <g fill="none" stroke="var(--sunrise)" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M8 30V14a6 6 0 0 1 6-6h16M90 8h16a6 6 0 0 1 6 6v16M112 112v16a6 6 0 0 1-6 6H90M30 134H14a6 6 0 0 1-6-6v-16" />
+      </g>
+      <path d="M12 72h96" stroke="var(--marker)" strokeWidth="3.5" strokeLinecap="round" strokeDasharray="1 7" />
+    </svg>
+  );
+}
+
 /** Four rounded viewfinder corners: the camera tile's frame, so its big area reads as "aim here". */
 export function ViewfinderDoodle({ className }: { className?: string }) {
   return (

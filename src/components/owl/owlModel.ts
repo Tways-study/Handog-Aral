@@ -70,6 +70,8 @@ export interface OwlPose {
   /** Closed-eye line (0..1 size) and its direction: 0 = happy arch, 1 = sleepy smile. */
   arc: number;
   arcFlip: number;
+  /** 0..1: glasses pushed up onto the forehead, so a closed-eye arc never crosses a lens rim. */
+  glassesUp: number;
 }
 
 export const NEUTRAL_POSE: OwlPose = {
@@ -92,6 +94,7 @@ export const NEUTRAL_POSE: OwlPose = {
   breathe: 0,
   arc: 0,
   arcFlip: 0,
+  glassesUp: 0,
 };
 
 export interface OwlModel {
@@ -453,6 +456,8 @@ export function buildOwl(): OwlModel {
       e.arc.rotation.z = p.arcFlip > 0.5 ? Math.PI : 0;
       e.arc.position.y = p.arcFlip > 0.5 ? 0.07 : -0.07;
     }
+    glasses.position.set(0, p.glassesUp * 0.5, -p.glassesUp * 0.1);
+    glasses.rotation.x = -p.glassesUp * 0.45;
     jaw.rotation.x = p.beak * 0.55;
     mouth.scale.y = 0.001 + p.beak * 0.05;
     wingLHinge.rotation.set(0, 0, -(WING_REST + p.wingL));
