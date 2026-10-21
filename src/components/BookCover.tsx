@@ -1,4 +1,6 @@
 import { useId } from "react";
+import OwlGroup from "@/components/art/OwlGroup";
+import { C, CW, Eye, Face, Sparkle, starPath } from "@/components/art/parts";
 import { cn } from "@/lib/utils";
 import type { CoverId, Jacket } from "@/shared/types";
 
@@ -19,95 +21,146 @@ const JACKET_FILL: Record<Jacket, string> = {
   gumamela: "var(--gumamela)",
 };
 
-const CREAM = "#FFF8EA";
-const INK = "#1D2340";
+const COVER = "M6 0H138a22 22 0 0 1 22 22V188a22 22 0 0 1-22 22H6a6 6 0 0 1-6-6V6a6 6 0 0 1 6-6z";
 
-/** Six flat-gouache motifs, drawn in a 160x210 notebook. Motif area is roughly x 30-140, y 80-196. */
+/** A tiny owl peeking up from the bottom-right corner. */
+function OwlPeek() {
+  return (
+    <g transform="translate(103 170) rotate(-7 24 24) scale(0.42)">
+      <OwlGroup mood="idle" />
+    </g>
+  );
+}
+
+/** Six kawaii gouache motifs in a 160x210 notebook. Motif area is roughly x 30-140, y 78-198. */
 function Motif({ id }: { id: CoverId }) {
+  const line = { stroke: C.contour, strokeWidth: CW, strokeLinejoin: "round", strokeLinecap: "round" } as const;
   switch (id) {
     case "fox":
       return (
-        <g>
-          <path d="M52 132 L60 98 L82 124 Z" fill="#F08A24" />
-          <path d="M128 132 L120 98 L98 124 Z" fill="#F08A24" />
-          <path d="M60 124 L63 108 L75 122 Z" fill={CREAM} />
-          <path d="M120 124 L117 108 L105 122 Z" fill={CREAM} />
-          <path d="M48 128 Q90 108 132 128 L108 176 Q90 188 72 176 Z" fill="#F08A24" />
-          <path d="M70 152 Q90 142 110 152 Q106 172 90 182 Q74 172 70 152 Z" fill={CREAM} />
-          <ellipse cx="90" cy="168" rx="5" ry="3.6" fill={INK} />
-          <circle cx="75" cy="142" r="3.8" fill={INK} />
-          <circle cx="105" cy="142" r="3.8" fill={INK} />
-          <path d="M82 175q8 6 16 0" stroke={INK} strokeWidth={2} strokeLinecap="round" fill="none" />
+        <g {...line}>
+          {/* ears */}
+          <path d="M44 132Q40 98 62 94Q80 104 84 124Z" fill={C.sunrise} />
+          <path d="M132 132Q136 98 114 94Q96 104 92 124Z" fill={C.sunrise} />
+          <path d="M53 124Q52 108 62 104Q70 110 73 122Z" fill={C.cream} strokeWidth={0} />
+          <path d="M123 124Q124 108 114 104Q106 110 103 122Z" fill={C.cream} strokeWidth={0} />
+          {/* head: round with soft cheek bumps */}
+          <path d="M36 152Q36 116 88 116Q140 116 140 152Q142 178 116 186Q88 194 60 186Q34 178 36 152Z" fill={C.sunrise} />
+          <path d="M44 160Q60 150 74 168Q88 180 102 168Q116 150 132 160Q130 178 112 184Q88 190 64 184Q46 178 44 160Z" fill={C.cream} strokeWidth={0} />
+          <path d="M52 128Q64 120 80 120" stroke="#FFC27A" strokeWidth={4} fill="none" />
+          <ellipse cx={88} cy={160} rx={5.5} ry={4} fill={C.ink} stroke="none" />
+          <path d="M82 167q6 5 12 0" stroke={C.ink} strokeWidth={1.8} fill="none" />
+          <Eye cx={66} cy={146} r={6.5} />
+          <Eye cx={110} cy={146} r={6.5} />
+          <circle cx={54} cy={162} r={6} fill={C.cheek} opacity={0.75} stroke="none" />
+          <circle cx={122} cy={162} r={6} fill={C.cheek} opacity={0.75} stroke="none" />
+          <Sparkle cx={40} cy={100} s={6} />
         </g>
       );
     case "star":
       return (
-        <g>
-          <path d="M90 92 L103 125 L139 128 L111 151 L120 186 L90 167 L60 186 L69 151 L41 128 L77 125 Z" fill="#2B3A8C" />
-          <path d="M90 108 L98 128 L120 130 L103 144 L108 166 L90 155 L72 166 L77 144 L60 130 L82 128 Z" fill="#F08A24" />
-          <circle cx="40" cy="104" r="3.5" fill="#2B3A8C" />
-          <circle cx="140" cy="100" r="3" fill="#2B3A8C" />
-          <circle cx="132" cy="182" r="3.5" fill="#2B3A8C" />
-          <path d="M42 176v10M37 181h10" stroke="#2B3A8C" strokeWidth={3} strokeLinecap="round" />
+        <g {...line}>
+          <path d={starPath(78, 138, 44, 24)} fill={C.contour} stroke={C.contour} strokeWidth={12} />
+          <path d={starPath(78, 138, 44, 24)} fill={C.gold} stroke={C.gold} strokeWidth={8} />
+          <path d="M60 114Q68 102 82 98" stroke="#FFF3C4" strokeWidth={4.5} fill="none" />
+          <Face cx={78} cy={140} gap={22} r={5} />
+          <Sparkle cx={40} cy={104} s={6} fill={C.cream} />
+          <Sparkle cx={134} cy={110} s={5} fill={C.marker} />
+          <Sparkle cx={38} cy={172} s={4.5} fill={C.marker} />
+          <OwlPeek />
         </g>
       );
     case "rice":
       return (
-        <g>
-          <circle cx="116" cy="112" r="14" fill="#F2B233" />
-          <path d="M0 210V152q20-12 40 0t40 0 40 0 40 0V210Z" fill="#1F5C3C" />
-          <g stroke="#FFF8EA" strokeWidth={3} strokeLinecap="round" fill="none">
-            <path d="M50 192V136M50 150q-8-4-10-12M50 150q8-4 10-12M50 164q-8-4-10-12M50 164q8-4 10-12" />
-            <path d="M88 192V122M88 138q-8-4-10-12M88 138q8-4 10-12M88 154q-8-4-10-12M88 154q8-4 10-12M88 170q-8-4-10-12M88 170q8-4 10-12" />
-            <path d="M126 192V140M126 154q-8-4-10-12M126 154q8-4 10-12M126 168q-8-4-10-12M126 168q8-4 10-12" />
-          </g>
-          <g fill="#F2B233">
-            <ellipse cx="50" cy="132" rx="3.5" ry="6" />
-            <ellipse cx="88" cy="117" rx="3.5" ry="6" />
-            <ellipse cx="126" cy="135" rx="3.5" ry="6" />
-          </g>
+        <g {...line}>
+          {/* steam */}
+          <path d="M70 108q-8-8 0-16M90 112q-8-8 0-18M110 108q-8-8 0-16" stroke={C.cream} strokeWidth={4.5} fill="none" opacity={0.9} />
+          {/* rice mound */}
+          <path d="M40 150Q40 112 88 112Q136 112 136 150Z" fill="#FFFFFF" />
+          <path d="M58 128q4-6 10-4M80 120q4-4 10-2M104 128q4-6 10-3M72 138q4-3 8-1M96 140q4-3 8-1" stroke="#E4D9C0" strokeWidth={2.4} fill="none" />
+          {/* bowl */}
+          <path d="M32 148H144Q144 196 112 196H64Q32 196 32 148Z" fill={C.cream} />
+          <path d="M33 164H143" stroke={C.kangkong} strokeWidth={5} fill="none" />
+          <path d="M44 154Q46 176 58 188" stroke="#fff" strokeWidth={4} fill="none" opacity={0.9} />
+          <Face cx={88} cy={177} gap={26} r={4.8} />
+          <Sparkle cx={140} cy={104} s={5} fill={C.marker} />
+          <Sparkle cx={36} cy={112} s={4.5} fill={C.cream} />
         </g>
       );
     case "rainbow":
       return (
-        <g>
-          <path d="M32 186a58 58 0 0 1 116 0" fill="none" stroke="#F2B233" strokeWidth={11} />
-          <path d="M43 186a47 47 0 0 1 94 0" fill="none" stroke="#FFF8EA" strokeWidth={11} />
-          <path d="M54 186a36 36 0 0 1 72 0" fill="none" stroke="#7FB2F0" strokeWidth={11} />
-          <path d="M65 186a25 25 0 0 1 50 0" fill="none" stroke="#8ED1A6" strokeWidth={11} />
-          <path d="M22 196q-2-14 12-14 4-10 16-6 8-6 16 2 12 0 12 12v6z" fill={CREAM} />
-          <path d="M104 196q-2-12 10-12 4-8 14-4 6-4 14 2 10 0 10 10v4z" fill={CREAM} />
+        <g {...line}>
+          <g fill="none" strokeLinecap="butt">
+            <path d="M88 176m-39 0a39 39 0 0 1 78 0" stroke={C.contour} strokeWidth={46} />
+            <path d="M34 176a54 54 0 0 1 108 0" stroke={C.gumamela} strokeWidth={10} />
+            <path d="M44 176a44 44 0 0 1 88 0" stroke={C.gold} strokeWidth={10} />
+            <path d="M54 176a34 34 0 0 1 68 0" stroke={C.mint} strokeWidth={10} />
+            <path d="M64 176a24 24 0 0 1 48 0" stroke="#7FB2F0" strokeWidth={10} />
+          </g>
+          <g transform="translate(104 158) rotate(-6 24 24) scale(0.44)">
+            <OwlGroup mood="wave" />
+          </g>
+          <path d="M26 192Q22 172 40 172Q46 160 62 166Q74 158 86 170Q104 168 102 192Z" fill={C.paper} />
+          <Face cx={64} cy={181} gap={18} r={4} />
+          <path d="M96 198Q94 184 108 184Q114 176 126 180Q136 176 144 186Q154 188 150 198Z" fill={C.paper} />
+          <Sparkle cx={38} cy={102} s={6} fill={C.cream} />
+          <Sparkle cx={128} cy={100} s={5} fill={C.marker} />
         </g>
       );
     case "turtle":
       return (
-        <g>
-          <path d="M44 172q0-48 46-48t46 48z" fill="#6CC596" />
-          <path d="M90 124v48M66 140l24 14 24-14M56 172l34-18 34 18" stroke="#2E7D55" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" fill="none" />
-          <path d="M36 172h108a5 5 0 0 1 0 10H36a5 5 0 0 1 0-10z" fill={CREAM} />
-          <path d="M126 150q16-2 18 8-6 8-18 4z" fill={CREAM} />
-          <circle cx="137" cy="154" r="2.3" fill={INK} />
-          <path d="M50 182v10q0 4 6 4h8q4 0 4-6v-8zM104 182v10q0 4 6 4h8q4 0 4-6v-8z" fill={CREAM} />
-          <path d="M30 176l-8 4 8 3z" fill={CREAM} />
+        <g {...line}>
+          {/* tail, feet */}
+          <path d="M34 178q-8-2-10 4 6 4 14 0z" fill={C.mint} />
+          <path d="M52 178H72V192Q72 198 64 198H58Q50 198 50 190Z" fill={C.mint} />
+          <path d="M104 178H124V190Q124 198 116 198H110Q102 198 102 192Z" fill={C.mint} />
+          {/* head */}
+          <path d="M120 150Q120 130 140 130Q156 134 154 154Q150 172 132 172Q120 170 120 150Z" fill={C.mint} />
+          <Eye cx={140} cy={147} r={4.8} />
+          <circle cx={149} cy={158} r={4} fill={C.cheek} opacity={0.75} stroke="none" />
+          <path d="M138 160q5 4 10 0" stroke={C.ink} strokeWidth={1.8} fill="none" />
+          {/* shell */}
+          <path d="M36 182Q36 118 82 118Q128 118 128 182Z" fill={C.kangkong} />
+          <path d="M82 118v64M58 136l24 14 24-14M46 182l36-24 36 24" stroke="#1F5C3C" strokeWidth={3} fill="none" />
+          <path d="M82 150L58 136V160L82 172L106 160V136Z" fill="#3E9C6E" strokeWidth={0} />
+          <path d="M52 140Q58 126 72 122" stroke="#9FE0BC" strokeWidth={4.5} fill="none" />
+          <path d="M34 182H130" stroke={C.contour} strokeWidth={CW} />
+          <Sparkle cx={42} cy={102} s={6} fill={C.cream} />
+          <Sparkle cx={132} cy={104} s={4.5} fill={C.marker} />
         </g>
       );
     case "basket":
       return (
-        <g>
-          <path d="M52 132q0-34 38-34t38 34" fill="none" stroke="#8A5A2B" strokeWidth={6} strokeLinecap="round" />
-          <circle cx="72" cy="128" r="11" fill="#C8323A" />
-          <circle cx="92" cy="120" r="12" fill="#2E7D55" />
-          <circle cx="110" cy="128" r="10" fill="#F08A24" />
-          <path d="M90 108q4-8 10-8" stroke="#2E7D55" strokeWidth={3.5} strokeLinecap="round" fill="none" />
-          <path d="M36 136h108l-14 56q-1 4-6 4H56q-5 0-6-4z" fill="#A86B34" />
-          <path d="M40 150h100M44 164h92M48 178h84" stroke="#8A5A2B" strokeWidth={3} />
-          <path d="M66 138l-6 54M90 138v58M114 138l6 54" stroke="#8A5A2B" strokeWidth={3} />
+        <g {...line}>
+          <path d="M50 134Q50 100 88 100Q126 100 126 134" fill="none" stroke={C.contour} strokeWidth={9} />
+          <path d="M50 134Q50 100 88 100Q126 100 126 134" fill="none" stroke="#C48A4E" strokeWidth={5} />
+          {/* fruit with faces */}
+          <circle cx={68} cy={134} r={16} fill={C.gumamela} />
+          <path d="M60 124Q62 118 68 118" stroke="#E98A8F" strokeWidth={3.5} fill="none" />
+          <Face cx={68} cy={136} gap={11} r={2.8} mouth={false} />
+          <path d="M80 130Q80 108 100 112Q112 118 108 134Q102 142 90 142Q80 140 80 130Z" fill={C.gold} />
+          <path d="M86 118Q92 112 98 114" stroke="#FFF3C4" strokeWidth={3.5} fill="none" />
+          <Eye cx={92} cy={128} r={3} />
+          <Eye cx={104} cy={128} r={3} />
+          <path d="M94 134q4 3 8 0" stroke={C.ink} strokeWidth={1.6} fill="none" />
+          <circle cx={112} cy={138} r={13} fill={C.sunrise} />
+          <path d="M104 130Q106 124 112 124" stroke="#FFC27A" strokeWidth={3} fill="none" />
+          <path d="M70 118q4-10 14-8" stroke={C.kangkong} strokeWidth={3.5} fill="none" />
+          <path d="M84 110Q96 98 104 106Q94 114 84 110Z" fill={C.mint} />
+          {/* basket */}
+          <path d="M34 146H142L128 190Q126 197 118 197H58Q50 197 48 190Z" fill="#C48A4E" />
+          <path d="M40 160H136M44 174H132M47 186H129" stroke="#8A5A2B" strokeWidth={3} fill="none" />
+          <path d="M62 148L56 196M88 148V197M114 148L120 196" stroke="#8A5A2B" strokeWidth={3} fill="none" />
+          <path d="M34 146H142" stroke={C.contour} strokeWidth={5} />
+          <path d="M36 146H140" stroke="#E0A868" strokeWidth={2.4} />
+          <Sparkle cx={40} cy={108} s={5} fill={C.cream} />
+          <Sparkle cx={138} cy={112} s={4.5} fill={C.marker} />
         </g>
       );
   }
 }
 
-/** A notebook cover in the book's jacket colour, with a spine, a label plate and one flat-gouache motif. */
+/** A glossy notebook cover in the book's jacket colour: stitched spine, label plate and one kawaii motif. */
 export default function BookCover({ coverId, jacket, className, label = true, title }: BookCoverProps) {
   const clipId = `cover-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   return (
@@ -120,23 +173,25 @@ export default function BookCover({ coverId, jacket, className, label = true, ti
     >
       <defs>
         <clipPath id={clipId}>
-          <path d="M6 0H138a22 22 0 0 1 22 22V188a22 22 0 0 1-22 22H6a6 6 0 0 1-6-6V6a6 6 0 0 1 6-6z" />
+          <path d={COVER} />
         </clipPath>
       </defs>
-      <path
-        d="M6 0H138a22 22 0 0 1 22 22V188a22 22 0 0 1-22 22H6a6 6 0 0 1-6-6V6a6 6 0 0 1 6-6z"
-        fill={JACKET_FILL[jacket]}
-      />
-      <path d="M0 6a6 6 0 0 1 6-6h8v210H6a6 6 0 0 1-6-6z" fill="#000" opacity="0.22" />
-      {label && (
-        <g>
-          <rect x="34" y="20" width="100" height="46" rx="9" fill="#FFFDF7" stroke="#000" strokeOpacity="0.08" strokeWidth={2} />
-          <path d="M44 40h80M44 54h56" stroke="#C3D3EE" strokeWidth={2} strokeLinecap="round" />
-        </g>
-      )}
+      <path d={COVER} fill={JACKET_FILL[jacket]} />
       <g clipPath={`url(#${clipId})`}>
+        {/* spine band, rounded stitching, glossy shoulder */}
+        <path d="M0 0h14v210H0z" fill="#000" opacity="0.22" />
+        <path d="M23 12V198" stroke="#fff" strokeOpacity={0.5} strokeWidth={3} strokeLinecap="round" strokeDasharray="0.1 8" />
+        <path d="M24 6H136Q152 6 154 26" stroke="#fff" strokeOpacity={0.28} strokeWidth={4} strokeLinecap="round" fill="none" />
+        <path d="M20 204H132Q150 204 154 186" stroke="#000" strokeOpacity={0.16} strokeWidth={4} strokeLinecap="round" fill="none" />
+        {label && (
+          <g>
+            <rect x="34" y="20" width="100" height="46" rx="14" fill="#FFFDF7" stroke={C.contour} strokeOpacity="0.55" strokeWidth={1.6} />
+            <path d="M46 40h76M46 54h52" stroke="#C3D3EE" strokeWidth={2.4} strokeLinecap="round" />
+          </g>
+        )}
         <Motif id={coverId} />
       </g>
+      <path d={COVER} fill="none" stroke={C.contour} strokeOpacity={0.5} strokeWidth={2} />
     </svg>
   );
 }
