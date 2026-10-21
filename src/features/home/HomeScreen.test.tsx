@@ -37,19 +37,33 @@ describe("HomeScreen", () => {
     expect(screen.getByText("1 ka bituon")).toBeTruthy();
   });
 
+  it("keeps the tally to two chips, shows the percentage once, and the collected count on the label", () => {
+    words = [word("a1", "t1", "easy", 0), word("a2", "t2", "easy", 1)];
+    useProgress.setState({ savedWordCount: 2, bookProgress: { fox: 67 } });
+    render(<HomeScreen />);
+    expect(screen.getByRole("list", { name: "Imo nga natipon" }).querySelectorAll("li")).toHaveLength(2);
+    expect(screen.getAllByText(/67%/)).toHaveLength(1);
+    expect(screen.getByText("Natipon:")).toBeTruthy();
+    expect(screen.getByText("2 ka pulong")).toBeTruthy();
+    expect(document.querySelector("[data-slot=stamp-star]")).toBeTruthy();
+  });
+
   it("falls back to the first bundled book", () => {
     render(<HomeScreen />);
     expect(screen.getByText("The Brave Little Fox")).toBeTruthy();
     expect(screen.getByRole("link", { name: "Padayon sa pagbasa" }).getAttribute("href")).toBe("/read/fox");
   });
 
-  it("lists the last four saved words newest first, with a link to /words and a quiz nudge", () => {
+  it("lists the last saved words newest first, with a link to /words and a quiz nudge", () => {
     words = [word("a1", "t1", "easy", 0), word("a2", "t2", "medium", 1), word("a3", "t3", "hard", 2), word("a4", "t4", "easy", 3), word("a5", "t5", "easy", 4)];
     useProgress.setState({ savedWordCount: 5 });
     render(<HomeScreen />);
     expect(screen.getByText("a1")).toBeTruthy();
     expect(screen.getByText("t4")).toBeTruthy();
-    expect(screen.queryByText("a5")).toBeNull();
+    expect(screen.getByText("a5")).toBeTruthy();
+    // rows beyond the fourth are for lg+ only
+    expect(screen.getByText("a5").closest("li")!.className).toContain("hidden lg:flex");
+    expect(screen.getByText("a4").closest("li")!.className).not.toContain("hidden");
     expect(screen.getByRole("link", { name: /natipon nga pulong/ }).getAttribute("href")).toBe("/words");
     expect(screen.getByRole("link", { name: "Mag-pasulit" }).getAttribute("href")).toBe("/quiz");
   });

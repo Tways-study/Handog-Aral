@@ -3,11 +3,11 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Flame, NotebookPen, ScanLine, Star } from "lucide-react";
+import { Flame, ScanLine } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/PageLayout";
-import BookCover from "@/components/BookCover";
 import DifficultyStamp from "@/components/DifficultyStamp";
 import Mascot from "@/components/Mascot";
+import StampStar from "@/components/StampStar";
 import { Button } from "@/components/ui/button";
 import { sampleBooks } from "@/data/books";
 import { useT } from "@/hooks/useT";
@@ -20,7 +20,9 @@ import { JACKET_CLASS } from "./jacket";
 import { needsWelcome } from "./onboarding";
 
 const QUIZ_MIN_WORDS = 4;
-const RECENT_COUNT = 4;
+/** Four rows below lg (the first viewport); two more at lg+, where the cover is taller. */
+const RECENT_COUNT = 6;
+const RECENT_MOBILE = 4;
 
 function Chip({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -84,17 +86,16 @@ export default function HomeScreen() {
     <PageContainer>
       <div ref={rootRef}>
         <PageHeader title={greeting} subtitle={sub} />
-        <ul aria-label={t.home.tallyLabel} className="flex flex-wrap gap-2 pb-2">
-          <Chip icon={<Star className="size-[1.125rem] text-mango" aria-hidden="true" />}>{t.home.chipStars(stars)}</Chip>
-          <Chip icon={<Flame className="size-[1.125rem] text-margin" aria-hidden="true" />}>{t.home.chipStreak(streak)}</Chip>
-          <Chip icon={<NotebookPen className="size-[1.125rem] text-ink-2" aria-hidden="true" />}>{t.home.chipWords(wordCount)}</Chip>
+        <ul aria-label={t.home.tallyLabel} className="flex gap-2 pb-2">
+          <Chip icon={<StampStar size={26} seed={stars} className="-my-1" />}>{t.home.chipStars(stars)}</Chip>
+          <Chip icon={<Flame className="size-[1.25rem] text-margin" aria-hidden="true" />}>{t.home.chipStreak(streak)}</Chip>
         </ul>
 
-        <div className="grid items-start gap-8 pt-14 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-10">
+        <div className="grid items-start gap-8 pt-14 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:min-h-[30rem] lg:items-stretch lg:gap-10">
           <section
             aria-label={t.home.coverLabel}
             className={cn(
-              "relative rounded-[0.375rem_1.375rem_1.375rem_0.375rem] py-5 pr-5 pl-9 shadow-md",
+              "relative rounded-[0.375rem_1.375rem_1.375rem_0.375rem] py-5 pr-5 pl-9 shadow-md lg:flex lg:flex-col lg:justify-center lg:py-8",
               JACKET_CLASS[book.jacket],
             )}
           >
@@ -102,7 +103,7 @@ export default function HomeScreen() {
             <Mascot mood="idle" size={92} className="absolute -top-[2.9rem] right-4" />
 
             <div className="flex items-end gap-3">
-              <div className="w-[78%] rounded-[0.625rem] border-2 border-black/10 bg-[#FFFDF7] px-3.5 py-2.5 text-[#1D2340] lg:w-auto lg:min-w-0 lg:flex-1">
+              <div className="w-[78%] rounded-[0.625rem] border-2 border-black/10 bg-[#FFFDF7] px-3.5 py-2.5 text-[#1D2340] lg:w-[78%]">
                 <p className="flex items-baseline gap-1.5 text-[0.8125rem] text-[#4A5070]">
                   {t.home.bookLabel}
                   <span className="flex-1 border-b-[1.5px] border-[#C3D3EE] font-heading text-xl leading-[1.15] font-bold text-[#1D2340]">
@@ -110,13 +111,12 @@ export default function HomeScreen() {
                   </span>
                 </p>
                 <p className="mt-0.5 flex items-baseline gap-1.5 text-[0.8125rem] text-[#4A5070]">
-                  {t.home.progressLabel}
+                  {t.home.collectedLabel}
                   <span className="flex-1 border-b-[1.5px] border-[#C3D3EE] text-[0.9375rem] font-bold text-[#1D2340]">
-                    {t.home.progressValue(pct)}
+                    {t.home.chipWords(wordCount)}
                   </span>
                 </p>
               </div>
-              <BookCover coverId={book.coverId} jacket={book.jacket} label={false} className="hidden w-24 shrink-0 rounded-sm lg:block" />
             </div>
 
             <div className="mt-4 flex items-center gap-2.5 text-[0.9375rem] font-bold">
@@ -147,8 +147,8 @@ export default function HomeScreen() {
             </Link>
           </section>
 
-          <section aria-labelledby="recent-heading" className="overflow-hidden rounded-lg border border-line">
-            <div className="pad pb-1">
+          <section aria-labelledby="recent-heading" className="flex flex-col overflow-hidden rounded-lg border border-line">
+            <div className="pad pb-1 lg:flex-1">
               <div className="pad-line flex items-center justify-between">
                 <h2 id="recent-heading" className="font-heading text-lg font-bold">
                   {t.home.recentTitle}
@@ -165,8 +165,8 @@ export default function HomeScreen() {
               </div>
               {recent.length > 0 ? (
                 <ul>
-                  {recent.map((w) => (
-                    <li key={w.key} className="pad-line flex items-center justify-between gap-3">
+                  {recent.map((w, i) => (
+                    <li key={w.key} className={cn("pad-line items-center justify-between gap-3", i >= RECENT_MOBILE ? "hidden lg:flex" : "flex")}>
                       <b className="font-heading text-[1.1875rem] font-bold">{w.word}</b>
                       <span className="flex min-w-0 items-center gap-2">
                         <span className="truncate text-ink-2">{w.translation}</span>
