@@ -6,8 +6,7 @@ const hiligaynon = {
   closeLabel: "Isara",
   dialogLabel: "Pagselebrar",
   more: (n: number) => `May ${n} pa nga sunod`,
-  stickerBody: (hint: string) => hint,
-  wonMatch: "Daog ka!",
+  outfitUnlocked: (name: string) => `Bag-o nga isul-ob sang kuwago: ${name}`,
 };
 
 const tagalog = {
@@ -17,8 +16,7 @@ const tagalog = {
   closeLabel: "Isara",
   dialogLabel: "Pagdiriwang",
   more: (n: number) => `May ${n} pa na susunod`,
-  stickerBody: (hint: string) => hint,
-  wonMatch: "Panalo ka!",
+  outfitUnlocked: (name: string) => `Bagong isusuot ng kuwago: ${name}`,
 } satisfies typeof hiligaynon;
 
 export const rewardsStrings = { hiligaynon, tagalog };

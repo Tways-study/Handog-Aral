@@ -28,8 +28,8 @@ export interface RewardsState extends RewardsData {
   award: (id: StickerId) => boolean;
   markSeen: (id: StickerId) => void;
   addBonusStars: (n: number) => void;
-  /** Applies an event, awards what it earns, queues one celebration per new sticker. Returns the NEW ids. */
-  recordEvent: (event: RewardEvent) => StickerId[];
+  /** Applies an event, awards what it earns, queues one celebration per new sticker. Returns the NEW ids. `{ celebrate: false }` awards quietly (used to backfill an existing child's progress). */
+  recordEvent: (event: RewardEvent, opts?: { celebrate?: boolean }) => StickerId[];
   reset: () => void;
 }
 
@@ -50,7 +50,7 @@ export const useRewards = create<RewardsState>()(
       },
       markSeen: (id) => set((s) => (s.seen.includes(id) ? s : { seen: [...s.seen, id] })),
       addBonusStars: (n) => set((s) => ({ bonusStars: Math.max(0, Math.min(MAX_BONUS_STARS, s.bonusStars + Math.floor(n))) })),
-      recordEvent: (event) => {
+      recordEvent: (event, opts) => {
         const flags = applyEventToFlags(get().flags, event);
         const fresh = evaluateEvent(event, flags, get().earned);
         const now = Date.now();
@@ -58,7 +58,7 @@ export const useRewards = create<RewardsState>()(
           flags,
           earned: fresh.length ? { ...s.earned, ...Object.fromEntries(fresh.map((id) => [id, now])) } : s.earned,
         }));
-        for (const sticker of fresh) celebrate({ sticker, owlMood: "cheer" });
+        if (opts?.celebrate !== false) for (const sticker of fresh) celebrate({ sticker, owlMood: "cheer" });
         return fresh;
       },
       reset: () => set({ ...defaultRewards, flags: { ...defaultFlags, openedBooks: [] } }),
