@@ -61,8 +61,8 @@ function Motif({ id }: { id: CoverId }) {
       return (
         <g {...line}>
           <path d={starPath(78, 138, 44, 24)} fill={C.contour} stroke={C.contour} strokeWidth={12} />
-          <path d={starPath(78, 138, 44, 24)} fill={C.gold} stroke={C.gold} strokeWidth={8} />
-          <path d="M60 114Q68 102 82 98" stroke="#FFF3C4" strokeWidth={4.5} fill="none" />
+          <path d={starPath(78, 138, 44, 24)} fill="#FFF1B8" stroke="#FFF1B8" strokeWidth={8} />
+          <path d="M60 114Q68 102 82 98" stroke="#fff" strokeWidth={4.5} fill="none" />
           <Face cx={78} cy={140} gap={22} r={5} />
           <Sparkle cx={40} cy={104} s={6} fill={C.cream} />
           <Sparkle cx={134} cy={110} s={5} fill={C.marker} />

@@ -35,14 +35,14 @@ export default function StickerArt({ id, locked = false, size = 96, className, t
       viewBox="0 0 96 96"
       width={size}
       height={size}
-      className={cn("inline-block shrink-0 select-none", locked && "text-muted-foreground", className)}
+      className={cn("inline-block shrink-0 select-none", locked && "text-ink-2", className)}
       data-sticker={id}
       data-locked={locked ? "true" : "false"}
       {...(title ? { role: "img", "aria-label": title } : { "aria-hidden": true, focusable: "false" })}
     >
       {locked ? (
         <g>
-          <DieCut shape={shape} inset={2} fill="currentColor" fillOpacity={0.07} stroke="currentColor" strokeOpacity={0.7} strokeWidth={3} strokeDasharray="6 6" strokeLinecap="round" />
+          <DieCut shape={shape} inset={2} fill="currentColor" fillOpacity={0.1} stroke="currentColor" strokeOpacity={0.85} strokeWidth={3} strokeDasharray="6 6" strokeLinecap="round" />
           <Lock x={30} y={30} width={36} height={36} strokeWidth={2.4} color="currentColor" aria-hidden="true" />
         </g>
       ) : (

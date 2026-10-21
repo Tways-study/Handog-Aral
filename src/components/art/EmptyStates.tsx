@@ -36,8 +36,6 @@ export function EmptyWords(props: ArtProps) {
         <rect x={46} y={72} width={68} height={36} rx={8} fill={C.paper} {...line} />
         <path d="M58 86h44M58 97h26" stroke="#C3D3EE" strokeWidth={3} strokeLinecap="round" strokeDasharray="1 6" />
       </g>
-      <ellipse cx={47} cy={92} rx={7} ry={10} transform="rotate(-8 51 92)" fill={OWL.shade} {...line} />
-      <ellipse cx={113} cy={92} rx={7} ry={10} transform="rotate(8 110 92)" fill={OWL.shade} {...line} />
       <Sparkle cx={26} cy={30} s={6} />
       <Sparkle cx={136} cy={24} s={5} fill="#fff" />
     </ArtSvg>
