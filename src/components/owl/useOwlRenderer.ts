@@ -20,7 +20,7 @@ export interface UseOwlRendererOptions {
 }
 
 /** Owns the WebGLRenderer, scene and motion controller for one canvas. Everything is released on unmount. */
-export function useOwlRenderer(canvasRef: RefObject<HTMLCanvasElement | null>, opts: UseOwlRendererOptions) {
+export function useOwlRenderer(hostRef: RefObject<HTMLDivElement | null>, opts: UseOwlRendererOptions) {
   const o = useRef(opts);
   useEffect(() => {
     o.current = opts;
@@ -30,12 +30,18 @@ export function useOwlRenderer(canvasRef: RefObject<HTMLCanvasElement | null>, o
   const prev = useRef({ outfit: opts.outfit, mood: opts.mood, reaction: opts.reaction?.key, tap: opts.tapKey });
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const host = hostRef.current;
+    if (!host) return;
+    // A fresh canvas per mount: a context that was force-lost (StrictMode remount) can never be reused.
+    const canvas = document.createElement("canvas");
+    canvas.setAttribute("aria-hidden", "true");
+    canvas.style.cssText = "display:block;width:100%;height:100%";
+    host.appendChild(canvas);
     let renderer: WebGLRenderer;
     try {
       renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "low-power" });
     } catch {
+      canvas.remove();
       o.current.onFail();
       return;
     }
@@ -58,6 +64,7 @@ export function useOwlRenderer(canvasRef: RefObject<HTMLCanvasElement | null>, o
       model.dispose();
       renderer.dispose();
       renderer.forceContextLoss();
+      canvas.remove();
       rendererRef.current = null;
       motionRef.current = null;
     };
@@ -99,7 +106,7 @@ export function useOwlRenderer(canvasRef: RefObject<HTMLCanvasElement | null>, o
       const now = performance.now();
       if (e.type === "pointermove" && now - lastMove < 60) return;
       lastMove = now;
-      const r = canvas!.getBoundingClientRect();
+      const r = canvas.getBoundingClientRect();
       const cx = r.left + r.width / 2;
       const cy = r.top + r.height / 2;
       const dx = (e.clientX - cx) / (r.width * 1.5);
@@ -123,7 +130,7 @@ export function useOwlRenderer(canvasRef: RefObject<HTMLCanvasElement | null>, o
     window.addEventListener("pointerdown", onPointer, { passive: true });
 
     return teardown;
-  }, [canvasRef]);
+  }, [hostRef]);
 
   useEffect(() => {
     const r = rendererRef.current;

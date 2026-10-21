@@ -6,11 +6,11 @@ import Mascot from "@/components/Mascot";
 import { cn } from "@/lib/utils";
 import { gsap, motionAllowed } from "@/lib/motion";
 import {
-  acquireOwlSlot,
   getOwlCapabilityEpoch,
   owl3dAllowed,
   subscribeOwlCapability,
 } from "@/lib/owl/capability";
+import { isSlotOwner, registerOwl, subscribeSlots } from "@/lib/owl/slots";
 import { useSettings, type OwlOutfit } from "@/stores/settings";
 
 export type OwlMood = "idle" | "cheer" | "think" | "wave" | "sleep";
@@ -33,6 +33,11 @@ export interface OwlProps {
   interactive?: boolean;
   onTap?: () => void;
   reaction?: OwlReaction;
+  /**
+   * Only ONE owl per page runs the 3D renderer (WebGL contexts are costly on low-end phones); the rest stay SVG.
+   * "hero" owls are served first; otherwise the first-mounted owl wins, and owls under 72 px never take it.
+   */
+  priority?: "hero";
   /** Pass a label only when the owl carries meaning; decorative (aria-hidden) by default. */
   title?: string;
 }
@@ -53,6 +58,7 @@ export default function Owl({
   interactive = false,
   onTap,
   reaction,
+  priority,
   title,
 }: OwlProps) {
   const savedOutfit = useSettings((s) => s.owlOutfit);
@@ -66,7 +72,7 @@ export default function Owl({
   const [staticOk, setStaticOk] = useState(false);
   const [visible, setVisible] = useState(false);
   const [inView, setInView] = useState(false);
-  const [slot, setSlot] = useState(false);
+  const [slotId, setSlotId] = useState<number | null>(null);
   const [ready, setReady] = useState(false);
   const [tapKey, setTapKey] = useState(0);
 
@@ -76,7 +82,6 @@ export default function Owl({
       setStaticOk(owl3dAllowed({ owl3d, ignoreVisibility: true }));
       setVisible(document.visibilityState === "visible");
     };
-     
     check();
     const mq = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     mq?.addEventListener?.("change", check);
@@ -99,25 +104,34 @@ export default function Owl({
     return () => io.disconnect();
   }, [staticOk]);
 
-  // A latch: once a 3D owl is live, the tab being hidden does not tear it down (the canvas just pauses).
-  const wants = staticOk && inView && (visible || slot);
+  // Register for the per-page 3D slot while this owl is eligible; the registry decides who actually gets it.
+  const wants = staticOk && inView && (visible || slotId !== null);
   useEffect(() => {
     if (!wants) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- releasing the 3D slot when the owl leaves the screen
-      setSlot(false);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- releasing the slot when the owl leaves the screen
+      setSlotId(null);
       setReady(false);
       return;
     }
-    const release = acquireOwlSlot();
-    if (!release) return;
-    setSlot(true);
+    const reg = registerOwl({ size, priority });
+    setSlotId(reg.id);
     return () => {
-      release();
+      reg.unregister();
+      setSlotId(null);
     };
-  }, [wants]);
+  }, [wants, size, priority]);
+  const slot = useSyncExternalStore(
+    subscribeSlots,
+    () => slotId !== null && isSlotOwner(slotId),
+    () => false,
+  );
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- losing the slot returns this owl to the SVG
+    if (!slot) setReady(false);
+  }, [slot]);
 
   const handleFail = useCallback(() => {
-    setSlot(false);
+    setSlotId(null);
     setReady(false);
   }, []);
   const handleReady = useCallback(() => setReady(true), []);

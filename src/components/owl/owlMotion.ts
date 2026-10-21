@@ -20,7 +20,7 @@ export function moodPose(mood: OwlMood): OwlPose {
   const p = { ...NEUTRAL_POSE };
   switch (mood) {
     case "cheer":
-      Object.assign(p, { wingL: 2.1, wingR: 2.1, lidL: 0.62, beak: 1, pupScale: 1.08, pupY: -0.1 });
+      Object.assign(p, { wingL: 2.45, wingR: 2.45, lidL: 0.62, beak: 1, pupScale: 1.08, pupY: -0.1 });
       break;
     case "think":
       Object.assign(p, { tilt: 0.17, lookX: 0.35, lookY: 0.6, pupX: 0.75, pupY: 0.8, wingRFwd: 1.15, wingR: -0.55, lidU: 0.12 });
@@ -104,7 +104,7 @@ export function createOwlMotion(host: OwlMotionHost) {
     return tl;
   };
   const wingsUpAndBack = (tl: gsap.core.Timeline, at: string | number) => {
-    tl.to(pose, { wingL: 2.2, wingR: 2.2, duration: 0.25, ease: "back.out(2)" }, at).to(
+    tl.to(pose, { wingL: 2.5, wingR: 2.5, duration: 0.25, ease: "back.out(2)" }, at).to(
       pose,
       { wingL: base.wingL, wingR: base.wingR, duration: 0.35, ease: "power2.inOut" },
       ">0.35",

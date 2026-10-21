@@ -4,13 +4,10 @@
  */
 
 export const OWL_FAIL_KEY = "handog-owl3d-failed";
-/** WebGL contexts are scarce (browsers drop the oldest after ~16): never keep more than this many live. */
-export const MAX_LIVE_OWLS = 8;
 
 let webglCache: boolean | null = null;
 let forceSvg = false;
 let epoch = 0;
-let liveOwls = 0;
 const listeners = new Set<() => void>();
 
 function bump(): void {
@@ -88,18 +85,6 @@ export function owl3dAllowed({ owl3d, ignoreVisibility = false }: CapabilityInpu
   return detectWebGL();
 }
 
-/** Claim one of the limited live-3D slots. Returns a release function, or null when all are taken. */
-export function acquireOwlSlot(): (() => void) | null {
-  if (liveOwls >= MAX_LIVE_OWLS) return null;
-  liveOwls++;
-  let released = false;
-  return () => {
-    if (released) return;
-    released = true;
-    liveOwls--;
-  };
-}
-
 /** For useSyncExternalStore: changes whenever forceSvg or the failure flag changes. */
 export function subscribeOwlCapability(cb: () => void): () => void {
   listeners.add(cb);
@@ -115,7 +100,6 @@ export function getOwlCapabilityEpoch(): number {
 export function resetOwlCapability(): void {
   webglCache = null;
   forceSvg = false;
-  liveOwls = 0;
   epoch = 0;
   listeners.clear();
   try {

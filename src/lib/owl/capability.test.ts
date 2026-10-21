@@ -1,7 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  acquireOwlSlot,
-  MAX_LIVE_OWLS,
   owl3dAllowed,
   resetOwlCapability,
   setOwlForceSvg,
@@ -63,12 +61,5 @@ describe("owl3dAllowed", () => {
     expect(owl3dAllowed({ owl3d: true })).toBe(false);
     setOwlForceSvg(false);
     expect(owl3dAllowed({ owl3d: true })).toBe(true);
-  });
-  it("limits live owls", () => {
-    const releases = Array.from({ length: MAX_LIVE_OWLS }, () => acquireOwlSlot());
-    expect(releases.every(Boolean)).toBe(true);
-    expect(acquireOwlSlot()).toBeNull();
-    releases[0]?.();
-    expect(acquireOwlSlot()).not.toBeNull();
   });
 });

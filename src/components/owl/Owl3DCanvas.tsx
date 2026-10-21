@@ -16,9 +16,9 @@ interface Props {
   onFail: () => void;
 }
 
-/** The lazy half of the owl: a transparent WebGL canvas. Only ever loaded through next/dynamic from Owl.tsx. */
+/** The lazy half of the owl: a host div that receives a transparent WebGL canvas. Only ever loaded through next/dynamic from Owl.tsx. */
 export default function Owl3DCanvas(props: Props) {
-  const ref = useRef<HTMLCanvasElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   useOwlRenderer(ref, props);
-  return <canvas ref={ref} aria-hidden="true" className="block h-full w-full" />;
+  return <div ref={ref} className="h-full w-full" />;
 }

@@ -162,8 +162,8 @@ export function buildOwl(): OwlModel {
   // ----- scene, camera, lights -----
   const scene = new Scene();
   const camera = new PerspectiveCamera(28, 1, 1, 20);
-  camera.position.set(0, 0.55, 6.6);
-  camera.lookAt(0, 0.12, 0);
+  camera.position.set(0, 1.55, 6.3);
+  camera.lookAt(0, 1.18, 0);
   scene.add(new AmbientLight(0xffffff, 1.55));
   const sun = new DirectionalLight(0xffffff, 2.1);
   sun.position.set(2.2, 3.2, 4.5);
