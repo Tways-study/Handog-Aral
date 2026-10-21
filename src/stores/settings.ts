@@ -70,7 +70,7 @@ export const useSettings = create<SettingsState>()(
         const old = (persisted ?? {}) as Partial<SettingsData>;
         return { ...old, onboarded: old.onboarded ?? Boolean(old.childName) } as SettingsData;
       },
-      storage: createIdbStorage(),
+      storage: createIdbStorage(() => void useSettings.persist.rehydrate()),
       skipHydration: false,
       partialize: (s): SettingsData => ({
         childName: s.childName,

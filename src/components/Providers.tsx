@@ -4,9 +4,8 @@ import { useEffect, type ReactNode } from "react";
 import { SerwistProvider, useSerwist } from "@serwist/turbopack/react";
 import { toast } from "sonner";
 import { translations } from "@/data/translations";
-import { ensureDictionary } from "@/lib/dictionary/seed";
-import { startLookupQueue } from "@/lib/queue/processor";
-import { runMigrations } from "@/stores/migrate";
+import { startInstallCapture } from "@/hooks/useInstallPrompt";
+import { hasLegacyState } from "@/stores/bootMirror";
 import { useProgressHydrated } from "@/stores/progress";
 import { useSettings, useSettingsHydrated } from "@/stores/settings";
 import AppShell from "@/components/AppShell";
@@ -21,14 +20,42 @@ const SW_ENABLED =
 
 const currentStrings = () => translations[useSettings.getState().language] ?? translations.hiligaynon;
 
-/** Data-layer boot: migrate old localStorage state, seed the dictionary, drain the lookup queue. */
+const whenIdle = (cb: () => void, timeout: number): (() => void) => {
+  if (typeof requestIdleCallback === "function") {
+    const id = requestIdleCallback(cb, { timeout });
+    return () => cancelIdleCallback(id);
+  }
+  const id = setTimeout(cb, Math.min(timeout, 300));
+  return () => clearTimeout(id);
+};
+
+/**
+ * Data-layer boot, kept off the first paint. The Dexie/zod-heavy modules are imported on demand:
+ * the legacy-state migration starts immediately (only when an old blob exists, so it finishes long
+ * before a child can save a word), the dictionary seed and lookup queue wait for an idle moment.
+ */
 function useBoot() {
   useEffect(() => {
-    void runMigrations().catch(() => {});
-    void ensureDictionary().catch(() => {});
-    return startLookupQueue({
-      onUpgraded: (n) => toast(currentStrings().shell.upgradedWords(n)),
-    });
+    let stopQueue: (() => void) | undefined;
+    let cancelled = false;
+    startInstallCapture();
+    if (hasLegacyState()) void import("@/stores/migrate").then((m) => m.runMigrations()).catch(() => {});
+    // Short deadline: a tap right after load should still find the curated dictionary.
+    const cancelSeed = whenIdle(() => void import("@/lib/dictionary/seed").then((m) => m.ensureDictionary()).catch(() => {}), 400);
+    const cancelQueue = whenIdle(() => {
+      void import("@/lib/queue/processor").then((m) => {
+        if (cancelled) return;
+        stopQueue = m.startLookupQueue({
+          onUpgraded: (n) => toast(currentStrings().shell.upgradedWords(n)),
+        });
+      });
+    }, 2000);
+    return () => {
+      cancelled = true;
+      cancelSeed();
+      cancelQueue();
+      stopQueue?.();
+    };
   }, []);
 }
 

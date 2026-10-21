@@ -1,9 +1,10 @@
 import type { Language, ResolvedExplanation } from "@/shared/schemas";
 import { getDb, wordCacheBulkPut } from "./db";
+import { LEGACY_STORAGE_KEY } from "./bootMirror";
 import { useProgress } from "./progress";
 import { useSettings } from "./settings";
 
-export const LEGACY_STORAGE_KEY = "handog-aral-state";
+export { LEGACY_STORAGE_KEY };
 
 /** Generic placeholders the old app wrote into wordCache when every lookup failed. */
 const OLD_PLACEHOLDERS = new Set([

@@ -84,7 +84,7 @@ export const useProgress = create<ProgressState>()(
     {
       name: PROGRESS_STORAGE_NAME,
       version: 1,
-      storage: createIdbStorage(),
+      storage: createIdbStorage(() => void useProgress.persist.rehydrate()),
       partialize: (s): ProgressData => ({
         currentBookId: s.currentBookId,
         bookProgress: s.bookProgress,
