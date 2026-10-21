@@ -6,6 +6,7 @@ import DifficultyStamp from "@/components/DifficultyStamp";
 import StampCheck from "@/components/StampCheck";
 import StampStar from "@/components/StampStar";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/hooks/useT";
 import { useMotion } from "@/lib/motion";
 import { realEnglish, realPhonetic } from "@/lib/phonetic";
@@ -93,8 +94,8 @@ export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, spe
     <div data-slot="word-panel" data-source={entry.source} data-pending={loading || undefined} data-reserve={reserve || undefined}>
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
-          <h2 className="font-heading text-[2.25rem] leading-none font-extrabold break-words lg:text-[2.75rem]">{entry.word}</h2>
-          {(phonetic || reserve) && <p className={cn("mt-1 text-base text-ink-2", reserve && "min-h-6")}>{phonetic}</p>}
+          <h2 className="font-heading text-[2.25rem] leading-none font-extrabold break-words [overflow-wrap:anywhere] lg:text-[2.75rem]">{entry.word}</h2>
+          {(phonetic || reserve) && <p className={cn("mt-1 text-base text-ink-2 [overflow-wrap:anywhere]", reserve && "min-h-6")}>{phonetic}</p>}
           <div className={cn("mt-2", reserve && "min-h-[1.625rem]")}>
             {!loading && (
               <span ref={stampRef} className="inline-flex">
@@ -123,7 +124,14 @@ export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, spe
       {(english || reserve) && (
         <div className={cn("mt-3 px-1", reserve && "min-h-[4.5rem]")}>
           {(english || loading) && <p className="text-[0.8125rem] font-bold text-ink-2">{p.englishLabel}</p>}
-          <p className="mt-0.5 text-[1.0625rem] leading-relaxed">{loading ? "" : english}</p>
+          {loading ? (
+            <div className="mt-2 grid gap-2" data-slot="pending-lines">
+              <Skeleton className="h-4 w-11/12" />
+              <Skeleton className="h-4 w-3/5" />
+            </div>
+          ) : (
+            <p className="mt-0.5 text-[1.0625rem] leading-relaxed">{english}</p>
+          )}
         </div>
       )}
 
@@ -135,14 +143,27 @@ export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, spe
             reserve && "min-h-[4.75rem]",
           )}
         >
-          {showExample ? markWordIn(entry.example!, entry.word) : null}
+          {showExample ? (
+            markWordIn(entry.example!, entry.word)
+          ) : loading ? (
+            <div className="grid gap-2 pt-1" data-slot="pending-lines">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-2/3" />
+            </div>
+          ) : null}
         </div>
       )}
 
-      <p className={cn("mt-3 flex items-start gap-1.5 text-[0.8125rem] leading-snug text-ink-2", reserve && "min-h-10")}>
+      <div className={cn("mt-3 flex items-start gap-1.5 text-[0.8125rem] leading-snug text-ink-2", reserve && "min-h-10")}>
         <SourceIcon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-        <span>{loading ? "" : sourceText}</span>
-      </p>
+        {loading ? (
+          <span className="block flex-1 pt-1" data-slot="pending-lines">
+            <Skeleton className="h-3 w-2/3" />
+          </span>
+        ) : (
+          <span>{sourceText}</span>
+        )}
+      </div>
       <div className="sticky bottom-0 z-10 -mx-5 mt-2 grid grid-cols-2 gap-2.5 bg-background px-5 pt-3 pb-6 lg:static lg:mx-0 lg:mt-4 lg:bg-transparent lg:p-0">
         <Button type="button" variant="secondary" size="lg" className="h-14" onClick={onSpeak} aria-busy={speaking}>
           <Volume2 aria-hidden="true" />

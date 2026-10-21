@@ -6,7 +6,9 @@ import { Search, Volume2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageContainer, PageHeader } from "@/components/PageLayout";
 import DifficultyStamp, { StampShape } from "@/components/DifficultyStamp";
+import EmptyPanelPrompt from "@/components/EmptyPanelPrompt";
 import Mascot from "@/components/Mascot";
+import PadSkeleton from "@/components/PadSkeleton";
 import WordPanel from "@/components/WordPanel";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from "@/components/ui/drawer";
@@ -87,9 +89,10 @@ export default function VocabularyScreen() {
       <PageHeader title={t.vocabulary.title} subtitle={words === null ? undefined : total ? t.vocabulary.subtitleWords(total) : t.vocabulary.subtitleEmpty} />
 
       {words === null ? (
-        <div className="grid gap-3" role="status" aria-busy="true">
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-72 w-full" />
+        <div className="grid gap-3" data-testid="words-loading">
+          <Skeleton className="h-12 w-full rounded-[0.875rem]" />
+          <Skeleton className="h-[4.75rem] w-full rounded-2xl" />
+          <PadSkeleton rows={6} label={t.shell.loading} className="-mx-5 mt-1 lg:mx-0 lg:rounded-xl lg:border-[1.5px] lg:border-line" />
         </div>
       ) : total === 0 ? (
         <EmptyState />
@@ -116,19 +119,16 @@ export default function VocabularyScreen() {
               </div>
               <ToggleGroup
                 type="single"
-                variant="outline"
                 spacing={2}
                 value={filter}
                 onValueChange={(v) => v && setFilter(v as Filter)}
                 aria-label={t.vocabulary.filterLabel}
-                className="grid w-full grid-cols-2 sm:flex sm:flex-wrap"
+                data-testid="word-filter"
+                className="grid w-full grid-cols-[repeat(auto-fit,minmax(4.25rem,1fr))] gap-2 rounded-2xl border-[1.5px] border-line bg-secondary p-1.5"
               >
-                <ToggleGroupItem value="all">{t.vocabulary.filterAll} ({total})</ToggleGroupItem>
+                <FilterItem value="all" label={t.vocabulary.filterAll} count={total} />
                 {LEVELS.map((l) => (
-                  <ToggleGroupItem key={l} value={l}>
-                    <StampShape level={l} className="text-current" />
-                    {t.difficulty[l]} ({counts[l]})
-                  </ToggleGroupItem>
+                  <FilterItem key={l} value={l} label={t.difficulty[l]} count={counts[l]} level={l} />
                 ))}
               </ToggleGroup>
               <p className="sr-only">{t.vocabulary.countsLabel(counts.easy, counts.medium, counts.hard)}</p>
@@ -172,10 +172,10 @@ export default function VocabularyScreen() {
                         onClick={() => setSelectedKey(w.key)}
                         aria-label={t.vocabulary.openWord(w.word)}
                         aria-current={w.key === selectedKey ? "true" : undefined}
-                        className="flex h-full min-w-0 flex-1 items-center justify-between gap-3 pl-[var(--pad-gutter)] text-left focus-visible:outline-solid focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ring"
+                        className="flex h-full min-w-0 flex-1 cursor-pointer touch-manipulation items-center justify-between gap-3 pl-[var(--pad-gutter)] text-left outline-none transition-colors hover:bg-secondary/60 active:bg-secondary aria-[current=true]:bg-secondary aria-[current=true]:shadow-[inset_0_0_0_2px_var(--line-strong)] focus-visible:outline-solid focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ring"
                       >
                         <span className="min-w-0">
-                          <span className="block truncate font-heading text-xl leading-[var(--pitch)] font-bold">{w.word}</span>
+                          <span className="block truncate font-heading text-xl leading-[var(--pitch)] font-bold tracking-normal">{w.word}</span>
                           <span className="block truncate leading-[var(--pitch)] text-ink-2">{w.translation}</span>
                         </span>
                       </button>
@@ -195,8 +195,8 @@ export default function VocabularyScreen() {
 
           {desktop && (
             <aside className="mt-4 hidden lg:block" aria-label={t.vocabulary.detailTitle}>
-              <div className="sticky top-6 rounded-xl border-[1.5px] border-line bg-paper p-6">
-                {detail ?? <p className="text-ink-2">{t.vocabulary.detailHint}</p>}
+              <div className="sticky top-6 max-h-[calc(100dvh-3rem)] overflow-y-auto overscroll-contain rounded-xl border-[1.5px] border-line bg-paper p-6 shadow-sm">
+                {detail ?? <EmptyPanelPrompt title={t.vocabulary.detailEmptyTitle} body={t.vocabulary.detailHint} />}
               </div>
             </aside>
           )}
@@ -213,6 +213,21 @@ export default function VocabularyScreen() {
         </Drawer>
       )}
     </PageContainer>
+  );
+}
+
+function FilterItem({ value, label, count, level }: { value: Filter; label: string; count: number; level?: (typeof LEVELS)[number] }) {
+  return (
+    <ToggleGroupItem
+      value={value}
+      className="h-auto min-h-14 w-full flex-col-reverse justify-center gap-0.5 rounded-xl px-1.5 py-1.5 leading-tight data-[state=on]:shadow-sm"
+    >
+      <span className="text-[0.8125rem] font-bold [overflow-wrap:anywhere]">{label}</span>
+      <span className="flex items-center gap-1.5 font-heading text-lg font-extrabold tabular-nums">
+        {level && <StampShape level={level} className="size-[18px] text-current" />}
+        {count}
+      </span>
+    </ToggleGroupItem>
   );
 }
 

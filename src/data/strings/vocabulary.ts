@@ -22,7 +22,8 @@ const hiligaynon = {
   quizReady: "Handa na ang pasulit!",
   takeQuiz: "Mag-pasulit",
   detailTitle: "Detalye sang pulong",
-  detailHint: "Pili-a ang pulong sa tuo para makita ang kahulugan.",
+  detailEmptyTitle: "Pili-a ang pulong",
+  detailHint: "Pili-a ang pulong sa wala para makita diri ang kahulugan.",
   removed: (w: string) => `Gin-wala na ang "${w}"`,
 };
 
@@ -49,7 +50,8 @@ const tagalog = {
   quizReady: "Handa na ang pagsusulit!",
   takeQuiz: "Mag-pagsusulit",
   detailTitle: "Detalye ng salita",
-  detailHint: "Pumili ng salita sa kaliwa para makita ang kahulugan.",
+  detailEmptyTitle: "Pumili ng salita",
+  detailHint: "Pumili ng salita sa kaliwa para makita dito ang kahulugan.",
   removed: (w: string) => `Inalis na ang "${w}"`,
 } satisfies typeof hiligaynon;
 

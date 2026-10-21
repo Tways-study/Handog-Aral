@@ -2,16 +2,15 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Camera, ImagePlus, Keyboard, ScanLine, Sparkles, Square, Volume2, WifiOff } from "lucide-react";
+import { ArrowLeft, Camera, Keyboard, ScanLine, Sparkles, Square, Volume2, WifiOff } from "lucide-react";
 import CameraScanner from "@/components/CameraScanner";
-import Mascot from "@/components/Mascot";
+import EmptyPanelPrompt from "@/components/EmptyPanelPrompt";
 import ReaderText from "@/components/ReaderText";
 import WordPanel from "@/components/WordPanel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle } from "@/components/ui/drawer";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 import { sampleBooks } from "@/data/books";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useSavedWords } from "@/hooks/useSavedWords";
@@ -26,6 +25,7 @@ import type { ResolvedExplanation } from "@/shared/schemas";
 import { useProgress } from "@/stores/progress";
 import { useSettings } from "@/stores/settings";
 import { ocrErrorKey } from "./errors";
+import { ScanProgress, ScanTiles } from "./ScanStart";
 import { useScanJob } from "./useScanJob";
 import { useWordLookup } from "./useWordLookup";
 
@@ -207,7 +207,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
           />
           <div aria-live="polite" className="pad-line">
             {scan.state.status === "error" && errKey && (
-              <span role="alert" className="font-bold">
+              <span role="alert" className="font-bold [overflow-wrap:anywhere]">
                 {s[errKey]}{" "}
                 {errKey === "errorOfflinePack" && (
                   <Link href="/settings" className="underline underline-offset-4">
@@ -218,19 +218,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
             )}
           </div>
           {scanning ? (
-            <div className="pad-line flex flex-col gap-3 pt-2">
-              <div className="flex items-center gap-3">
-                <Mascot mood="think" size={56} />
-                <p className="text-lg font-bold" role="status">
-                  {s.scanning}
-                </p>
-              </div>
-              <Progress value={scan.state.progress} aria-label={s.scanning} className="max-w-sm" />
-              <p className="text-sm text-ink-2">{s.scanningPercent(scan.state.progress)}</p>
-              <Button type="button" variant="secondary" className="w-fit" onClick={scan.cancel}>
-                {s.cancel}
-              </Button>
-            </div>
+            <ScanProgress progress={scan.state.progress} onCancel={scan.cancel} />
           ) : typing ? (
             <form
               className="pad-line flex flex-col gap-3"
@@ -260,23 +248,12 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
               </div>
             </form>
           ) : (
-            <div className="pad-line flex flex-col gap-3 pt-2">
-              <Mascot mood="idle" size={72} />
-              <Button type="button" size="xl" className="w-full max-w-sm" onClick={() => setShowCamera(true)}>
-                <Camera aria-hidden="true" />
-                {s.openCamera}
-              </Button>
-              <div className="flex flex-wrap gap-2.5">
-                <Button type="button" size="lg" variant="secondary" onClick={() => galleryRef.current?.click()}>
-                  <ImagePlus aria-hidden="true" />
-                  {s.pickGallery}
-                </Button>
-                <Button type="button" size="lg" variant="secondary" onClick={() => setTyping(true)}>
-                  <Keyboard aria-hidden="true" />
-                  {s.typeText}
-                </Button>
-              </div>
-            </div>
+            <ScanTiles
+              perch={!(scan.state.status === "error" && errKey)}
+              onCamera={() => setShowCamera(true)}
+              onGallery={() => galleryRef.current?.click()}
+              onType={() => setTyping(true)}
+            />
           )}
         </div>
         {showCamera && <CameraScanner onCapture={handleFile} onClose={() => setShowCamera(false)} />}
@@ -386,13 +363,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
       {isDesktop && (
         <aside aria-label={t.popup.translationLabel} className="border-l-[1.5px] border-line bg-paper lg:sticky lg:top-0 lg:h-dvh lg:overflow-y-auto">
           <div ref={panelRef} className="p-7">
-            {panelNode ?? (
-              <div className="flex flex-col items-center gap-3 pt-16 text-center">
-                <Mascot mood="think" size={96} />
-                <h2 className="font-heading text-2xl font-bold">{s.emptyPanelTitle}</h2>
-                <p className="max-w-[16rem] text-base text-ink-2">{s.emptyPanelBody}</p>
-              </div>
-            )}
+            {panelNode ?? <EmptyPanelPrompt className="pt-16" title={s.emptyPanelTitle} body={s.emptyPanelBody} />}
           </div>
         </aside>
       )}
