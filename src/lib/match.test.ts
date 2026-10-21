@@ -9,7 +9,7 @@ const seq = (...values: number[]) => {
 
 /** A game with a fixed, known layout: w0 m0 w1 m1 w2 m2. */
 function fixed(): MatchGame {
-  const cards = W(3).flatMap((w, i) => [
+  const cards = W(3).flatMap((w) => [
     { id: `word:${w.word}`, pairId: w.word, kind: "word" as const, text: w.word },
     { id: `meaning:${w.word}`, pairId: w.word, kind: "meaning" as const, text: w.translation },
   ]);
