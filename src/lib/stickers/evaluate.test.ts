@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { BOOKS } from "@/data/books";
+import { sampleBooks as BOOKS } from "@/data/books";
 import { OUTFIT_UNLOCKS, isOutfitUnlocked, stickerHint, stickerTitle, STICKER_CATALOG } from "./catalog";
 import { applyEventToFlags, BUNDLED_BOOK_COUNT, defaultFlags, evaluateEvent, type RewardEvent, type RewardFlags } from "./evaluate";
 import { STICKER_IDS, type StickerId } from "./ids";
