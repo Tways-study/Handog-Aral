@@ -48,3 +48,4 @@ public/tesseract/
 
 # Private build dirs for parallel agents
 .next-*/
+.gstack/
