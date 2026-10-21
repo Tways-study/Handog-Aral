@@ -1,0 +1,422 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-21T00:57:18.328958+00:00",
+  "title": "Design System: Handog Aral",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Pad Paper",
+        "canonical": "#FBF7EE",
+        "tonalRamp": [
+          "#7E7C77",
+          "#C9C6BE",
+          "#FBF8F0",
+          "#FDFAF5",
+          "#FDFCF8",
+          "#FEFDFB",
+          "#FFFEFD",
+          "#FFFFFE"
+        ]
+      },
+      "paper-2": {
+        "role": "neutral",
+        "displayName": "Second Paper",
+        "canonical": "#F2EBDC",
+        "tonalRamp": [
+          "#79766E",
+          "#C2BCB0",
+          "#F3EDE0",
+          "#F7F3EA",
+          "#FAF7F1",
+          "#FCFAF7",
+          "#FDFDFB",
+          "#FEFEFE"
+        ]
+      },
+      "card-surface": {
+        "role": "neutral",
+        "displayName": "Card Cream",
+        "canonical": "#FFFDF7",
+        "tonalRamp": [
+          "#807E7C",
+          "#CCCAC6",
+          "#FFFDF8",
+          "#FFFEFA",
+          "#FFFEFC",
+          "#FFFFFD",
+          "#FFFFFE",
+          "#FFFFFF"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Navy Ink",
+        "canonical": "#1D2340",
+        "tonalRamp": [
+          "#0E1220",
+          "#171C33",
+          "#343953",
+          "#777B8C",
+          "#A5A7B3",
+          "#C9CAD1",
+          "#E4E5E8",
+          "#F6F6F7"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "#4A5070",
+        "tonalRamp": [
+          "#252838",
+          "#3B405A",
+          "#5C627E",
+          "#9296A9",
+          "#B7B9C6",
+          "#D4D5DD",
+          "#E9EAEE",
+          "#F8F8F9"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Blue Rule",
+        "canonical": "#C3D3EE",
+        "tonalRamp": [
+          "#626A77",
+          "#9CA9BE",
+          "#C9D7F0",
+          "#DBE5F5",
+          "#E7EDF8",
+          "#F1F4FB",
+          "#F8FAFD",
+          "#FDFDFE"
+        ]
+      },
+      "margin": {
+        "role": "neutral",
+        "displayName": "Margin Red",
+        "canonical": "#E0756C",
+        "tonalRamp": [
+          "#703A36",
+          "#B35E56",
+          "#E3837B",
+          "#ECACA7",
+          "#F3C8C4",
+          "#F8DEDC",
+          "#FBEEED",
+          "#FEF9F9"
+        ]
+      },
+      "sunrise": {
+        "role": "primary",
+        "displayName": "Sunrise Orange",
+        "canonical": "#F08A24",
+        "tonalRamp": [
+          "#784512",
+          "#C06E1D",
+          "#F2963A",
+          "#F6B97C",
+          "#F9D0A7",
+          "#FBE3CA",
+          "#FDF1E5",
+          "#FEFAF6"
+        ]
+      },
+      "marker": {
+        "role": "accent",
+        "displayName": "Marker Peach",
+        "canonical": "#FFD49A",
+        "tonalRamp": [
+          "#806A4D",
+          "#CCAA7B",
+          "#FFD8A4",
+          "#FFE5C2",
+          "#FFEED7",
+          "#FFF5E7",
+          "#FFFAF3",
+          "#FFFDFB"
+        ]
+      },
+      "indigo": {
+        "role": "secondary",
+        "displayName": "Jacket Indigo",
+        "canonical": "#2B3A8C",
+        "tonalRamp": [
+          "#161D46",
+          "#222E70",
+          "#404E98",
+          "#8089BA",
+          "#AAB0D1",
+          "#CCD0E3",
+          "#E6E7F1",
+          "#F7F7FA"
+        ]
+      },
+      "kangkong": {
+        "role": "secondary",
+        "displayName": "Kangkong Green",
+        "canonical": "#2E7D55",
+        "tonalRamp": [
+          "#173E2A",
+          "#256444",
+          "#438A66",
+          "#82B199",
+          "#ABCBBB",
+          "#CDE0D6",
+          "#E6EFEB",
+          "#F7FAF8"
+        ]
+      },
+      "mango": {
+        "role": "secondary",
+        "displayName": "Mango",
+        "canonical": "#F2B233",
+        "tonalRamp": [
+          "#79591A",
+          "#C28E29",
+          "#F3BA47",
+          "#F7D185",
+          "#FAE0AD",
+          "#FCEDCE",
+          "#FDF6E7",
+          "#FEFCF7"
+        ]
+      },
+      "gumamela": {
+        "role": "secondary",
+        "displayName": "Gumamela Red",
+        "canonical": "#C8323A",
+        "tonalRamp": [
+          "#64191D",
+          "#A0282E",
+          "#CE474E",
+          "#DE8489",
+          "#E9ADB0",
+          "#F2CED0",
+          "#F8E6E7",
+          "#FDF7F7"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The tapped word in the word panel."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Card and section titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Large button labels and screen titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "UI copy."
+      },
+      "reading": {
+        "displayName": "Reading",
+        "purpose": "Scanned and story text on the pad; line height equals rule pitch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Field, nav and source labels."
+      }
+    },
+    "shadows": [
+      {
+        "name": "elev-sm",
+        "value": "0 1px 2px rgb(29 35 64 / 0.08), 0 4px 10px -6px rgb(29 35 64 / 0.18)",
+        "purpose": "Cards."
+      },
+      {
+        "name": "elev-md",
+        "value": "0 1px 2px rgb(29 35 64 / 0.08), 0 8px 24px -12px rgb(29 35 64 / 0.25)",
+        "purpose": "Raised panels."
+      },
+      {
+        "name": "elev-lg",
+        "value": "0 2px 4px rgb(29 35 64 / 0.08), 0 14px 32px -14px rgb(29 35 64 / 0.4)",
+        "purpose": "Dialogs and jackets."
+      },
+      {
+        "name": "elev-sheet",
+        "value": "0 -12px 40px -16px rgb(29 35 64 / 0.45)",
+        "purpose": "Bottom drawer."
+      },
+      {
+        "name": "elev-cta",
+        "value": "0 1px 2px rgb(29 35 64 / 0.2), 0 10px 20px -10px rgb(29 35 64 / 0.55)",
+        "purpose": "Sunrise buttons and nav Scan."
+      },
+      {
+        "name": "scrim",
+        "value": "rgb(29 35 64 / 0.28)",
+        "purpose": "Overlay backdrop (rgb(0 0 0 / 0.5) in dark)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Overlays entering (CSS); GSAP uses expo.out."
+      },
+      {
+        "name": "ease-in",
+        "value": "cubic-bezier(0.7, 0, 0.84, 0)",
+        "purpose": "Overlays leaving; GSAP uses power2.in."
+      },
+      {
+        "name": "duration",
+        "value": "150ms / 220ms / 300ms",
+        "purpose": "fast / base / slow; transform and opacity only, disabled under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "lg",
+        "value": "1024px",
+        "purpose": "Bottom nav becomes left rail, reader becomes two panes, word panel docks."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one primary action.",
+      "html": "<button class=\"ds-btn-primary\">Save word</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border-radius:14px;font:700 16px var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;transition:background-color .15s,transform .15s;border:0;background:#F08A24;color:#1D2340;box-shadow:0 1px 2px rgb(29 35 64/.2),0 10px 20px -10px rgb(29 35 64/.55)}.ds-btn-primary:hover{background:rgb(240 138 36/.9)}.ds-btn-primary:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}.ds-btn-primary:active{transform:scale(.98)}"
+    },
+    {
+      "name": "Ink Button",
+      "kind": "button",
+      "refersTo": "button-ink",
+      "description": "Strong secondary action.",
+      "html": "<button class=\"ds-btn-ink\">Listen</button>",
+      "css": ".ds-btn-ink{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border-radius:14px;font:700 16px var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;transition:background-color .15s,transform .15s;border:0;background:#1D2340;color:#FBF7EE}.ds-btn-ink:hover{background:rgb(29 35 64/.9)}.ds-btn-ink:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}.ds-btn-ink:active{transform:scale(.98)}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Quiet paper button with a line border.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border-radius:14px;font:700 16px var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;transition:background-color .15s,transform .15s;border:1.5px solid #E3DACA;background:#FBF7EE;color:#1D2340}.ds-btn-secondary:hover{background:#F2EBDC}.ds-btn-secondary:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Cream field with strong border.",
+      "html": "<input class=\"ds-input\" placeholder=\"Your name\">",
+      "css": ".ds-input{height:48px;width:100%;box-sizing:border-box;padding:0 16px;border:1.5px solid #7F849C;border-radius:14px;background:#FFFDF7;color:#1D2340;font:400 16px 'Atkinson Hyperlegible',system-ui,sans-serif}.ds-input:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Cream card with fine border and soft shadow.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-t\">Today's words</div><p>Tap a word to hear it.</p></div>",
+      "css": ".ds-card{padding:20px;border:1.5px solid #E3DACA;border-radius:16px;background:#FFFDF7;color:#1D2340;box-shadow:0 1px 2px rgb(29 35 64/.08),0 4px 10px -6px rgb(29 35 64/.18)}.ds-card-t{font:700 20px 'Baloo 2',ui-rounded,system-ui,sans-serif;line-height:1.2}.ds-card p{margin:8px 0 0;font:400 15px 'Atkinson Hyperlegible',system-ui,sans-serif;color:#4A5070}"
+    },
+    {
+      "name": "Pad Paper",
+      "kind": "custom",
+      "refersTo": "reading",
+      "description": "Ruled reading surface with a red margin; line height equals rule pitch.",
+      "html": "<div class=\"ds-pad\"><p>The owl reads a book by the window.</p><p>Tap any word.</p></div>",
+      "css": ".ds-pad{position:relative;padding:0 20px 0 58px;background-color:#FBF7EE;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 35px,#C3D3EE 35px,#C3D3EE 36px);color:#1D2340}.ds-pad::before{content:'';position:absolute;top:0;bottom:0;left:44px;width:1.5px;background:#E0756C}.ds-pad p{margin:0;font:400 20px/36px 'Atkinson Hyperlegible',system-ui,sans-serif}"
+    },
+    {
+      "name": "Difficulty Stamp",
+      "kind": "chip",
+      "refersTo": "stamp-easy",
+      "description": "Shape plus label: circle easy, square medium, triangle hard.",
+      "html": "<span class=\"ds-stamp\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\"><path d=\"M12 3 21.5 20h-19z\"/><path d=\"M12 10.5 15.5 17h-7z\"/></svg>Hard</span>",
+      "css": ".ds-stamp{display:inline-flex;align-items:center;gap:6px;color:#C8323A;font:700 14px 'Atkinson Hyperlegible',system-ui,sans-serif}"
+    },
+    {
+      "name": "Tapped Word",
+      "kind": "custom",
+      "refersTo": "marker",
+      "description": "Marker highlight with sunrise underline.",
+      "html": "<p class=\"ds-line\">The cat <span class=\"ds-word\">jumped</span> high.</p>",
+      "css": ".ds-line{font:400 20px/36px 'Atkinson Hyperlegible',system-ui,sans-serif;color:#1D2340}.ds-word{background:#FFD49A;box-shadow:inset 0 -3px 0 #F08A24;border-radius:6px;padding:0 2px}"
+    },
+    {
+      "name": "Scan Button (nav)",
+      "kind": "nav",
+      "refersTo": "scan-fab",
+      "description": "Raised sunrise tile in the bottom nav.",
+      "html": "<span class=\"ds-scan\"><svg viewBox=\"0 0 24 24\" width=\"28\" height=\"28\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\"><path d=\"M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3M4 12h16\"/></svg></span>",
+      "css": ".ds-scan{display:grid;place-items:center;width:64px;height:64px;border-radius:22px;background:#F08A24;color:#1D2340;box-shadow:0 1px 2px rgb(29 35 64/.2),0 10px 20px -10px rgb(29 35 64/.55)}"
+    },
+    {
+      "name": "Book Jacket",
+      "kind": "card",
+      "refersTo": "jacket-indigo",
+      "description": "Cloth-colored notebook cover owning a region.",
+      "html": "<div class=\"ds-jacket\">Ang Alamat ng Pinya</div>",
+      "css": ".ds-jacket{padding:32px 20px;border-radius:24px;background:#2B3A8C;color:#fff;font:800 24px/1.1 'Baloo 2',ui-rounded,system-ui,sans-serif;box-shadow:0 2px 4px rgb(29 35 64/.08),0 14px 32px -14px rgb(29 35 64/.4)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Pad Paper Storybook",
+    "overview": "The child's page becomes their own pad paper. Reading text sits on quiet blue rules with one red margin line, warm off-white paper, deep navy ink, and every word can be tapped. Saturated book-jacket cloth (indigo, mango, kangkong green, gumamela red) acts as the notebook cover and owns whole regions. Rewards are rubber-stamp stars and teacher check marks, never confetti. The owl mascot is the only character.\n\nThe system is calm and low-density: one thing burns brightest at a time. Sunrise orange marks the single primary action and the tapped word. It refuses the category default of candy-gradient cards, emoji chrome and stacked stat tiles. Dark mode is a night pad under one bulb, same structure with lowered paper.",
+    "keyCharacteristics": [
+      "Real baseline grid: the rule pitch equals the reading line-height at every font-size setting.",
+      "Warm paper neutrals, navy ink, flat cloth-colored jackets, one orange accent.",
+      "State by shape first (circle/square/triangle difficulty stamps), color only reinforces.",
+      "Offline-to-AI upgrades restyle in place with reserved space, no layout shift.",
+      "Motion is transform and opacity only, 150-300ms, once per flow, off under reduced motion.",
+      "Large targets (44px minimum, 48-60px for actions) for ages 6-12."
+    ],
+    "rules": [
+      {
+        "name": "The One Burner Rule",
+        "body": "Orange goes on the single primary action per screen and the tapped word. The raised Scan button in the nav is a deliberate, user-approved second occurrence; do not extend that exception.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mixed-Tint Rule",
+        "body": "Reading overlays are mixed into the paper at 12-16% and never laid over text. Contrast is asserted in src/styles/contrast.test.ts.",
+        "section": "colors"
+      },
+      {
+        "name": "The Baseline Rule",
+        "body": "Reading text uses .pad-text, whose line-height is the rule pitch; sizes are rem-based so pitch and text scale together.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sentence Case Rule",
+        "body": "Labels are sentence case, bold, small. No uppercase tracked labels.",
+        "section": "typography"
+      },
+      {
+        "name": "The Soft Navy Shadow Rule",
+        "body": "Shadows are blurred, offset-down, and navy-tinted. No hard offset shadows.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do read tokens only from the CSS custom properties / Tailwind utilities (bg-paper, text-ink, bg-sunrise, shadow-cta).",
+      "Do lay reading text on .pad / .pad-text so line-height equals the rule pitch.",
+      "Do pair every difficulty color with its shape and label.",
+      "Do use ink navy text on sunrise and mango, white on indigo, kangkong, and gumamela.",
+      "Do gate every GSAP helper on reduced motion and animate only transform and opacity.",
+      "Do reserve space for content that upgrades in place."
+    ],
+    "donts": [
+      "Don't add a second sunrise action on a screen beyond the nav Scan button.",
+      "Don't use candy gradients, stacked stat tiles, or emoji as chrome.",
+      "Don't convey state by color alone.",
+      "Don't put a color overlay over text; mix it into the paper.",
+      "Don't use hard offset shadows or glow."
+    ]
+  }
+}

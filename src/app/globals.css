@@ -21,6 +21,13 @@
   --line: #E3DACA;
   --line-strong: #7F849C;
 
+  /* the notebook label card on a book cover: it is paper stuck on cloth, so it stays light in dark mode
+     (deliberately NOT redefined under .dark) */
+  --label-paper: #FFFDF7;
+  --label-ink: #1D2340;
+  --label-ink-2: #4A5070;
+  --label-rule: #C3D3EE;
+
   /* the one accent, plus the tapped-word marker */
   --sunrise: #F08A24;
   --sunrise-ink: #1D2340;
@@ -167,6 +174,10 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  --color-label-paper: var(--label-paper);
+  --color-label-ink: var(--label-ink);
+  --color-label-ink-2: var(--label-ink-2);
+  --color-label-rule: var(--label-rule);
   --color-paper: var(--paper);
   --color-paper-2: var(--paper-2);
   --color-ink: var(--ink);

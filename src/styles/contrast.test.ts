@@ -55,6 +55,8 @@ const themes = { light, dark } as const;
 // [foreground token, background token, min ratio, why]
 const PAIRS: [string, string, number, string][] = [
   ["--ink", "--paper", 4.5, "body on paper"],
+  ["--label-ink", "--label-paper", 4.5, "title on the notebook label (stays light in both themes)"],
+  ["--label-ink-2", "--label-paper", 4.5, "caption on the notebook label (stays light in both themes)"],
   ["--ink", "--paper-2", 4.5, "body on paper-2"],
   ["--ink", "--card", 4.5, "body on card"],
   ["--ink", "--popover", 4.5, "body on popover"],

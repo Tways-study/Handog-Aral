@@ -39,8 +39,8 @@ export default function BooksScreen() {
               >
                 <div className="@container relative w-[11.5rem] shrink-0 transition-transform duration-150 motion-safe:group-hover:-translate-y-0.5 sm:mx-auto sm:w-full sm:max-w-[16rem]">
                   <BookCover coverId={book.coverId} jacket={book.jacket} label={false} className="drop-shadow-md" />
-                  <div className="absolute top-[9.5%] left-[21.25%] flex h-[21.9%] w-[62.5%] items-center overflow-hidden rounded-[0.5625rem] border-2 border-black/10 bg-[#FFFDF7] px-[4%]">
-                    <span className="line-clamp-3 font-heading leading-[1.1] font-bold text-[#1D2340] text-[max(1rem,8cqw)]">{book.title}</span>
+                  <div className="absolute top-[9.5%] left-[21.25%] flex h-[21.9%] w-[62.5%] items-center overflow-hidden rounded-[0.5625rem] border-2 border-black/10 bg-label-paper px-[4%]">
+                    <span className="line-clamp-3 font-heading leading-[1.1] font-bold text-label-ink text-[max(1rem,8cqw)]">{book.title}</span>
                   </div>
                 </div>
                 <div className="min-w-0 flex-1 sm:flex-none sm:px-1">

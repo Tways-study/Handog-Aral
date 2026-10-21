@@ -103,16 +103,16 @@ export default function HomeScreen() {
             <Mascot mood="idle" size={92} className="absolute -top-[2.9rem] right-4" />
 
             <div className="flex items-end gap-3">
-              <div className="w-[78%] rounded-[0.625rem] border-2 border-black/10 bg-[#FFFDF7] px-3.5 py-2.5 text-[#1D2340] lg:w-[78%]">
-                <p className="flex items-baseline gap-1.5 text-[0.8125rem] text-[#4A5070]">
+              <div className="w-[78%] rounded-[0.625rem] border-2 border-black/10 bg-label-paper px-3.5 py-2.5 text-label-ink lg:w-[78%]">
+                <p className="flex items-baseline gap-1.5 text-[0.8125rem] text-label-ink-2">
                   {t.home.bookLabel}
-                  <span className="flex-1 border-b-[1.5px] border-[#C3D3EE] font-heading text-xl leading-[1.15] font-bold text-[#1D2340]">
+                  <span className="flex-1 border-b-[1.5px] border-label-rule font-heading text-xl leading-[1.15] font-bold text-label-ink">
                     {book.title}
                   </span>
                 </p>
-                <p className="mt-0.5 flex items-baseline gap-1.5 text-[0.8125rem] text-[#4A5070]">
+                <p className="mt-0.5 flex items-baseline gap-1.5 text-[0.8125rem] text-label-ink-2">
                   {t.home.collectedLabel}
-                  <span className="flex-1 border-b-[1.5px] border-[#C3D3EE] text-[0.9375rem] font-bold text-[#1D2340]">
+                  <span className="flex-1 border-b-[1.5px] border-label-rule text-[0.9375rem] font-bold text-label-ink">
                     {t.home.chipWords(wordCount)}
                   </span>
                 </p>
