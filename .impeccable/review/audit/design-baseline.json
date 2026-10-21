@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-21",
+  "url": "http://localhost:3231 (production build of v3-overhaul)",
+  "designScore": "B-",
+  "aiSlopScore": "B",
+  "funCuteScore": "C+",
+  "goodwill": 75,
+  "categoryGrades": {
+    "hierarchy": "C", "typography": "B", "color": "B+", "spacing": "B-",
+    "interaction": "B-", "responsive": "B+", "motion": "B", "content": "B",
+    "aiSlop": "B+", "performance": "A"
+  },
+  "findings": [
+    {"id":"F-04","title":"Continue reading is a text link under orange Scan","impact":"high","category":"hierarchy"},
+    {"id":"F-05","title":"Home counts instead of capability voice","impact":"high","category":"content"},
+    {"id":"F-10","title":"Reader word targets 36px tall, as narrow as 18px","impact":"high","category":"interaction"},
+    {"id":"F-11","title":"Reader is mute: no owl on mobile, empty paper","impact":"high","category":"hierarchy"},
+    {"id":"F-12","title":"First tapped word not celebrated","impact":"high","category":"motion"},
+    {"id":"F-13","title":"First saved word under-celebrated (small stamp)","impact":"high","category":"motion"},
+    {"id":"F-17","title":"First scan has no ceremony","impact":"high","category":"motion"},
+    {"id":"F-21","title":"First quiz and correct answer undramatic, no owl","impact":"high","category":"motion"},
+    {"id":"F-20","title":"Quiz wrong-answer feedback cramped / under nav with banner","impact":"medium","category":"layout"},
+    {"id":"F-09","title":"Mobile covers have a blank label card","impact":"medium","category":"layout"},
+    {"id":"F-15","title":"Dyslexia header clipped","impact":"medium","category":"typography"},
+    {"id":"F-16","title":"Scan tiles: icons in beige circles","impact":"medium","category":"aiSlop"},
+    {"id":"F-22","title":"Quiz results star fills slot 4 for 1/5","impact":"medium","category":"content"}
+  ]
+}
