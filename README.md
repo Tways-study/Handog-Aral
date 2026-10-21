@@ -48,11 +48,12 @@ Without any keys the app still works: curated words, the online dictionary, and 
 | `GEMINI_MODEL` | server, optional | Defaults to `gemini-flash-latest` |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | server | Per-IP rate limiting. Required in production: without them the proxy returns 503 |
 | `ALLOWED_ORIGINS` | server, optional | Extra CORS origins (`https://localhost` and `capacitor://localhost` are always allowed) |
+| `NEXT_PUBLIC_SITE_URL` | build | Production origin, used for the social-card image URLs (default `http://localhost:3000`) |
 | `NEXT_PUBLIC_API_BASE` | build | Empty for the web build; the deployed URL for the Android build |
 
 ## Deploying
 
-**Web (Vercel):** import the repo, set the server variables above, deploy. The AI proxy runs as Next.js route handlers (`/api/explain`, `/api/ocr`, `/api/health`) in the same project.
+**Web (Vercel):** import the repo, set the server variables above, deploy. The AI proxy runs as Next.js route handlers (`/api/explain`, `/api/ocr`, `/api/health`) in the same project. The web build sends security headers (`next.config.ts`: nosniff, frame-ancestors none, Permissions-Policy, a conservative CSP) and serves `/serwist/sw.js` uncached. Going live: follow [`docs/release-checklist.md`](docs/release-checklist.md).
 
 **Android:** set `NEXT_PUBLIC_API_BASE` to the deployed web URL, run `npm run build:android`, then `npx cap open android` and build from Android Studio. The Android build is a static export (no service worker) that calls the deployed proxy.
 
