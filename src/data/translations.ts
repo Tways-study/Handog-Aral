@@ -8,6 +8,9 @@ import { popupStrings } from "./strings/popup";
 import { bookCardStrings } from "./strings/bookCard";
 import { welcomeStrings } from "./strings/welcome";
 import { systemStrings } from "./strings/system";
+import { stickersStrings } from "./strings/stickers";
+import { playStrings } from "./strings/play";
+import { rewardsStrings } from "./strings/rewards";
 
 /**
  * Core strings (nav, difficulty, shell) live here; each feature owns its own file under
@@ -52,6 +55,9 @@ const hiligaynon = {
     bookCard: bookCardStrings.hiligaynon,
     welcome: welcomeStrings.hiligaynon,
     system: systemStrings.hiligaynon,
+    stickers: stickersStrings.hiligaynon,
+    play: playStrings.hiligaynon,
+    rewards: rewardsStrings.hiligaynon,
 };
 
 type Translation = typeof hiligaynon;
@@ -95,6 +101,9 @@ const tagalog = {
     bookCard: bookCardStrings.tagalog,
     welcome: welcomeStrings.tagalog,
     system: systemStrings.tagalog,
+    stickers: stickersStrings.tagalog,
+    play: playStrings.tagalog,
+    rewards: rewardsStrings.tagalog,
 } satisfies Translation;
 
 export const translations = { hiligaynon, tagalog };
