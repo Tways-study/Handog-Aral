@@ -143,11 +143,11 @@ export default function HomeScreen() {
         <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-x-10 gap-y-8 pt-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:items-stretch lg:pt-2">
           {/* The owl and what it has to say: over the cover on a phone, the stage above the pad at lg+. */}
           <div data-rise className="relative z-10 flex items-end justify-between gap-2 lg:col-start-2 lg:row-start-1 lg:flex-row-reverse lg:justify-end lg:gap-5">
-            <div className="min-w-0 flex-1 pb-1 lg:max-w-md lg:flex-none lg:pb-5">
+            <div className="min-w-0 flex-1 pb-1 lg:pb-5">
               <SpeechTag tail={isDesktop ? "left" : "right"} className="px-3.5 py-2.5 lg:px-4 lg:py-3">
                 {newest ? (
                   <>
-                    <p className="text-[0.9375rem] leading-snug font-bold">{t.home.growthWords(wordCount)}</p>
+                    <p className="text-[0.9375rem] leading-snug font-bold [@media(max-height:700px)]:hidden">{t.home.growthWords(wordCount)}</p>
                     <button
                       type="button"
                       onClick={listenNewest}
@@ -177,7 +177,7 @@ export default function HomeScreen() {
                 play("pop");
                 buzz("tap");
               }}
-              className="-mb-10 mr-1 lg:mb-0 lg:mr-0"
+              className="-mb-10 mr-1 shrink-0 lg:mb-0 lg:mr-0"
             />
           </div>
 

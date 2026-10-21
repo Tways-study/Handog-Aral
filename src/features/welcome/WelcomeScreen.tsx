@@ -107,14 +107,14 @@ function NameStep({ onStart, onSkip }: { onStart: (name: string) => void; onSkip
 
   return (
     <form
-      className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:max-w-xl lg:justify-center lg:py-10"
+      className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:max-w-xl lg:justify-center lg:py-6"
       onSubmit={(e) => {
         e.preventDefault();
         onStart(name.trim());
       }}
     >
       {/* The owl, perched on the notebook, says hello in its own speech tag. */}
-      <div className="relative z-10 flex items-end justify-between gap-2 lg:mt-4">
+      <div className="relative z-10 flex items-end justify-between gap-2 lg:mt-0">
         <SpeechTag tail="right" className="mb-3 min-w-0 flex-1 px-4 py-3 lg:mb-6">
           <p className="text-base leading-snug font-bold lg:text-lg">{t.welcome.owlHello}</p>
         </SpeechTag>
@@ -130,12 +130,12 @@ function NameStep({ onStart, onSkip }: { onStart: (name: string) => void; onSkip
             play("pop");
             buzz("tap");
           }}
-          className="-mb-14 mr-1 lg:-mb-16"
+          className="-mb-10 mr-1 lg:-mb-14"
         />
       </div>
       <section
         ref={coverRef}
-        className="relative flex min-h-[15rem] flex-col justify-between gap-5 rounded-[0.375rem_1.75rem_1.75rem_0.375rem] bg-indigo py-6 pr-5 pl-10 text-indigo-fg shadow-lg lg:min-h-[19rem] lg:gap-6 lg:py-9 lg:pr-8 lg:pl-14"
+        className="relative flex min-h-[15rem] flex-col justify-between gap-5 rounded-[0.375rem_1.75rem_1.75rem_0.375rem] bg-indigo pt-12 pr-5 pb-6 pl-10 text-indigo-fg shadow-lg lg:min-h-[16rem] lg:gap-5 lg:pt-12 lg:pr-8 lg:pb-7 lg:pl-14"
       >
         <span aria-hidden="true" className="absolute inset-y-0 left-0 w-5 rounded-l-[0.375rem] bg-black/25 lg:w-6" />
         <div>
@@ -167,7 +167,7 @@ function NameStep({ onStart, onSkip }: { onStart: (name: string) => void; onSkip
         </div>
       </section>
 
-      <div ref={lowerRef} className="mt-7 flex flex-1 flex-col gap-6 lg:mt-9 lg:flex-none lg:gap-8">
+      <div ref={lowerRef} className="mt-6 flex flex-1 flex-col gap-5 lg:mt-7 lg:flex-none lg:gap-6">
         <div className="flex flex-col gap-3">
           <span id="language-label" className="text-base font-bold">
             {t.welcome.languageLabel}
@@ -189,7 +189,7 @@ function NameStep({ onStart, onSkip }: { onStart: (name: string) => void; onSkip
                   key={o.value}
                   value={o.value}
                   className={cn(
-                    "group relative flex min-h-28 cursor-pointer flex-col justify-end rounded-[0.25rem_1rem_1rem_0.25rem] py-3 pr-2 pl-5 text-left shadow-sm outline-none transition-[transform,box-shadow] duration-150 focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ring motion-safe:active:scale-[0.98] data-[state=checked]:shadow-[0_0_0_3px_var(--paper),0_0_0_5.5px_var(--ink)] motion-safe:data-[state=checked]:-rotate-2",
+                    "group relative flex min-h-28 lg:min-h-24 cursor-pointer flex-col justify-end rounded-[0.25rem_1rem_1rem_0.25rem] py-3 pr-2 pl-5 text-left shadow-sm outline-none transition-[transform,box-shadow] duration-150 focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ring motion-safe:active:scale-[0.98] data-[state=checked]:shadow-[0_0_0_3px_var(--paper),0_0_0_5.5px_var(--ink)] motion-safe:data-[state=checked]:-rotate-2",
                     JACKET_CLASS[JACKET_FOR[o.value]],
                   )}
                 >
@@ -212,7 +212,7 @@ function NameStep({ onStart, onSkip }: { onStart: (name: string) => void; onSkip
           </RadioGroup.Root>
         </div>
 
-        <div className="sticky bottom-0 z-20 -mx-5 mt-auto flex flex-col gap-1 bg-background px-5 pt-3 pb-1 lg:static lg:mx-0 lg:bg-transparent lg:p-0">
+        <div className="sticky bottom-0 z-20 -mx-5 mt-auto flex flex-col gap-1 bg-linear-to-t from-background from-75% to-transparent px-5 pt-6 pb-1 lg:static lg:mx-0 lg:bg-none lg:p-0">
           <Button type="submit" size="xl" className="w-full">
             {t.welcome.start}
           </Button>

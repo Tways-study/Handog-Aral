@@ -19,6 +19,11 @@ test("new user lands on /welcome, picks Filipino, enters a name and starts", asy
   await page.getByLabel("Ano ang pangalan mo?").fill("Ana");
   await page.getByRole("button", { name: "Magsimula tayo" }).click();
 
+  // Step 2, the first superpower, comes before Home; this child just carries on.
+  await expect(page.getByRole("heading", { name: "Ang Una Mong Superpower" })).toBeVisible();
+  await expect(page.getByText("Kumusta, Ana!")).toBeVisible();
+  await page.getByRole("button", { name: "Sige, tara na!" }).click();
+
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { name: GREETING_TL })).toBeVisible();
   // Tagalog UI: stars/words chips and nav labels.

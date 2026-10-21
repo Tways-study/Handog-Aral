@@ -99,7 +99,7 @@ function Segmented<T extends string>({
       className="w-full flex-wrap sm:w-auto"
     >
       {options.map((o) => (
-        <ToggleGroupItem key={o.value} value={o.value} className="h-auto min-h-12 shrink flex-1 px-4 py-2 text-center leading-tight whitespace-normal sm:flex-none">
+        <ToggleGroupItem key={o.value} value={o.value} className="h-auto min-h-12 flex-auto px-4 py-2 text-center leading-tight whitespace-normal sm:flex-none">
           {value === o.value && <Check aria-hidden="true" />}
           {o.label}
         </ToggleGroupItem>
@@ -134,9 +134,6 @@ export default function SettingsScreen() {
               autoComplete="off"
             />
           </Row>
-        </Section>
-
-        <Section id="sec-language" title={t.settings.languageHeading}>
           <Row label={t.settings.languageLabel} help={t.settings.languageHelp} id="lbl-language">
             <Segmented<Language>
               value={s.language}
@@ -215,7 +212,7 @@ function FunSection() {
         <Row label={t.settings.soundLabel} help={t.settings.soundHelp} htmlFor="sound-fx">
           <div className="flex flex-wrap items-center gap-3">
             <Switch id="sound-fx" checked={sound} onCheckedChange={setSound} />
-            <Button variant="secondary" size="sm" disabled={!sound} onClick={() => play("chime")}>
+            <Button variant="secondary" size="sm" className="h-auto min-h-11 max-w-full shrink py-2 whitespace-normal" disabled={!sound} onClick={() => play("chime")}>
               <Volume2 aria-hidden="true" />
               {t.settings.soundTest}
             </Button>
@@ -224,7 +221,7 @@ function FunSection() {
         <Row label={t.settings.vibrationLabel} help={t.settings.vibrationHelp} htmlFor="vibration">
           <div className="flex flex-wrap items-center gap-3">
             <Switch id="vibration" checked={haptics} onCheckedChange={setHaptics} />
-            <Button variant="secondary" size="sm" disabled={!haptics} onClick={() => buzz("success")}>
+            <Button variant="secondary" size="sm" className="h-auto min-h-11 max-w-full shrink py-2 whitespace-normal" disabled={!haptics} onClick={() => buzz("success")}>
               <Vibrate aria-hidden="true" />
               {t.settings.vibrationTest}
             </Button>

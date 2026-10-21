@@ -207,3 +207,19 @@ test("Reset all progress clears words and progress but keeps settings", async ({
   await expect(html(page)).toHaveClass(/font-large/);
   await expect(html(page)).toHaveClass(/\bdark\b/);
 });
+
+test("Fun group: switches persist, the owl wardrobe link works, and Text size is visible above the nav at first view", async ({ page }) => {
+  await gotoAs(page, "/settings");
+  const size = page.getByRole("radio", { name: "Medium", exact: true });
+  const nav = await page.locator("[data-slot=bottom-nav]").boundingBox();
+  const box = await size.boundingBox();
+  if (nav && (page.viewportSize()?.width ?? 0) < 1024) expect(box!.y + box!.height).toBeLessThanOrEqual(nav.y);
+  await page.getByRole("switch", { name: "Sounds" }).click();
+  await page.getByRole("switch", { name: "Animated 3D owl" }).click();
+  await expect.poll(async () => (await persisted(page)).sound).toBe(true);
+  await expect.poll(async () => (await persisted(page)).owl3d).toBe(true);
+  await expect(page.getByRole("button", { name: "Play a test sound" })).toBeEnabled();
+  await expect(page.getByText("For parents, teachers and guardians")).toBeVisible();
+  await page.getByRole("link", { name: "Open the sticker book" }).click();
+  await expect(page).toHaveURL(/\/stickers$/);
+});
