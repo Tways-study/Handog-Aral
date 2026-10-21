@@ -2,8 +2,10 @@ import { defineConfig } from "@playwright/test";
 
 // e2e runs against a production build in a private dist dir so it never clobbers `.next`:
 //   NEXT_DIST_DIR=.next-e2e npm run build
+// Parallel agents/tools can run their own copy: E2E_PORT=3211 E2E_DIST_DIR=.next-v1 (build into that dir first).
 // The proxy (/api/*) is always stubbed inside the tests; no GEMINI_API_KEY is needed.
-const PORT = 3200;
+const PORT = Number(process.env.E2E_PORT ?? 3200);
+const DIST_DIR = process.env.E2E_DIST_DIR ?? ".next-e2e";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -19,7 +21,7 @@ export default defineConfig({
     ...(process.env.PW_CHROMIUM_PATH ? { launchOptions: { executablePath: process.env.PW_CHROMIUM_PATH } } : {}),
   },
   webServer: {
-    command: `NEXT_DIST_DIR=.next-e2e npx next start -p ${PORT}`,
+    command: `NEXT_DIST_DIR=${DIST_DIR} npx next start -p ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: true,
     timeout: 120_000,
