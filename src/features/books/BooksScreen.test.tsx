@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("next/navigation", () => ({ usePathname: () => "/books" }));
+const push = vi.fn();
+vi.mock("next/navigation", () => ({ usePathname: () => "/books", useRouter: () => ({ push, replace: vi.fn() }) }));
 let saved: { bookId: string | null }[] | null = [];
 vi.mock("@/hooks/useSavedWords", () => ({ useSavedWords: () => saved }));
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import BooksScreen from "./BooksScreen";
 import { bookStatus } from "./status";
 import { defaultProgress, useProgress } from "@/stores/progress";
@@ -50,5 +51,34 @@ describe("BooksScreen", () => {
     render(<BooksScreen />);
     expect(screen.getByText("1 aklat na ang natapos mo.")).toBeTruthy();
     expect(screen.getAllByText("Tuloy").length).toBe(1);
+  });
+});
+
+describe("BooksScreen cover labels and opening", () => {
+  it("shows every title in the cover label (no blank plate), two columns on a phone", () => {
+    render(<BooksScreen />);
+    const list = screen.getByRole("list", { name: "Mga libro" });
+    expect(list.className).toContain("grid-cols-2");
+    for (const a of within(list).getAllByRole("link")) {
+      const label = a.querySelector("[data-jacket] span.font-heading");
+      expect(label?.textContent?.trim().length).toBeGreaterThan(3);
+      expect(label?.className).not.toContain("hidden");
+    }
+  });
+
+  it("opens the book with the reduced-motion path at once (no matchMedia means no motion)", () => {
+    push.mockClear();
+    render(<BooksScreen />);
+    const first = within(screen.getByRole("list", { name: "Mga libro" })).getAllByRole("link")[0];
+    fireEvent.click(first);
+    expect(push).toHaveBeenCalledWith("/read/fox");
+  });
+
+  it("leaves modified clicks to the browser", () => {
+    push.mockClear();
+    render(<BooksScreen />);
+    const first = within(screen.getByRole("list", { name: "Mga libro" })).getAllByRole("link")[0];
+    fireEvent.click(first, { metaKey: true });
+    expect(push).not.toHaveBeenCalled();
   });
 });

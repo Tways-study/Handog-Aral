@@ -1,58 +1,75 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Flame, ScanLine } from "lucide-react";
+import { Bookmark, BookOpen, ChevronRight, Flame, Gamepad2, RotateCcw, ScanLine, Volume2 } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/PageLayout";
 import DifficultyStamp from "@/components/DifficultyStamp";
 import BookCover from "@/components/BookCover";
-import Mascot from "@/components/Mascot";
+import Owl, { type OwlReaction } from "@/components/owl/Owl";
 import StampStar from "@/components/StampStar";
+import StickerArt from "@/components/stickers/StickerArt";
 import { Button } from "@/components/ui/button";
 import { sampleBooks } from "@/data/books";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useT } from "@/hooks/useT";
 import { useSavedWords } from "@/hooks/useSavedWords";
-import { useMotion } from "@/lib/motion";
+import { buzz } from "@/lib/haptics";
+import { pageIn } from "@/lib/motionPages";
+import { play } from "@/lib/sound";
+import { STICKER_IDS, type StickerId } from "@/lib/stickers/ids";
+import { speak } from "@/lib/tts";
 import { cn } from "@/lib/utils";
-import { selectTotalStars, useProgress, useProgressHydrated } from "@/stores/progress";
+import { useProgress, useProgressHydrated } from "@/stores/progress";
+import { selectAllStars, useRewards, useRewardsHydrated } from "@/stores/rewards";
 import { useSettings, useSettingsHydrated } from "@/stores/settings";
 import ShelfBar from "@/features/books/ShelfBar";
 import { JACKET_CLASS } from "./jacket";
 import { needsWelcome } from "./onboarding";
+import SpeechTag from "./SpeechTag";
 
 const QUIZ_MIN_WORDS = 4;
+/** The memory game needs a few words to pair up. */
+const PLAY_MIN_WORDS = 3;
 /** Four rows below lg (the first viewport); one more at lg+, where the cover is taller. */
 const RECENT_COUNT = 5;
 const RECENT_MOBILE = 4;
+const DESKTOP_QUERY = "(min-width: 1024px)";
 
 function Chip({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <li className="inline-flex h-[2.125rem] items-center gap-1.5 rounded-full border-[1.5px] border-line px-3 text-[0.9375rem] font-bold">
+    <li className="inline-flex min-h-[2.125rem] items-center gap-1.5 rounded-full border-[1.5px] border-line px-3 py-0.5 text-[0.9375rem] font-bold [html.font-large_&]:w-full">
       {icon}
       {children}
     </li>
   );
 }
 
+const ROW =
+  "pressable flex min-h-16 items-center gap-3 rounded-lg border-[1.5px] border-line bg-card px-4 py-2.5 shadow-sm outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring";
+
 export default function HomeScreen() {
   const t = useT();
   const router = useRouter();
-  const { fadeRoute } = useMotion();
   const rootRef = useRef<HTMLDivElement>(null);
+  const isDesktop = useMediaQuery(DESKTOP_QUERY);
 
   const settingsReady = useSettingsHydrated();
   const progressReady = useProgressHydrated();
+  const rewardsReady = useRewardsHydrated();
   const hydrated = settingsReady && progressReady;
   const childName = useSettings((s) => s.childName);
   const onboarded = useSettings((s) => s.onboarded);
-  const currentBookId = useProgress((s) => s.currentBookId);
-  const bookProgress = useProgress((s) => s.bookProgress);
-  const streak = useProgress((s) => s.streak);
-  const savedWordCount = useProgress((s) => s.savedWordCount);
-  const stars = useProgress(selectTotalStars);
-  const updateStreak = useProgress((s) => s.updateStreak);
+  const ttsSpeed = useSettings((s) => s.ttsSpeed);
+  const progress = useProgress();
+  const { currentBookId, bookProgress, streak, savedWordCount, updateStreak } = progress;
+  const bonusStars = useRewards((s) => s.bonusStars);
+  const earned = useRewards((s) => s.earned);
+  const stars = selectAllStars(progress, { bonusStars });
   const words = useSavedWords();
+  const [reaction, setReaction] = useState<OwlReaction | undefined>();
+  const streakSent = useRef(false);
 
   // Wait for the saved-words table too, so a user with words but a stale counter is never redirected.
   const redirecting = hydrated && words !== null && needsWelcome({ onboarded, childName, savedWordCount: Math.max(savedWordCount, words.length) });
@@ -66,9 +83,23 @@ export default function HomeScreen() {
     if (ready) updateStreak();
   }, [ready, updateStreak]);
 
+  // Once per mount, after the streak has updated and the rewards store is loaded (a write before that would be overwritten).
   useEffect(() => {
-    if (ready) return fadeRoute(rootRef.current);
-  }, [ready, fadeRoute]);
+    if (!ready || !rewardsReady || streakSent.current) return;
+    streakSent.current = true;
+    const days = useProgress.getState().streak;
+    if (days > 0) useRewards.getState().recordEvent({ type: "streak", days });
+  }, [ready, rewardsReady]);
+
+  useEffect(() => {
+    if (ready) return pageIn(rootRef.current);
+  }, [ready]);
+
+  const stickerPreview = useMemo(() => {
+    const got = (Object.keys(earned) as StickerId[]).sort((a, b) => (earned[b] ?? 0) - (earned[a] ?? 0));
+    const rest = STICKER_IDS.filter((id) => earned[id] === undefined);
+    return { count: got.length, ids: [...got, ...rest].slice(0, 3) };
+  }, [earned]);
 
   if (!ready) return <PageContainer><div ref={rootRef} aria-busy="true" className="min-h-[60vh]" /></PageContainer>;
 
@@ -83,46 +114,103 @@ export default function HomeScreen() {
         : [t.home.greetingEvening(childName), t.home.subEvening];
   const wordCount = Math.max(savedWordCount, words.length);
   const recent = words.slice(0, RECENT_COUNT);
+  const newest = words[0];
   const otherBooks = sampleBooks.filter((b) => b.id !== book.id);
+
+  // Continue where you stopped; "Umpisahan ta" until the first word is saved; "Basaha liwat" once finished.
+  const [readLabel, ReadIcon] =
+    pct >= 100 ? ([t.home.readAgain, RotateCcw] as const) : pct > 0 ? ([t.home.continueReading, Bookmark] as const) : ([t.home.startReading, BookOpen] as const);
+
+  const cheer = () => setReaction({ kind: "cheer", key: Date.now() });
+  const listenNewest = () => {
+    if (!newest) return;
+    cheer();
+    void speak(newest.word, { rate: ttsSpeed });
+    useRewards.getState().recordEvent({ type: "listen" });
+  };
 
   return (
     <PageContainer>
       <div ref={rootRef}>
-        <PageHeader title={greeting} subtitle={sub} />
-        <ul aria-label={t.home.tallyLabel} className="flex gap-2 pb-2">
-          <Chip icon={<StampStar size={26} seed={stars} className="-my-1" />}>{t.home.chipStars(stars)}</Chip>
-          <Chip icon={<Flame className="size-[1.25rem] text-margin" aria-hidden="true" />}>{t.home.chipStreak(streak)}</Chip>
-        </ul>
+        <div data-rise>
+          <PageHeader title={greeting} subtitle={sub} />
+          <ul aria-label={t.home.tallyLabel} className="flex flex-wrap gap-2 pb-2 [html.font-large_&]:flex-col">
+            <Chip icon={<StampStar size={26} seed={stars} className="-my-1" />}>{t.home.chipStars(stars)}</Chip>
+            <Chip icon={<Flame className="size-[1.25rem] text-margin" aria-hidden="true" />}>{t.home.chipStreak(streak)}</Chip>
+          </ul>
+        </div>
 
-        <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-8 pt-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-stretch lg:gap-10">
+        <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-x-10 gap-y-8 pt-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:items-stretch lg:pt-2">
+          {/* The owl and what it has to say: over the cover on a phone, the stage above the pad at lg+. */}
+          <div data-rise className="relative z-10 flex items-end justify-between gap-2 lg:col-start-2 lg:row-start-1 lg:flex-row-reverse lg:justify-end lg:gap-5">
+            <div className="min-w-0 flex-1 pb-1 lg:max-w-md lg:flex-none lg:pb-5">
+              <SpeechTag tail={isDesktop ? "left" : "right"} className="px-3.5 py-2.5 lg:px-4 lg:py-3">
+                {newest ? (
+                  <>
+                    <p className="text-[0.9375rem] leading-snug font-bold">{t.home.growthWords(wordCount)}</p>
+                    <button
+                      type="button"
+                      onClick={listenNewest}
+                      className="pressable mt-1 flex min-h-11 w-full items-center gap-2 rounded-lg bg-paper-2 px-2.5 text-left outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-ring"
+                    >
+                      <Volume2 aria-hidden="true" className="size-5 shrink-0" />
+                      <span className="min-w-0">
+                        <b className="block truncate font-heading text-[1.0625rem] leading-tight">{newest.word}</b>
+                        <span className="block truncate text-sm text-ink-2">{newest.translation}</span>
+                      </span>
+                    </button>
+                  </>
+                ) : (
+                  <p className="text-base leading-snug font-bold">{t.home.growthEmpty}</p>
+                )}
+              </SpeechTag>
+            </div>
+            <Owl
+              priority="hero"
+              size={isDesktop ? 168 : 100}
+              mood={pct >= 100 ? "cheer" : "idle"}
+              interactive
+              title={t.home.owlName}
+              reaction={reaction}
+              onTap={() => {
+                cheer();
+                play("pop");
+                buzz("tap");
+              }}
+              className="-mb-10 mr-1 lg:mb-0 lg:mr-0"
+            />
+          </div>
+
           <section
+            data-rise
             aria-label={t.home.coverLabel}
             className={cn(
-              "relative rounded-[0.375rem_1.375rem_1.375rem_0.375rem] py-5 pr-5 pl-9 shadow-md",
+              "relative flex flex-col rounded-[0.375rem_1.375rem_1.375rem_0.375rem] py-5 pr-5 pl-9 shadow-md lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:min-h-[30rem] lg:py-7 lg:pr-7 lg:pl-12",
               JACKET_CLASS[book.jacket],
             )}
           >
-            <span aria-hidden="true" className="absolute inset-y-0 left-0 w-4 rounded-l-[0.375rem] bg-black/25" />
-            <Mascot mood="idle" size={92} className="absolute -top-[2.9rem] right-4" />
+            <span aria-hidden="true" className="absolute inset-y-0 left-0 w-4 rounded-l-[0.375rem] bg-black/25 lg:w-5" />
 
-            <div className="flex items-end gap-3">
-              <div className="w-[78%] rounded-[0.625rem] border-2 border-black/10 bg-label-paper px-3.5 py-2.5 text-label-ink lg:w-[78%]">
-                <p className="flex items-baseline gap-1.5 text-[0.8125rem] text-label-ink-2">
-                  {t.home.bookLabel}
-                  <span className="flex-1 border-b-[1.5px] border-label-rule font-heading text-xl leading-[1.15] font-bold text-label-ink">
-                    {book.title}
-                  </span>
-                </p>
-                <p className="mt-0.5 flex items-baseline gap-1.5 text-[0.8125rem] text-label-ink-2">
-                  {t.home.collectedLabel}
-                  <span className="flex-1 border-b-[1.5px] border-label-rule text-[0.9375rem] font-bold text-label-ink">
-                    {t.home.chipWords(wordCount)}
-                  </span>
-                </p>
-              </div>
+            <div className="rounded-[0.625rem] border-2 border-black/10 bg-label-paper px-3.5 py-2.5 text-label-ink lg:px-4 lg:py-3">
+              <p className="flex items-baseline gap-1.5 text-[0.8125rem] text-label-ink-2">
+                {t.home.bookLabel}
+                <span className="flex-1 border-b-[1.5px] border-label-rule font-heading text-xl leading-[1.15] font-bold text-label-ink lg:text-2xl">
+                  {book.title}
+                </span>
+              </p>
+              <p className="mt-0.5 flex items-baseline gap-1.5 text-[0.8125rem] text-label-ink-2">
+                {t.home.collectedLabel}
+                <span className="flex-1 border-b-[1.5px] border-label-rule text-[0.9375rem] font-bold text-label-ink">
+                  {t.home.chipWords(wordCount)}
+                </span>
+              </p>
             </div>
 
-            <div className="mt-4 flex items-center gap-2.5 text-[0.9375rem] font-bold">
+            <div aria-hidden="true" className="hidden min-h-0 flex-1 items-center justify-center py-6 lg:flex">
+              <BookCover coverId={book.coverId} jacket={book.jacket} label={false} className="w-44 -rotate-3 drop-shadow-xl" />
+            </div>
+
+            <div className="mt-4 flex items-center gap-2.5 text-[0.9375rem] font-bold lg:mt-0">
               <div
                 role="progressbar"
                 aria-label={t.bookCard.progressText(pct)}
@@ -137,20 +225,24 @@ export default function HomeScreen() {
             </div>
 
             <Button asChild size="xl" className="mt-4 h-auto min-h-[3.75rem] w-full py-2 text-center whitespace-normal">
+              <Link href={`/read/${book.id}`}>
+                <ReadIcon aria-hidden="true" />
+                {readLabel}
+              </Link>
+            </Button>
+            <Button asChild variant="secondary" size="lg" className="mt-2.5 h-auto min-h-14 w-full py-2 text-center whitespace-normal">
               <Link href="/scan">
                 <ScanLine aria-hidden="true" />
                 {t.home.scanCta}
               </Link>
             </Button>
-            <Link
-              href={`/read/${book.id}`}
-              className="mt-2 flex min-h-11 items-center justify-center text-[0.9375rem] font-bold underline underline-offset-4 outline-none transition-opacity focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring motion-safe:active:opacity-70"
-            >
-              {t.home.continueReading}
-            </Link>
           </section>
 
-          <section aria-labelledby="recent-heading" className="flex flex-col overflow-hidden rounded-lg border border-line">
+          <section
+            data-rise
+            aria-labelledby="recent-heading"
+            className="flex flex-col overflow-hidden rounded-lg border border-line lg:col-start-2 lg:row-start-2"
+          >
             <div className="pad pb-1 lg:flex-1">
               <div className="pad-line flex items-center justify-between">
                 <h2 id="recent-heading" className="font-heading text-lg font-bold">
@@ -179,12 +271,9 @@ export default function HomeScreen() {
                   ))}
                 </ul>
               ) : (
-                <div className="pad-line flex items-start gap-3 pb-4 [line-height:1.5]">
-                  <Mascot mood="think" size={64} className="mt-1" />
-                  <div>
-                    <p className="font-heading text-lg font-bold">{t.home.emptyTitle}</p>
-                    <p className="text-ink-2">{t.home.emptyBody}</p>
-                  </div>
+                <div className="pad-line pb-4 [line-height:1.5]">
+                  <p className="font-heading text-lg font-bold">{t.home.emptyTitle}</p>
+                  <p className="text-ink-2">{t.home.emptyBody}</p>
                 </div>
               )}
             </div>
@@ -199,8 +288,41 @@ export default function HomeScreen() {
           </section>
         </div>
 
+        <section data-rise aria-label={t.home.morePlaces} className="pt-10 lg:pt-12">
+          <ul className={cn("grid gap-3", words.length >= PLAY_MIN_WORDS && "lg:grid-cols-2")}>
+            <li>
+              <Link href="/stickers" className={ROW}>
+                <span aria-hidden="true" className="flex shrink-0 -space-x-2.5">
+                  {stickerPreview.ids.map((id) => (
+                    <StickerArt key={id} id={id} locked={earned[id] === undefined} size={44} />
+                  ))}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-heading text-lg leading-tight font-bold">{t.home.stickersTitle}</span>
+                  <span className="block text-[0.9375rem] text-ink-2">{t.home.stickersCount(stickerPreview.count, STICKER_IDS.length)}</span>
+                </span>
+                <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-ink-2" />
+              </Link>
+            </li>
+            {words.length >= PLAY_MIN_WORDS && (
+              <li>
+                <Link href="/play" className={ROW}>
+                  <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-xl bg-paper-2">
+                    <Gamepad2 className="size-6" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-heading text-lg leading-tight font-bold">{t.home.playTitle}</span>
+                    <span className="block text-[0.9375rem] text-ink-2">{t.home.playHint}</span>
+                  </span>
+                  <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-ink-2" />
+                </Link>
+              </li>
+            )}
+          </ul>
+        </section>
+
         {otherBooks.length > 0 && (
-          <section aria-labelledby="other-books-heading" className="pt-12 lg:pt-14">
+          <section data-rise aria-labelledby="other-books-heading" className="pt-10 lg:pt-12">
             <div className="flex items-center justify-between gap-3 pb-3">
               <h2 id="other-books-heading" className="font-heading text-xl font-bold lg:text-2xl">
                 {t.home.otherBooksTitle}

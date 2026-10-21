@@ -1,17 +1,21 @@
 import "fake-indexeddb/auto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 
 const replace = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace, push: vi.fn() }), usePathname: () => "/" }));
 let words: unknown[] | null = [];
+const speak = vi.fn(async () => {});
+vi.mock("@/lib/tts", () => ({ speak: (...a: unknown[]) => speak(...(a as [])), stop: vi.fn(async () => {}) }));
 vi.mock("@/hooks/useSavedWords", () => ({ useSavedWords: () => words }));
 vi.mock("@/stores/settings", async (orig) => ({ ...(await orig<typeof import("@/stores/settings")>()), useSettingsHydrated: () => true }));
+vi.mock("@/stores/rewards", async (orig) => ({ ...(await orig<typeof import("@/stores/rewards")>()), useRewardsHydrated: () => true }));
 vi.mock("@/stores/progress", async (orig) => ({ ...(await orig<typeof import("@/stores/progress")>()), useProgressHydrated: () => true }));
 
 import HomeScreen from "./HomeScreen";
 import { defaultSettings, useSettings } from "@/stores/settings";
 import { defaultProgress, useProgress } from "@/stores/progress";
+import { defaultRewards, useRewards } from "@/stores/rewards";
 
 const word = (w: string, translation: string, difficulty: string, i: number) => ({
   key: w, word: w, phonetic: "", english: "", translation, emoji: "", difficulty, example: null, source: "dictionary", language: "hiligaynon", bookId: null, savedAt: 100 - i,
@@ -22,6 +26,8 @@ beforeEach(() => {
   words = [];
   useSettings.setState({ ...defaultSettings, onboarded: true, childName: "Ana" });
   useProgress.setState({ ...defaultProgress });
+  useRewards.setState({ ...defaultRewards, earned: {}, flags: { ...defaultRewards.flags, openedBooks: [] } });
+  speak.mockClear();
 });
 afterEach(cleanup);
 
@@ -48,22 +54,76 @@ describe("HomeScreen", () => {
     expect(document.querySelector("[data-slot=stamp-star]")).toBeTruthy();
   });
 
-  it("falls back to the first bundled book", () => {
+  it("falls back to the first bundled book, and says Umpisahan ta until a word is saved", () => {
     render(<HomeScreen />);
     expect(screen.getByText("The Brave Little Fox")).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Padayon sa pagbasa" }).getAttribute("href")).toBe("/read/fox");
+    expect(screen.getByRole("link", { name: "Umpisahan ta" }).getAttribute("href")).toBe("/read/fox");
+    expect(screen.queryByRole("link", { name: "Padayon sa pagbasa" })).toBeNull();
+  });
+
+  it("the in-page primary follows progress: continue at 1-99%, read again at 100%; scan is a paper secondary", () => {
+    useProgress.setState({ currentBookId: "fox", bookProgress: { fox: 100 } });
+    render(<HomeScreen />);
+    expect(screen.getByRole("link", { name: "Basaha liwat" }).getAttribute("href")).toBe("/read/fox");
+    const read = screen.getByRole("link", { name: "Basaha liwat" });
+    const scan = screen.getByRole("link", { name: "I-scan ang pahina" });
+    expect(read.getAttribute("data-variant")).toBe("default");
+    expect(scan.getAttribute("data-variant")).toBe("secondary");
+    cleanup();
+    useProgress.setState({ bookProgress: { fox: 1 } });
+    render(<HomeScreen />);
+    expect(screen.getByRole("link", { name: "Padayon sa pagbasa" })).toBeTruthy();
+  });
+
+  it("the owl's tag is a real button with the newest word and its meaning; tapping it listens and records the event", () => {
+    words = [word("enormous", "Dako gid", "medium", 0), word("quiet", "Mahipos", "easy", 1)];
+    useProgress.setState({ savedWordCount: 2 });
+    render(<HomeScreen />);
+    expect(screen.getByText("Mabasa mo na ang 2 ka bag-ong pulong!")).toBeTruthy();
+    const tag = screen.getByRole("button", { name: /enormous\s*Dako gid/ });
+    fireEvent.click(tag);
+    expect(speak).toHaveBeenCalledWith("enormous", expect.objectContaining({ rate: 0.8 }));
+    expect(useRewards.getState().flags.listened).toBe(true);
+  });
+
+  it("with no words the owl invites the child to pick a book instead", () => {
+    render(<HomeScreen />);
+    expect(screen.getByText("Pili-a ang libro, kag basahon ta!")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Dako|Pamati/ })).toBeNull();
+  });
+
+  it("the stars chip counts word, quiz and bonus stars", () => {
+    useProgress.setState({ savedWordCount: 6, quizStars: 1 });
+    useRewards.setState({ bonusStars: 2 });
+    words = [word("a1", "t", "easy", 0)];
+    render(<HomeScreen />);
+    expect(screen.getByText("5 ka bituon")).toBeTruthy();
+  });
+
+  it("links to the sticker book with N of 14, and to the memory game only from 3 saved words", () => {
+    useRewards.setState({ earned: { "first-word": 1, "first-scan": 2 } });
+    render(<HomeScreen />);
+    const stickers = screen.getByRole("link", { name: /Mga sticker/ });
+    expect(stickers.getAttribute("href")).toBe("/stickers");
+    expect(within(stickers).getByText("2 sang 14")).toBeTruthy();
+    expect(screen.queryByRole("link", { name: /Maglaro ta/ })).toBeNull();
+    cleanup();
+    words = [word("a1", "t1", "easy", 0), word("a2", "t2", "easy", 1), word("a3", "t3", "easy", 2)];
+    render(<HomeScreen />);
+    expect(screen.getByRole("link", { name: /Maglaro ta/ }).getAttribute("href")).toBe("/play");
   });
 
   it("lists the last saved words newest first, with a link to /words and a quiz nudge", () => {
     words = [word("a1", "t1", "easy", 0), word("a2", "t2", "medium", 1), word("a3", "t3", "hard", 2), word("a4", "t4", "easy", 3), word("a5", "t5", "easy", 4)];
     useProgress.setState({ savedWordCount: 5 });
     render(<HomeScreen />);
-    expect(screen.getByText("a1")).toBeTruthy();
-    expect(screen.getByText("t4")).toBeTruthy();
-    expect(screen.getByText("a5")).toBeTruthy();
+    const strip = within(document.getElementById("recent-heading")!.closest("section")!);
+    expect(strip.getByText("a1")).toBeTruthy();
+    expect(strip.getByText("t4")).toBeTruthy();
+    expect(strip.getByText("a5")).toBeTruthy();
     // rows beyond the fourth are for lg+ only
-    expect(screen.getByText("a5").closest("li")!.className).toContain("hidden lg:flex");
-    expect(screen.getByText("a4").closest("li")!.className).not.toContain("hidden");
+    expect(strip.getByText("a5").closest("li")!.className).toContain("hidden lg:flex");
+    expect(strip.getByText("a4").closest("li")!.className).not.toContain("hidden");
     expect(screen.getByRole("link", { name: /natipon nga pulong/ }).getAttribute("href")).toBe("/words");
     expect(screen.getByRole("link", { name: "Mag-pasulit" }).getAttribute("href")).toBe("/quiz");
   });
@@ -83,9 +143,16 @@ describe("HomeScreen", () => {
     expect(screen.getByRole("heading", { name: "Iba pang libro" })).toBeTruthy();
   });
 
-  it("records the day's streak once on mount", () => {
-    render(<HomeScreen />);
-    expect(useProgress.getState().streak).toBe(1);
+  it("records the day's streak once on mount and tells the rewards", () => {
+    const d = new Date();
+    const yesterday = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
+    const ymd = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
+    useProgress.setState({ streak: 2, lastActiveDate: ymd });
+    const { rerender } = render(<HomeScreen />);
+    expect(useProgress.getState().streak).toBe(3);
+    expect(useRewards.getState().earned["streak-3"]).toBeTruthy();
+    rerender(<HomeScreen />);
+    expect(useProgress.getState().streak).toBe(3);
   });
 
   it("redirects a brand-new user to /welcome", () => {
@@ -108,6 +175,6 @@ describe("HomeScreen", () => {
   it("speaks Tagalog when the language is tagalog", () => {
     useSettings.setState({ language: "tagalog" });
     render(<HomeScreen />);
-    expect(screen.getByRole("link", { name: "Ituloy ang pagbabasa" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Umpisahan natin" })).toBeTruthy();
   });
 });

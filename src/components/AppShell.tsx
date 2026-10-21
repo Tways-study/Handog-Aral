@@ -8,6 +8,7 @@ import Mascot from "@/components/Mascot";
 import OfflineBanner from "@/components/OfflineBanner";
 import { useT } from "@/hooks/useT";
 import { fadeRoute } from "@/lib/motion";
+import { tabPop } from "@/lib/motionPages";
 import { cn } from "@/lib/utils";
 
 type NavId = "home" | "books" | "scan" | "words" | "quiz";
@@ -20,15 +21,22 @@ interface NavItem {
   also?: string[];
 }
 
+/**
+ * /play (the memory game over the child's saved words) and /stickers (what the child has earned) are not tabs
+ * of their own: no sixth tab. They light up Pulong, the collection the child is building.
+ */
 export const NAV_ITEMS: NavItem[] = [
   { id: "home", href: "/", icon: House },
   { id: "books", href: "/books", icon: Book, also: ["/read"] },
   { id: "scan", href: "/scan", icon: ScanLine },
-  { id: "words", href: "/words", icon: NotebookText },
+  { id: "words", href: "/words", icon: NotebookText, also: ["/play", "/stickers"] },
   { id: "quiz", href: "/quiz", icon: SquareCheckBig },
 ];
 
 const FOCUS = "focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring";
+
+/** Dispatch `new CustomEvent("handog:pop-tab", { detail: "words" })` to give that tab icon one 1.2x pop. */
+export const POP_TAB_EVENT = "handog:pop-tab";
 
 const LABEL_KEY = {
   home: "navHome",
@@ -107,7 +115,7 @@ function BottomNav() {
               active ? "text-ink" : "text-ink-2",
             )}
           >
-            <Icon aria-hidden="true" className="size-[22px] shrink-0" />
+            <Icon aria-hidden="true" data-tab-icon={item.id} className="size-[22px] shrink-0" />
             <span className="line-clamp-2 max-w-full [word-spacing:0] text-balance [overflow-wrap:anywhere] [letter-spacing:0] [html.font-large_&]:text-[0.5625rem]">{label}</span>
             <span
               aria-hidden="true"
@@ -159,7 +167,7 @@ function Rail() {
         }
         return (
           <Link key={item.id} href={item.href} aria-current={active ? "page" : undefined} className={railLink(active)}>
-            <Icon aria-hidden="true" className="size-[22px]" />
+            <Icon aria-hidden="true" data-tab-icon={item.id} className="size-[22px]" />
             {label}
           </Link>
         );
@@ -190,6 +198,24 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   // A subtle fade on route change (no-op under prefers-reduced-motion).
   useEffect(() => fadeRoute(mainRef.current), [pathname]);
+
+  // Other screens ask for a tab to pop once ("something new is in Pulong").
+  useEffect(() => {
+    const stops = new Set<() => void>();
+    const onPop = (e: Event) => {
+      const id = (e as CustomEvent<string>).detail;
+      if (typeof id !== "string" || !(id in LABEL_KEY)) return;
+      document.querySelectorAll(`[data-tab-icon="${id}"]`).forEach((icon) => {
+        const stop = tabPop(icon);
+        stops.add(stop);
+      });
+    };
+    window.addEventListener(POP_TAB_EVENT, onPop);
+    return () => {
+      window.removeEventListener(POP_TAB_EVENT, onPop);
+      stops.forEach((stop) => stop());
+    };
+  }, []);
 
   return (
     <div className="min-h-dvh bg-background text-foreground">

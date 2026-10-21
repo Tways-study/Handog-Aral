@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { Check, Download, Trash2, Volume2, Wifi, WifiOff } from "lucide-react";
+import Link from "next/link";
+import { Check, Download, Sticker, Trash2, Vibrate, Volume2, Wifi, WifiOff } from "lucide-react";
 import { toast } from "sonner";
 import { PageContainer, PageHeader } from "@/components/PageLayout";
 import InstallAppButton from "@/components/InstallAppButton";
 import Mascot from "@/components/Mascot";
+import Owl from "@/components/owl/Owl";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -15,7 +17,9 @@ import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useT } from "@/hooks/useT";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { buzz } from "@/lib/haptics";
 import { offlinePackStatus, warmOfflinePack } from "@/lib/ocr/tesseract";
+import { play } from "@/lib/sound";
 import { speak } from "@/lib/tts";
 import { cn } from "@/lib/utils";
 import { syncVocabularyProgress } from "@/lib/vocabulary";
@@ -111,7 +115,12 @@ export default function SettingsScreen() {
   const s = useSettings();
   return (
     <PageContainer>
-      <PageHeader title={t.settings.title} subtitle={t.settings.subtitle} hideSettings />
+      <PageHeader
+        title={t.settings.title}
+        subtitle={t.settings.subtitle}
+        hideSettings
+        trailing={<Owl size={64} outfit="glasses" mood="idle" className="-mt-1" />}
+      />
       <div className="flex max-w-2xl flex-col gap-6 pt-2">
         <Section id="sec-child" title={t.settings.childHeading}>
           <Row label={t.settings.nameLabel} help={t.settings.nameHelp} htmlFor="child-name">
@@ -142,6 +151,7 @@ export default function SettingsScreen() {
         </Section>
 
         <ReadingSection />
+        <FunSection />
 
         <Section id="sec-appearance" title={t.settings.appearanceHeading}>
           <Row label={t.settings.themeLabel} help={t.settings.themeHelp} id="lbl-theme">
@@ -184,6 +194,54 @@ export default function SettingsScreen() {
         </Section>
       </div>
     </PageContainer>
+  );
+}
+
+function FunSection() {
+  const t = useT();
+  const owl3d = useSettings((s) => s.owl3d);
+  const setOwl3d = useSettings((s) => s.setOwl3d);
+  const sound = useSettings((s) => s.sound);
+  const setSound = useSettings((s) => s.setSound);
+  const haptics = useSettings((s) => s.haptics);
+  const setHaptics = useSettings((s) => s.setHaptics);
+
+  return (
+    <>
+      <Section id="sec-fun" title={t.settings.funHeading}>
+        <Row label={t.settings.owl3dLabel} help={t.settings.owl3dHelp} htmlFor="owl-3d">
+          <Switch id="owl-3d" checked={owl3d} onCheckedChange={setOwl3d} />
+        </Row>
+        <Row label={t.settings.soundLabel} help={t.settings.soundHelp} htmlFor="sound-fx">
+          <div className="flex flex-wrap items-center gap-3">
+            <Switch id="sound-fx" checked={sound} onCheckedChange={setSound} />
+            <Button variant="secondary" size="sm" disabled={!sound} onClick={() => play("chime")}>
+              <Volume2 aria-hidden="true" />
+              {t.settings.soundTest}
+            </Button>
+          </div>
+        </Row>
+        <Row label={t.settings.vibrationLabel} help={t.settings.vibrationHelp} htmlFor="vibration">
+          <div className="flex flex-wrap items-center gap-3">
+            <Switch id="vibration" checked={haptics} onCheckedChange={setHaptics} />
+            <Button variant="secondary" size="sm" disabled={!haptics} onClick={() => buzz("success")}>
+              <Vibrate aria-hidden="true" />
+              {t.settings.vibrationTest}
+            </Button>
+          </div>
+        </Row>
+      </Section>
+      <Section id="sec-owl" title={t.settings.owlHeading}>
+        <Row label={t.settings.owlRowLabel} help={t.settings.owlRowHelp}>
+          <Button asChild variant="secondary" className="h-auto min-h-12 max-w-full py-2 whitespace-normal">
+            <Link href="/stickers">
+              <Sticker aria-hidden="true" />
+              {t.settings.owlRowLink}
+            </Link>
+          </Button>
+        </Row>
+      </Section>
+    </>
   );
 }
 

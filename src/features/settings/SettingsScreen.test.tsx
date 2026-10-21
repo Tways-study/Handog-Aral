@@ -9,6 +9,10 @@ let online = true;
 vi.mock("next/navigation", () => ({ usePathname: () => "/settings" }));
 vi.mock("@/hooks/useOnlineStatus", () => ({ useOnlineStatus: () => ({ online }) }));
 vi.mock("@/lib/tts", () => ({ speak: vi.fn(async () => {}), stop: vi.fn(async () => {}) }));
+const playSound = vi.fn();
+vi.mock("@/lib/sound", () => ({ play: (...a: unknown[]) => playSound(...a) }));
+const buzzMock = vi.fn();
+vi.mock("@/lib/haptics", () => ({ buzz: (...a: unknown[]) => buzzMock(...a) }));
 vi.mock("sonner", () => ({ toast: Object.assign(vi.fn(), { success: vi.fn(), error: vi.fn() }) }));
 const warm = vi.fn();
 const status = vi.fn();
@@ -58,6 +62,42 @@ describe("Settings controls write the stores", () => {
   it("has no API-key UI", () => {
     render(<SettingsScreen />);
     expect(screen.queryByText(/api key/i)).toBeNull();
+  });
+});
+
+describe("Fun group and the owl", () => {
+  it("says who the screen is for, and keeps the adult English", () => {
+    render(<SettingsScreen />);
+    expect(screen.getByText(/For parents, teachers and guardians/)).toBeTruthy();
+    expect(document.querySelector("[data-owl-outfit=glasses]")).toBeTruthy();
+  });
+
+  it("switches the animated owl, sounds and vibration through the settings store", () => {
+    render(<SettingsScreen />);
+    const owl = screen.getByRole("switch", { name: "Animated 3D owl" });
+    expect(owl.getAttribute("aria-checked")).toBe("true");
+    fireEvent.click(owl);
+    fireEvent.click(screen.getByRole("switch", { name: "Sounds" }));
+    fireEvent.click(screen.getByRole("switch", { name: "Vibration" }));
+    expect(useSettings.getState()).toMatchObject({ owl3d: false, sound: true, haptics: false });
+  });
+
+  it("test buttons play a chime / a buzz, and are off while their setting is off", () => {
+    render(<SettingsScreen />);
+    const sound = screen.getByRole("button", { name: "Play a test sound" }) as HTMLButtonElement;
+    expect(sound.disabled).toBe(true);
+    fireEvent.click(screen.getByRole("switch", { name: "Sounds" }));
+    expect(sound.disabled).toBe(false);
+    fireEvent.click(sound);
+    expect(playSound).toHaveBeenCalledWith("chime");
+    fireEvent.click(screen.getByRole("button", { name: "Test vibration" }));
+    expect(buzzMock).toHaveBeenCalledWith("success");
+  });
+
+  it("links to the owl wardrobe and sticker book", () => {
+    render(<SettingsScreen />);
+    expect(screen.getByRole("link", { name: "Open the sticker book" }).getAttribute("href")).toBe("/stickers");
+    expect(screen.getByText("Owl wardrobe and sticker book")).toBeTruthy();
   });
 });
 

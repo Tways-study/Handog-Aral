@@ -4,7 +4,7 @@
  */
 const english = {
   title: "Settings",
-  subtitle: "For parents and teachers. Changes apply right away.",
+  subtitle: "For parents, teachers and guardians. Changes apply right away.",
 
   childHeading: "Child",
   nameLabel: "Child's name",
@@ -40,6 +40,20 @@ const english = {
   fast: "Fast",
   listen: "Listen",
   listenSample: "The owl reads one page at a time.",
+
+  funHeading: "Fun",
+  owl3dLabel: "Animated 3D owl",
+  owl3dHelp: "The owl looks around and reacts. Turn it off on slower phones or to save battery; the flat owl is used instead.",
+  soundLabel: "Sounds",
+  soundHelp: "Short, soft sounds for stamps and stars. Off by default so shared devices stay quiet.",
+  soundTest: "Play a test sound",
+  vibrationLabel: "Vibration",
+  vibrationHelp: "A tiny buzz when a star or sticker is earned, on phones that support it.",
+  vibrationTest: "Test vibration",
+  owlHeading: "Owl",
+  owlRowLabel: "Owl wardrobe and sticker book",
+  owlRowHelp: "Dress the owl and see the stickers earned so far.",
+  owlRowLink: "Open the sticker book",
 
   appearanceHeading: "Appearance",
   themeLabel: "Theme",

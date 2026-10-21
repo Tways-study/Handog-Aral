@@ -1,11 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { act, cleanup, render, screen, within } from "@testing-library/react";
 
 let mockPath = "/";
 vi.mock("next/navigation", () => ({ usePathname: () => mockPath }));
 vi.mock("@/hooks/useOnlineStatus", () => ({ useOnlineStatus: () => ({ online: true }) }));
 
-import AppShell, { isActive } from "./AppShell";
+import { gsap } from "gsap";
+import AppShell, { isActive, NAV_ITEMS, POP_TAB_EVENT } from "./AppShell";
 
 function renderAt(path: string) {
   mockPath = path;
@@ -65,5 +66,33 @@ describe("AppShell navigation", () => {
     expect(screen.queryAllByRole("navigation", { hidden: true })).toHaveLength(0);
     expect(screen.getByRole("main")).toBeTruthy();
     expect(screen.getByText("Laktawan sa sulod").getAttribute("href")).toBe("#main");
+  });
+});
+
+describe("AppShell extra routes and tab pop", () => {
+  it("lights Pulong (and only Pulong) for /play and /stickers, so no tab looks wrong", () => {
+    const words = NAV_ITEMS.find((i) => i.id === "words")!;
+    expect(isActive("/play", words)).toBe(true);
+    expect(isActive("/stickers", words)).toBe(true);
+    expect(isActive("/words", words)).toBe(true);
+    for (const path of ["/play", "/stickers"]) {
+      const others = NAV_ITEMS.filter((i) => i.id !== "words");
+      expect(others.some((i) => isActive(path, i))).toBe(false);
+    }
+    expect(NAV_ITEMS).toHaveLength(5);
+  });
+
+  it("pops the named tab icon once on handog:pop-tab, and ignores unknown names", () => {
+    const impl = (query: string) => ({ matches: query.includes("no-preference"), media: query, onchange: null, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, dispatchEvent: () => false });
+    vi.stubGlobal("matchMedia", impl);
+    window.matchMedia = impl as unknown as typeof window.matchMedia;
+    renderAt("/");
+    const icons = document.querySelectorAll('[data-tab-icon="words"]');
+    expect(icons.length).toBe(2);
+    act(() => void window.dispatchEvent(new CustomEvent(POP_TAB_EVENT, { detail: "bogus" })));
+    expect(gsap.getTweensOf(icons[0])).toHaveLength(0);
+    act(() => void window.dispatchEvent(new CustomEvent(POP_TAB_EVENT, { detail: "words" })));
+    expect(gsap.getTweensOf(icons[0]).length).toBeGreaterThan(0);
+    vi.unstubAllGlobals();
   });
 });

@@ -3,18 +3,23 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { RadioGroup } from "radix-ui";
-import Mascot from "@/components/Mascot";
+import Owl, { type OwlReaction } from "@/components/owl/Owl";
 import StampCheck from "@/components/StampCheck";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useT } from "@/hooks/useT";
+import { buzz } from "@/lib/haptics";
 import { useMotion } from "@/lib/motion";
+import { play } from "@/lib/sound";
 import { cn } from "@/lib/utils";
 import type { Language } from "@/shared/schemas";
 import type { Jacket } from "@/shared/types";
 import { JACKET_CLASS } from "@/features/home/jacket";
 import { useSettings } from "@/stores/settings";
+import SpeechTag from "@/features/home/SpeechTag";
+import SuperpowerStep from "./SuperpowerStep";
 
 /** The teacher's check, stamped onto the chosen notebook's label. Lands once when it appears. */
 function SelectedStamp() {
@@ -30,58 +35,114 @@ function SelectedStamp() {
 
 const JACKET_FOR: Record<Language, Jacket> = { hiligaynon: "indigo", tagalog: "gumamela" };
 
+/** How long the owl waves hello before settling, in ms. */
+const WAVE_MS = 2600;
+
 export default function WelcomeScreen() {
-  const t = useT();
+  const [step, setStep] = useState<1 | 2>(1);
+  const childName = useSettings((s) => s.childName);
+  const setChildName = useSettings((s) => s.setChildName);
+  const setOnboarded = useSettings((s) => s.setOnboarded);
   const router = useRouter();
+
+  const finish = () => {
+    setOnboarded(true);
+    router.replace("/");
+  };
+
+  if (step === 2) {
+    return (
+      <SuperpowerStep
+        name={childName}
+        onDone={finish}
+        onSkip={finish}
+      />
+    );
+  }
+
+  return (
+    <NameStep
+      onStart={(name) => {
+        setChildName(name);
+        setStep(2);
+        window.scrollTo?.({ top: 0 });
+      }}
+      onSkip={() => {
+        setChildName("");
+        finish();
+      }}
+    />
+  );
+}
+
+function NameStep({ onStart, onSkip }: { onStart: (name: string) => void; onSkip: () => void }) {
+  const t = useT();
   const { fadeRoute, enterPanel } = useMotion();
   const coverRef = useRef<HTMLElement>(null);
   const lowerRef = useRef<HTMLDivElement>(null);
   const language = useSettings((s) => s.language);
   const setLanguage = useSettings((s) => s.setLanguage);
-  const setChildName = useSettings((s) => s.setChildName);
-  const setOnboarded = useSettings((s) => s.setOnboarded);
   const [name, setName] = useState("");
+  const roomy = useMediaQuery("(min-width: 360px) and (min-height: 700px)");
+  const desktop = useMediaQuery("(min-width: 1024px)");
+  const [waving, setWaving] = useState(true);
+  const [reaction, setReaction] = useState<OwlReaction | undefined>({ kind: "wave", key: 1 });
 
   useEffect(() => {
     const stopCover = fadeRoute(coverRef.current);
     const stopLower = enterPanel(lowerRef.current);
+    const id = window.setTimeout(() => setWaving(false), WAVE_MS);
     return () => {
       stopCover();
       stopLower();
+      window.clearTimeout(id);
     };
   }, [fadeRoute, enterPanel]);
-
-  const finish = (childName: string) => {
-    setChildName(childName);
-    setOnboarded(true);
-    router.replace("/");
-  };
 
   const options: { value: Language; label: string }[] = [
     { value: "hiligaynon", label: t.welcome.optionHiligaynon },
     { value: "tagalog", label: t.welcome.optionTagalog },
   ];
+  const owlSize = desktop ? 200 : roomy ? 168 : 132;
 
   return (
     <form
       className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:max-w-xl lg:justify-center lg:py-10"
       onSubmit={(e) => {
         e.preventDefault();
-        finish(name.trim());
+        onStart(name.trim());
       }}
     >
+      {/* The owl, perched on the notebook, says hello in its own speech tag. */}
+      <div className="relative z-10 flex items-end justify-between gap-2 lg:mt-4">
+        <SpeechTag tail="right" className="mb-3 min-w-0 flex-1 px-4 py-3 lg:mb-6">
+          <p className="text-base leading-snug font-bold lg:text-lg">{t.welcome.owlHello}</p>
+        </SpeechTag>
+        <Owl
+          priority="hero"
+          size={owlSize}
+          mood={waving ? "wave" : "idle"}
+          interactive
+          title={t.home.owlName}
+          reaction={reaction}
+          onTap={() => {
+            setReaction({ kind: "hop", key: Date.now() });
+            play("pop");
+            buzz("tap");
+          }}
+          className="-mb-14 mr-1 lg:-mb-16"
+        />
+      </div>
       <section
         ref={coverRef}
-        className="relative mt-[6.5rem] flex min-h-[19rem] flex-1 flex-col justify-between gap-6 rounded-[0.375rem_1.75rem_1.75rem_0.375rem] bg-indigo py-7 pr-5 pl-10 text-indigo-fg shadow-lg lg:mt-24 lg:min-h-[22rem] lg:flex-none lg:py-9 lg:pr-8 lg:pl-14"
+        className="relative flex min-h-[15rem] flex-col justify-between gap-5 rounded-[0.375rem_1.75rem_1.75rem_0.375rem] bg-indigo py-6 pr-5 pl-10 text-indigo-fg shadow-lg lg:min-h-[19rem] lg:gap-6 lg:py-9 lg:pr-8 lg:pl-14"
       >
         <span aria-hidden="true" className="absolute inset-y-0 left-0 w-5 rounded-l-[0.375rem] bg-black/25 lg:w-6" />
-        <Mascot mood="cheer" size={132} className="absolute -top-[7.25rem] right-5 lg:right-8 lg:-top-[8.25rem] lg:size-[150px]" />
         <div>
           <h1 className="max-w-[8ch] font-heading text-[clamp(2.75rem,14vw,3.5rem)] leading-[0.95] font-extrabold lg:max-w-none lg:text-6xl">
             {t.welcome.appName}
           </h1>
           <p className="mt-3 font-heading text-lg font-bold lg:text-xl">{t.welcome.tagline}</p>
-          <p className="mt-2 max-w-[26ch] text-base">{t.welcome.intro}</p>
         </div>
 
         <div className="rounded-[0.625rem] border-2 border-black/10 bg-label-paper px-4 pt-3 pb-2 text-label-ink">
@@ -91,7 +152,12 @@ export default function WelcomeScreen() {
           <Input
             id="child-name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              const next = e.target.value;
+              // The first letter makes the owl cheer.
+              if (name.trim() === "" && next.trim() !== "") setReaction({ kind: "cheer", key: Date.now() });
+              setName(next);
+            }}
             placeholder={t.welcome.namePlaceholder}
             maxLength={24}
             autoComplete="given-name"
@@ -101,14 +167,18 @@ export default function WelcomeScreen() {
         </div>
       </section>
 
-      <div ref={lowerRef} className="mt-8 flex flex-col gap-8 lg:mt-10">
+      <div ref={lowerRef} className="mt-7 flex flex-1 flex-col gap-6 lg:mt-9 lg:flex-none lg:gap-8">
         <div className="flex flex-col gap-3">
           <span id="language-label" className="text-base font-bold">
             {t.welcome.languageLabel}
           </span>
           <RadioGroup.Root
             value={language}
-            onValueChange={(v) => setLanguage(v as Language)}
+            onValueChange={(v) => {
+              setLanguage(v as Language);
+              setReaction({ kind: "hop", key: Date.now() });
+              play("flip");
+            }}
             aria-labelledby="language-label"
             className="grid grid-cols-2 gap-4 px-1 pb-1"
           >
@@ -119,12 +189,12 @@ export default function WelcomeScreen() {
                   key={o.value}
                   value={o.value}
                   className={cn(
-                    "group relative flex min-h-32 cursor-pointer flex-col justify-end rounded-[0.25rem_1rem_1rem_0.25rem] py-3 pr-2 pl-5 text-left shadow-sm outline-none transition-[transform,box-shadow] duration-150 focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ring motion-safe:active:scale-[0.98] data-[state=checked]:shadow-[0_0_0_3px_var(--paper),0_0_0_5.5px_var(--ink)]",
+                    "group relative flex min-h-28 cursor-pointer flex-col justify-end rounded-[0.25rem_1rem_1rem_0.25rem] py-3 pr-2 pl-5 text-left shadow-sm outline-none transition-[transform,box-shadow] duration-150 focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-ring motion-safe:active:scale-[0.98] data-[state=checked]:shadow-[0_0_0_3px_var(--paper),0_0_0_5.5px_var(--ink)] motion-safe:data-[state=checked]:-rotate-2",
                     JACKET_CLASS[JACKET_FOR[o.value]],
                   )}
                 >
                   <span aria-hidden="true" className="absolute inset-y-0 left-0 w-3.5 rounded-l-[0.25rem] bg-black/25" />
-                  <span className="mb-3 flex justify-end">
+                  <span className="mb-2 flex justify-end">
                     <span className="grid size-9 place-items-center rounded-full bg-label-paper">
                       {selected ? (
                         <SelectedStamp />
@@ -142,11 +212,11 @@ export default function WelcomeScreen() {
           </RadioGroup.Root>
         </div>
 
-        <div className="flex flex-col gap-1">
+        <div className="sticky bottom-0 z-20 -mx-5 mt-auto flex flex-col gap-1 bg-background px-5 pt-3 pb-1 lg:static lg:mx-0 lg:bg-transparent lg:p-0">
           <Button type="submit" size="xl" className="w-full">
             {t.welcome.start}
           </Button>
-          <Button type="button" variant="link" className="self-center" onClick={() => finish("")}>
+          <Button type="button" variant="link" className="self-center" onClick={onSkip}>
             {t.welcome.skip}
           </Button>
         </div>

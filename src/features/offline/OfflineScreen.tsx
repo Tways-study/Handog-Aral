@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Mascot from "@/components/Mascot";
+import { OfflineArt } from "@/components/art";
 import { PageContainer } from "@/components/PageLayout";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useT } from "@/hooks/useT";
@@ -13,7 +13,7 @@ export default function OfflineScreen() {
   return (
     <div className="min-h-dvh">
       <PageContainer className="flex flex-col items-center py-16 text-center">
-        <Mascot mood="think" size={120} />
+        <OfflineArt size={200} />
         <h1 className="mt-6 font-heading text-3xl font-bold text-balance">{t.offlinePageTitle}</h1>
         <p className="mt-3 max-w-[36ch] text-lg text-ink-2">{t.offlinePageBody}</p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
