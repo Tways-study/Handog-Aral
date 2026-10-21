@@ -70,6 +70,7 @@ src/shared/      zod schemas shared by client and server
 src/data/        bundled books, curated words, per-feature strings (Hiligaynon / Tagalog)
 e2e/             Playwright specs
 docs/v3-plan.md  the v3 overhaul plan and status
+CHANGELOG.md     version history
 ```
 
 More detail for contributors (and AI assistants) is in [`CLAUDE.md`](CLAUDE.md); the product record is in [`PRODUCT.md`](PRODUCT.md).
