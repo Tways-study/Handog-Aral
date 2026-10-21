@@ -42,6 +42,20 @@ export function saveDataOn(): boolean {
   return !!conn?.saveData;
 }
 
+/**
+ * Devices that should never pay for WebGL + three.js: slow or metered networks (the chunk alone is 139 KB gzipped),
+ * 1 GB of RAM or less, or two cores or fewer. Every field is optional in the platform, so a missing value never refuses.
+ */
+export function lowEndDevice(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const nav = navigator as Navigator & { connection?: { effectiveType?: string }; deviceMemory?: number };
+  const type = nav.connection?.effectiveType;
+  if (type === "slow-2g" || type === "2g" || type === "3g") return true;
+  if (typeof nav.deviceMemory === "number" && nav.deviceMemory <= 1) return true;
+  if (typeof nav.hardwareConcurrency === "number" && nav.hardwareConcurrency > 0 && nav.hardwareConcurrency <= 2) return true;
+  return false;
+}
+
 export function hasOwl3dFailed(): boolean {
   try {
     return sessionStorage.getItem(OWL_FAIL_KEY) === "1";
@@ -74,13 +88,14 @@ export interface CapabilityInput {
   ignoreVisibility?: boolean;
 }
 
-/** True when the 3D owl may be loaded: setting on, WebGL, no reduced motion, no save-data, page visible, not failed. */
+/** True when the 3D owl may be loaded: setting on, WebGL, no reduced motion, no save-data, not a low-end device, page visible, not failed. */
 export function owl3dAllowed({ owl3d, ignoreVisibility = false }: CapabilityInput): boolean {
   if (typeof window === "undefined") return false;
   if (!owl3d || forceSvg) return false;
   if (hasOwl3dFailed()) return false;
   if (prefersReducedMotion()) return false;
   if (saveDataOn()) return false;
+  if (lowEndDevice()) return false;
   if (!ignoreVisibility && typeof document !== "undefined" && document.visibilityState === "hidden") return false;
   return detectWebGL();
 }

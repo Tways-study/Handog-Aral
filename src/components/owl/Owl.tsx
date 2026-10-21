@@ -10,6 +10,7 @@ import {
   owl3dAllowed,
   subscribeOwlCapability,
 } from "@/lib/owl/capability";
+import { owl3dLoadGate } from "@/lib/owl/loadGate";
 import { isSlotOwner, registerOwl, subscribeSlots } from "@/lib/owl/slots";
 import { useSettings, type OwlOutfit } from "@/stores/settings";
 
@@ -74,6 +75,8 @@ export default function Owl({
   const [inView, setInView] = useState(false);
   const [slotId, setSlotId] = useState<number | null>(null);
   const [ready, setReady] = useState(false);
+  // The 3D chunk waits for the load gate (after window load, idle, and a calm main thread); the SVG is the owl until then.
+  const [gateOpen, setGateOpen] = useState(false);
   const [tapKey, setTapKey] = useState(0);
 
   // Capability (client only). Reduced motion / save-data changes at runtime flip it off again.
@@ -92,6 +95,17 @@ export default function Owl({
     };
   }, [owl3d, epoch]);
 
+  useEffect(() => {
+    if (!staticOk || gateOpen) return;
+    let live = true;
+    void owl3dLoadGate().then((ok) => {
+      if (live && ok) setGateOpen(true);
+    });
+    return () => {
+      live = false;
+    };
+  }, [staticOk, gateOpen]);
+
   // On screen (with a little margin)?
   useEffect(() => {
     const el = rootRef.current;
@@ -105,7 +119,7 @@ export default function Owl({
   }, [staticOk]);
 
   // Register for the per-page 3D slot while this owl is eligible; the registry decides who actually gets it.
-  const wants = staticOk && inView && (visible || slotId !== null);
+  const wants = staticOk && gateOpen && inView && (visible || slotId !== null);
   useEffect(() => {
     if (!wants) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- releasing the slot when the owl leaves the screen

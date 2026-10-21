@@ -9,8 +9,8 @@ import { hasLegacyState } from "@/stores/bootMirror";
 import { useProgressHydrated } from "@/stores/progress";
 import { useSettings, useSettingsHydrated } from "@/stores/settings";
 import AppShell from "@/components/AppShell";
-import CelebrationHost from "@/components/celebration/CelebrationHost";
-import RewardsBoot from "@/components/celebration/RewardsBoot";
+import CelebrationGate from "@/components/celebration/CelebrationGate";
+import RewardsBootLazy from "@/components/celebration/RewardsBootLazy";
 import LoadingFrame from "@/components/LoadingFrame";
 import ThemeSync from "@/components/ThemeSync";
 import { Toaster } from "@/components/ui/sonner";
@@ -107,8 +107,8 @@ export default function Providers({ children }: { children: ReactNode }) {
         <AppShell>
           <HydrationGate>{children}</HydrationGate>
         </AppShell>
-        <RewardsBoot />
-        <CelebrationHost />
+        <RewardsBootLazy />
+        <CelebrationGate />
         <Toaster />
       </TooltipProvider>
     </SerwistProvider>
