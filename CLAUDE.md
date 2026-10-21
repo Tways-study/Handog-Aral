@@ -4,53 +4,50 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Handog Aral is a reading companion for Filipino children (ages 6–12, including children with dyslexia). A child scans a book page, taps a word, and gets a definition explained in Hiligaynon or Filipino/Tagalog. It is a Next.js 16 (App Router) + React 19 + TypeScript + Tailwind v4 PWA, wrapped for Android with Capacitor. The v3 overhaul is in progress on the `v3-overhaul` branch (see `PRODUCT.md`); the current UI is still the pre-redesign look.
+Handog Aral is a reading companion for Filipino children (ages 6–12, including children with dyslexia). A child scans a book page (or opens a built-in story), taps a word, and gets an explanation in Hiligaynon or Filipino/Tagalog. It is a Next.js 16 (App Router) + React 19 + TypeScript + Tailwind v4 PWA, mobile-first with a real desktop layout, wrapped for Android with Capacitor. Product truth is in `PRODUCT.md`; the v3 plan and phase status are in `docs/v3-plan.md` (work is on branch `v3-overhaul`).
 
 ## Commands
 
 ```bash
-npm install
-npm run dev          # next dev (http://localhost:3000)
-npm run build        # web build (Vercel target), Serwist service worker enabled
-npm start            # serve the production web build
+npm install            # postinstall copies the self-hosted Tesseract assets into public/tesseract/ (needs network once)
+npm run dev            # next dev (http://localhost:3000); /design is a dev-only showcase of the design system
+npm run build          # web build (Vercel target), Serwist service worker enabled
+npm start              # serve the production web build
 npm run build:android  # BUILD_TARGET=capacitor next build && npx cap sync android
-npm run typecheck    # tsc --noEmit
-npm run lint         # eslint . (eslint-config-next)
-npm test             # vitest run (jsdom)
-npm run e2e          # playwright test (starts next dev; mobile 375x812 + desktop 1280x800)
+npm run typecheck      # tsc --noEmit
+npm run lint           # eslint . (eslint-config-next)
+npm test               # vitest run (jsdom)
+npx vitest run src/lib/quiz.test.ts   # a single test file
+npm run e2e            # playwright test (mobile 375x812 + desktop 1280x800)
 ```
 
-**Two build targets, one codebase.** `next build` is the web target. `BUILD_TARGET=capacitor next build` is the Android target: `output: 'export'`, `trailingSlash`, unoptimized images, `pageExtensions: ['tsx']` (so `route.ts` handlers such as the Serwist route and future `/api/*` are left out), no service worker. It writes to `out/`, which `capacitor.config.json` serves (`webDir: "out"`). Run `npx cap open android` afterward.
+**Two build targets, one codebase.** `next build` is the web target. `BUILD_TARGET=capacitor next build` is the Android target: `output: 'export'`, `trailingSlash`, unoptimized images, `pageExtensions: ['tsx']` (so every `route.ts` — the `/api/*` proxy and the Serwist route — is left out), no service worker. It writes to `out/`, which `capacitor.config.json` serves. The Android build calls the deployed proxy through `NEXT_PUBLIC_API_BASE`. The two builds share `.next`/`out`, so run one at a time and run the web build last.
 
-Optional env: `NEXT_PUBLIC_GEMINI_API_KEY` in `.env.local` (temporary client-side path; the user can also enter a key in Settings, stored in `localStorage` as `handog-gemini-key`). The app must keep working with no key. This moves behind a server proxy in a later phase.
+**Private build dirs.** Set `NEXT_DIST_DIR=.next-<name>` to build or run `next dev` without clobbering `.next` (git-ignored). The Playwright e2e suite expects a production build in `.next-e2e` served on :3200: `NEXT_DIST_DIR=.next-e2e npm run build`, then `npx playwright test` (it reuses the server if one is up; keep workers ≤ 3). If Playwright's expected Chromium revision isn't installed, point `PW_CHROMIUM_PATH` at an installed one. Every e2e test stubs `/api/*` and dictionaryapi.dev; none may reach the real network.
+
+**Env** (see `.env.example`): `GEMINI_API_KEY`, `GEMINI_MODEL` (default `gemini-flash-latest`), `UPSTASH_REDIS_REST_URL`/`_TOKEN`, `ALLOWED_ORIGINS`, `NEXT_PUBLIC_API_BASE`. The key is server-side only; there is no in-app key entry. In production the proxy fails closed (503) without the Upstash vars; in development it allows all requests.
 
 ## Architecture
 
-**State.** All state is one `useReducer` in `src/context/AppContext.tsx`, persisted to `localStorage` (`handog-aral-state`) and merged over `initialState` on load. `AppProvider` is a client component that loads persisted state in an effect and renders children only after mount, so nothing reads `localStorage` during SSR. Shared types (`AppState`, `Action`, `WordEntry`, `Book`) are in `src/shared/types.ts`. Screens read it through `useApp()` and dispatch typed actions (`LEARN_WORD`, `CACHE_WORD`, `UPDATE_STREAK`, …). `stars` and per-book `bookProgress` are derived inside the `LEARN_WORD` reducer case (stars = `floor(words/3)`, capped at 5; book progress = learned words for that book / 6). Do not set them separately.
+**Routes.** App Router with one thin server `page.tsx` per route rendering a `"use client"` screen from `src/features/<name>/`: `/` (Home), `/welcome` (first-run onboarding), `/books`, `/read/[bookId]` (six bundled books via `generateStaticParams`), `/scan`, `/words`, `/quiz`, `/settings`, `/offline`. `AppShell` (in `Providers`) renders the bottom nav below `lg` and a left rail at `lg`+; screens use `PageContainer`/`PageHeader` from `src/components/PageLayout`. Keep `window`/IndexedDB access out of module scope and server render. A `HydrationGate` in `Providers` shows `LoadingFrame` until the settings and progress stores have hydrated.
 
-**Navigation.** App Router, one thin server `page.tsx` per route rendering a `"use client"` screen from `src/features/<name>/`. Routes: `/` (Home), `/scan`, `/books`, `/words` (vocabulary), `/quiz`, `/settings`, `/welcome` (splash). `BottomNav` is rendered once in `src/app/layout.tsx` and hidden on `/welcome`. Home redirects to `/welcome` on first run (no saved progress and no `handog-aral-welcomed` in sessionStorage). Choosing a book sets `currentBook` and goes to `/scan`; `/read/[bookId]` comes later. Use `next/link` / `useRouter`, and keep `window`/`localStorage` access out of module scope and server render.
+**State.** Persisted zustand stores over `idb-keyval`: `src/stores/settings.ts` (name, language, font size, dyslexia, TTS speed, overlay, theme, `onboarded`) and `src/stores/progress.ts` (current book, book progress, streak, quiz stars/high score, saved-word count). Heavier data is in Dexie (`src/stores/db.ts`, db `handog-aral`): `wordCache` (LRU 2000), `dictionary`, `lookupQueue`, `words` (saved vocabulary). Total stars = word stars (derived from saved-word count) + quiz stars; never overwrite one with the other. Always save/remove words through `learnWord`/`forgetWord` in `src/lib/vocabulary.ts` so book progress and star counts stay in sync. `ThemeSync` applies theme, `html.font-{small,medium,large}` and `body.dyslexia-font` from the settings store. `src/stores/migrate.ts` imports the pre-v3 `localStorage` blob once.
 
-**Layout.** `src/app` (routes, `globals.css`, `sw.ts`, `serwist/[path]/route.ts`), `src/features` (screens), `src/components` (shared UI; `ui/` is shadcn), `src/context`, `src/hooks`, `src/lib` (services, `fonts.ts`, `utils.ts` with `cn`), `src/data`, `src/shared`. Alias `@/*` -> `src/*`. Fonts (Baloo 2, Nunito, Atkinson Hyperlegible) come from `next/font/google` in `src/lib/fonts.ts`.
+**Word-explanation pipeline** (`src/lib/dictionary/explain.ts`): word cache (unless the entry is `offline`) → curated dictionary (`src/data/fallbackWords.ts`, seeded into Dexie by `seed.ts`) → `/api/explain` (Gemini) → dictionaryapi.dev + templated translation → an honest provisional `offline` entry that is enqueued. `src/lib/queue/processor.ts` upgrades queued entries when back online (cache and saved words), and the open word panel swaps in place via a Dexie `liveQuery`. A newer tap must abort the older lookup. Results carry `source` (`ai|curated|dictionary|offline`) and the UI says so.
 
-**Localization.** Child-facing strings live in `src/data/translations.ts`, keyed by `hiligaynon` / `tagalog`, and are read through the `useTranslations()` hook. Settings labels are English because parents and teachers use them. New UI text needs entries in both languages.
+**AI proxy** (`src/app/api/{explain,ocr,health}/route.ts`, `src/server/*`, client in `src/lib/api.ts`). Shared zod contracts are in `src/shared/schemas.ts`. Per-IP Upstash rate limit (30/min explain, 6/min OCR), origin allowlist (always `https://localhost` and `capacitor://localhost`), size caps, 15s upstream timeout. The client returns `{ok, data} | {ok:false, reason:'offline'|'rate_limited'|'error'}`; `isReachable()` pings `/api/health` because `navigator.onLine` is not trusted.
 
-**Word-definition pipeline** (`src/lib/geminiService.ts`, `explainWord`). Order of resolution:
-1. `state.wordCache` check in `ScanScreen`
-2. `src/data/fallbackWords.ts` (curated entries, no network)
-3. Gemini (`gemini-2.0-flash`), if a key exists, with the surrounding sentence passed as context
-4. `dictionaryapi.dev`, with `generateLocalTranslation()` building a templated Hiligaynon/Tagalog gloss
-5. A generic placeholder
+**OCR** (`src/lib/ocr/`): `recognizePage` uses the proxy when online and reachable, otherwise local Tesseract with assets self-hosted under `public/tesseract/` (generated; git-ignored; cached by the `tesseract-assets` runtime cache and by `warmOfflinePack`). `OcrError` codes: `no_text`, `offline_pack_missing`, `aborted`, `failed`. Scans are cancellable and a stale scan must never overwrite a newer one. TTS (`src/lib/tts/`) uses `@capacitor-community/text-to-speech` natively and Web Speech elsewhere, sentence by sentence.
 
-`ScanScreen` builds the cache key as `` `${word}_${language}` `` so a language switch refetches. The `CACHE_WORD` reducer only lowercases the key, so the caller owns the key format. The README says "250 curated entries"; trust the file, not the README, for specifics.
+**Design system** (direction: Pad Paper Storybook; contract in `.impeccable/surfaces/src-app-jsx.md`, comp in `.impeccable/mocks/home-reader-comp.html`). Tokens are CSS variables in `src/app/globals.css` (light and dark) exposed as Tailwind utilities (`bg-paper`, `text-ink`, `bg-sunrise`, jackets `bg-indigo|kangkong|mango|gumamela`, `border-line`, plus the shadcn names). `src/styles/contrast.test.ts` asserts WCAG contrast for the token pairs, so change colours there deliberately. Reading text sits on ruled paper: `.pad`/`.pad-text` tie line height to `--pitch`, which scales with the font-size class. Difficulty is shown by shape and label (`DifficultyStamp`), never colour alone. Rules: no emoji or glyphs as icons (lucide only), no hard-coded hex in components, ≥44px touch targets, visible focus rings (`focus-visible:outline-solid` — in Tailwind v4 `outline-none` plus `outline-3` draws nothing), no hover-only affordances. Motion is GSAP via `src/lib/motion.ts` helpers, gated on `prefers-reduced-motion`, transform/opacity only, no looping decoration.
 
-**OCR** (`src/lib/ocrService.ts`). It tries Gemini Vision first, then falls back to `tesseract.js`, which is dynamically imported to keep the initial bundle small. `CameraScanner` handles `getUserMedia` capture and gallery pick and passes a `File` to this service.
+**Localization.** Child-facing strings are per feature in `src/data/strings/*.ts` (Hiligaynon is the shape, Tagalog `satisfies` it), composed in `src/data/translations.ts`, read with `useT()`. Settings is an adults' screen and is in English. New child-facing text needs both languages.
 
-**Accessibility settings.** These are applied as CSS classes rather than props: font size as `html.font-{small,medium,large}` (with a `--nav-h` variable so `.pb-nav` clears the nav bar), dyslexia mode as `body.dyslexia-font`, and the color overlay as `overlay-{yellow,blue,pink}` on the scan viewport. Layout uses `rem` so everything scales with font size; avoid `px` for text and spacing.
-
-**PWA.** Serwist via `@serwist/turbopack`: `next.config.ts` wraps the config with `withSerwist` (web target only), `src/app/serwist/[path]/route.ts` builds `/serwist/sw.js` from `src/app/sw.ts` (precache manifest + `defaultCache`), and `SerwistProvider` in `src/components/Providers.tsx` registers it in production only. There is no web app manifest and `public/` has only `favicon.svg` yet (icons and manifest come in a later phase).
+**PWA.** Serwist via `@serwist/turbopack`: `next.config.ts` wraps the web config with `withSerwist`; `src/app/serwist/[path]/route.ts` builds `/serwist/sw.js` from `src/app/sw.ts` (precache + runtime rules: CacheFirst `/tesseract/*`, NetworkOnly `/api/*` — never cache the proxy, or offline detection breaks). Updates are prompt-based (a toast posts `SKIP_WAITING`). `src/app/manifest.ts` and icons in `public/icons/` (regenerate with `scripts/gen-pwa-icons.mjs`).
 
 ## Repo notes
 
-- `.agent.md` is a read-only "Senior Code Reviewer" agent profile. It says to use camelCase for variables and PascalCase for components, and to validate external input with Zod. Zod is installed but not used yet.
-- `README.md` is long and partly duplicated (it has two tech-stack and two architecture sections, and several version changelogs). Prefer the code when they disagree.
-- ESLint (flat config, `eslint-config-next`) ignores unused variables that start with an uppercase letter or `_`.
+- `.agent.md` is a read-only "Senior Code Reviewer" agent profile (camelCase variables, PascalCase components, validate external input with Zod).
+- `.impeccable/` holds the design direction, the approved comp and review screenshots; `PRODUCT.md` is the product record.
+- ESLint ignores unused variables that start with an uppercase letter or `_`, and ignores `public/tesseract/**` and `.next-*/**`.
+- Offline dictionary expansion (`scripts/build-dictionary.ts`, `src/data/dictionary.v1.json`, ~2,000 words) is not built yet; it needs a `GEMINI_API_KEY` locally. Generated entries must carry `reviewed: false` until a native speaker checks them.
