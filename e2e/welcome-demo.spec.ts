@@ -27,10 +27,12 @@ test("first superpower: tap a real word, the owl cheers, save it, earn the first
 
   await panel.getByRole("button", { name: "Tipigi" }).click();
   await expect.poll(() => countRows(page, "words")).toBe(1);
-  // The first-word sticker celebration appears.
-  const dialog = page.getByRole("dialog");
+  // The first-word sticker celebration appears (the word sheet is a dialog too on mobile, so pick this one by its text;
+  // the celebration host loads lazily and appears a moment after the sheet closes).
+  const dialog = page.getByRole("dialog").filter({ hasText: "Bag-o nga sticker!" });
   await expect(dialog).toBeVisible();
-  await page.keyboard.press("Escape");
+  await dialog.getByRole("button", { name: "Sige!" }).click();
+  await expect(dialog).toBeHidden();
   await expect(page.getByText("Natipigan na! Imo ini nga una nga pulong.")).toBeVisible();
 
   await page.getByRole("button", { name: "Sige, kadi ta na!" }).click();

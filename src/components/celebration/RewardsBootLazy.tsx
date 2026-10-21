@@ -1,9 +1,9 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { softDynamic } from "@/lib/softDynamic";
 import { useEffect, useState } from "react";
 
-const RewardsBoot = dynamic(() => import("./RewardsBoot"), { ssr: false });
+const RewardsBoot = softDynamic(() => import("./RewardsBoot"));
 
 /** Mounts the sticker backfill only once the browser is idle, so its store and catalog stay out of the first load. */
 export default function RewardsBootLazy() {

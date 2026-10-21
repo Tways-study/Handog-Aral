@@ -1,6 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { softDynamic } from "@/lib/softDynamic";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Mascot from "@/components/Mascot";
 import { cn } from "@/lib/utils";
@@ -45,7 +45,7 @@ export interface OwlProps {
 }
 
 // The heavy three.js module: its own chunk, fetched only when an Owl actually decides to go 3D.
-const Owl3DCanvas = dynamic(() => import("./Owl3DCanvas"), { ssr: false });
+const Owl3DCanvas = softDynamic(() => import("./Owl3DCanvas"));
 
 /**
  * THE owl for every screen. Renders the flat SVG `Mascot` at once in a fixed size x size box, and only when the

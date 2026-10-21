@@ -1,11 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { softDynamic } from "@/lib/softDynamic";
 import { useState } from "react";
 import { useCelebrations } from "./queue";
 
 // The dialog, confetti, sticker art and the owl inside it stay out of the first-load bundle.
-const CelebrationHost = dynamic(() => import("./CelebrationHost"), { ssr: false });
+const CelebrationHost = softDynamic(() => import("./CelebrationHost"));
 
 /**
  * Always mounted in Providers, and tiny on purpose: it only watches the (zustand-only) queue. The first time
