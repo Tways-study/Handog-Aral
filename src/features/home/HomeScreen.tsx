@@ -20,8 +20,8 @@ import { JACKET_CLASS } from "./jacket";
 import { needsWelcome } from "./onboarding";
 
 const QUIZ_MIN_WORDS = 4;
-/** Four rows below lg (the first viewport); two more at lg+, where the cover is taller. */
-const RECENT_COUNT = 6;
+/** Four rows below lg (the first viewport); one more at lg+, where the cover is taller. */
+const RECENT_COUNT = 5;
 const RECENT_MOBILE = 4;
 
 function Chip({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
@@ -91,11 +91,11 @@ export default function HomeScreen() {
           <Chip icon={<Flame className="size-[1.25rem] text-margin" aria-hidden="true" />}>{t.home.chipStreak(streak)}</Chip>
         </ul>
 
-        <div className="grid items-start gap-8 pt-14 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:min-h-[30rem] lg:items-stretch lg:gap-10">
+        <div className="grid items-start gap-8 pt-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-stretch lg:gap-10">
           <section
             aria-label={t.home.coverLabel}
             className={cn(
-              "relative rounded-[0.375rem_1.375rem_1.375rem_0.375rem] py-5 pr-5 pl-9 shadow-md lg:flex lg:flex-col lg:justify-center lg:py-8",
+              "relative rounded-[0.375rem_1.375rem_1.375rem_0.375rem] py-5 pr-5 pl-9 shadow-md",
               JACKET_CLASS[book.jacket],
             )}
           >
@@ -186,8 +186,8 @@ export default function HomeScreen() {
               )}
             </div>
             {words.length >= QUIZ_MIN_WORDS && (
-              <div className="flex items-center justify-between gap-3 border-t border-line bg-paper-2 px-4 py-3">
-                <p className="text-[0.9375rem] text-ink-2">{t.home.quizNudge(wordCount)}</p>
+              <div className="flex items-center justify-between gap-3 border-t border-line bg-paper-2 px-4 py-1.5">
+                <p className="text-[0.9375rem] text-ink-2">{t.home.quizNudge}</p>
                 <Button asChild variant="secondary" size="sm" className="shrink-0">
                   <Link href="/quiz">{t.home.quizCta}</Link>
                 </Button>

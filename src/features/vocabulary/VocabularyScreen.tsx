@@ -178,14 +178,14 @@ export default function VocabularyScreen() {
                           <span className="block truncate font-heading text-xl leading-[var(--pitch)] font-bold">{w.word}</span>
                           <span className="block truncate leading-[var(--pitch)] text-ink-2">{w.translation}</span>
                         </span>
-                        {/* paper backing: the rule under the row never strikes through the icon */}
-                        <span className="grid shrink-0 place-items-center rounded-md bg-paper p-1">
-                          <DifficultyStamp level={w.difficulty} showLabel={false} />
-                        </span>
                       </button>
-                      <Button variant="ghost" size="icon" className="bg-paper hover:bg-paper-2" onClick={() => void say(w)} aria-label={t.vocabulary.speakWord(w.word)}>
-                        <Volume2 aria-hidden="true" />
-                      </Button>
+                      {/* one cell, one paper backing: the rule never shows between or around the icons */}
+                      <span className="flex shrink-0 items-center gap-1 rounded-md bg-paper">
+                        <DifficultyStamp level={w.difficulty} showLabel={false} />
+                        <Button variant="ghost" size="icon" onClick={() => void say(w)} aria-label={t.vocabulary.speakWord(w.word)}>
+                          <Volume2 aria-hidden="true" />
+                        </Button>
+                      </span>
                     </li>
                   ))}
                 </ul>

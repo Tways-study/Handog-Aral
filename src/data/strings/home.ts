@@ -20,7 +20,7 @@ const hiligaynon = {
   recentViewAllLabel: "Tan-awa ang tanan nga natipon nga pulong",
   emptyTitle: "Wala pa sang natipon nga pulong",
   emptyBody: "I-scan ang pahina sang imo libro ukon abri-a ang isa ka istorya. Pindota ang pulong nga indi mo kilala kag tipigi.",
-  quizNudge: (n: number) => `${n} na ka pulong ang natipon. Handa ka na sa pasulit?`,
+  quizNudge: "Handa ka na sa pasulit?",
   quizCta: "Mag-pasulit",
 };
 
@@ -45,7 +45,7 @@ const tagalog = {
   recentViewAllLabel: "Tingnan ang lahat ng natipong salita",
   emptyTitle: "Wala pang natipong salita",
   emptyBody: "I-scan ang pahina ng iyong aklat o magbukas ng kuwento. Pindutin ang salitang hindi mo kilala at itabi ito.",
-  quizNudge: (n: number) => `${n} na salita ang natipon. Handa ka na ba sa pagsusulit?`,
+  quizNudge: "Handa ka na ba sa pagsusulit?",
   quizCta: "Magpasulit",
 } satisfies typeof hiligaynon;
 
