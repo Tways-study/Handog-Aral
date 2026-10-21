@@ -10,6 +10,10 @@ export interface SettingsPatch {
   colorOverlay?: "none" | "yellow" | "blue" | "pink";
   theme?: "system" | "light" | "dark";
   onboarded?: boolean;
+  owl3d?: boolean;
+  owlOutfit?: "none" | "glasses" | "cap" | "bow";
+  sound?: boolean;
+  haptics?: boolean;
 }
 
 const DEFAULT_SETTINGS = {
@@ -21,6 +25,11 @@ const DEFAULT_SETTINGS = {
   colorOverlay: "none",
   theme: "system",
   onboarded: false,
+  // The 3D owl is covered by its own spec; everywhere else the flat owl keeps runs fast and deterministic.
+  owl3d: false,
+  owlOutfit: "none",
+  sound: false,
+  haptics: true,
 };
 
 export interface ExplainBody {
@@ -105,7 +114,7 @@ async function writeIdbKeyval(page: Page, key: string, value: string) {
 export async function gotoAs(page: Page, path: string, settings: SettingsPatch = {}, progress?: Record<string, unknown>) {
   await page.goto("/offline"); // static page: no first-run redirect, boots the stores
   const state = { ...DEFAULT_SETTINGS, onboarded: true, ...settings };
-  await writeIdbKeyval(page, "handog-settings", JSON.stringify({ state, version: 2 }));
+  await writeIdbKeyval(page, "handog-settings", JSON.stringify({ state, version: 3 }));
   if (progress) await writeIdbKeyval(page, "handog-progress", JSON.stringify({ state: progress, version: 1 }));
   await page.goto(path);
 }
