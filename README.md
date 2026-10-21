@@ -12,6 +12,7 @@ It is a mobile-first PWA with a real desktop layout (side rail and a two-pane re
 - **Tap a word, get it in your language.** The home-language explanation comes first, then the English meaning and an example, with a Listen button.
 - **Works without internet.** Scanning falls back to on-device OCR (Tesseract, self-hosted), words fall back to a curated dictionary, and anything looked up offline is upgraded automatically when the connection returns — the screen says honestly which kind of explanation you are seeing.
 - **Built for dyslexia and small hands.** OpenDyslexic option, font-size scaling, reading colour overlays, speech speed, ruled "pad paper" reading with line height tied to the rules, large touch targets, difficulty shown by shape and label (never colour alone), light and dark themes, reduced-motion support.
+- **Fun and cute, for young readers.** A 3D owl companion that reacts and wears outfits (flat fallback on low-end devices), 14 collectible stickers, a "Pares" memory game with saved words, and gentle celebrations. Sounds and haptics are optional; reduced motion turns off 3D and confetti.
 - **Private by design.** No accounts. Progress stays on the device; the AI key lives on the server, never in the app.
 
 ## Tech stack

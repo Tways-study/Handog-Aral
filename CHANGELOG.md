@@ -1,8 +1,14 @@
 # Changelog
 
-Version history for Handog Aral, reconstructed from the git log. v2 was the Vite app; v3 is the Next.js overhaul on the `v3-overhaul` branch (see `docs/v3-plan.md` for phase status). `package.json` is still `0.0.0`, so v3 has no release number yet.
+Version history for Handog Aral, reconstructed from the git log. v2 was the Vite app; v3 is the Next.js overhaul, merged to `main` (see `docs/v3-plan.md` for status). `package.json` is `3.0.0-beta.1`.
 
-## v3 (unreleased, `v3-overhaul`)
+## v3 (3.0.0-beta.1)
+
+### 2026-10-22 · Fun and cute round
+- Procedural three.js toon owl (lazy, with a flat SVG fallback and safe refusals on slow, low-end or reduced-motion devices), moods and a wardrobe (glasses, cap, bow).
+- Rewards: 14 stickers, celebration dialog, "Pares" memory game, optional synthesized sounds and haptics, first-time moments.
+- Redrawn art, shape-coded difficulty, GSAP motion gated on reduced motion.
+- Fixes: offline crash from lazy chunks (`softDynamic`), settings mirror no longer rehydrates from an older copy.
 
 ### 2026-10-21 · Polish, production hardening, accessibility
 - Pad Paper Storybook comp approved; `DESIGN.md` written from the finished build and the notebook label colours moved into tokens.
