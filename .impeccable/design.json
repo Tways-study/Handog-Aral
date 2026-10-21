@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-21T00:57:18.328958+00:00",
+  "generatedAt": "2026-10-21T15:32:39.702673+00:00",
   "title": "Design System: Handog Aral",
   "extensions": {
     "colorMeta": {
@@ -198,6 +198,81 @@
           "#F8E6E7",
           "#FDF7F7"
         ]
+      },
+      "label-paper": {
+        "role": "neutral",
+        "displayName": "Notebook Label Paper",
+        "canonical": "#FFFDF7",
+        "tonalRamp": [
+          "#73726F",
+          "#999894",
+          "#BFBEB9",
+          "#E6E4DE",
+          "#FFFDF8",
+          "#FFFEFA",
+          "#FFFEFC",
+          "#FFFFFE"
+        ]
+      },
+      "owl-body": {
+        "role": "tertiary",
+        "displayName": "Owl Brown",
+        "canonical": "#A86B34",
+        "tonalRamp": [
+          "#4C3017",
+          "#65401F",
+          "#7E5027",
+          "#97602F",
+          "#B58152",
+          "#CBA685",
+          "#E1CBB8",
+          "#F2E9E1"
+        ]
+      },
+      "owl-belly": {
+        "role": "tertiary",
+        "displayName": "Owl Belly Cream",
+        "canonical": "#F2D3A0",
+        "tonalRamp": [
+          "#6D5F48",
+          "#917F60",
+          "#B69E78",
+          "#DABE90",
+          "#F4DAAE",
+          "#F7E5C6",
+          "#FAF0DE",
+          "#FDF8F1"
+        ]
+      },
+      "owl-outline": {
+        "role": "tertiary",
+        "displayName": "Owl Outline Brown",
+        "canonical": "#3A2412",
+        "tonalRamp": [
+          "#1A1008",
+          "#23160B",
+          "#2C1B0E",
+          "#342010",
+          "#584536",
+          "#897C71",
+          "#BAB2AC",
+          "#E1DEDB"
+        ]
+      },
+      "owl-cap": {
+        "role": "tertiary",
+        "displayName": "Owl Cap Blue",
+        "canonical": "#34409B",
+        "tonalRamp": [
+          "#171D46",
+          "#1F265D",
+          "#273074",
+          "#2F3A8C",
+          "#525DAA",
+          "#858CC3",
+          "#B8BCDC",
+          "#E1E2F0"
+        ]
       }
     },
     "typographyMeta": {
@@ -224,6 +299,30 @@
       "label": {
         "displayName": "Label",
         "purpose": "Field, nav and source labels."
+      },
+      "helper": {
+        "displayName": "Helper",
+        "purpose": "Descriptions, hints and form-label text (0.9375rem)."
+      },
+      "example": {
+        "displayName": "Example",
+        "purpose": "Example sentences in the word panel (1.0625rem)."
+      },
+      "word-title-small": {
+        "displayName": "Word title small",
+        "purpose": "A vocabulary word in a list row or the Home recent-words line (1.1875rem)."
+      },
+      "display-desktop": {
+        "displayName": "Display desktop",
+        "purpose": "The tapped word at lg (2.75rem)."
+      },
+      "nav-label-large-text": {
+        "displayName": "Nav label at Large text",
+        "purpose": "Bottom-nav label at Large text (0.5625rem), two-line clamp."
+      },
+      "root-small": {
+        "displayName": "Root Small",
+        "purpose": "html font-size 14px for the Small text setting; all rem scales from it."
       }
     },
     "shadows": [
@@ -256,6 +355,16 @@
         "name": "scrim",
         "value": "rgb(29 35 64 / 0.28)",
         "purpose": "Overlay backdrop (rgb(0 0 0 / 0.5) in dark)."
+      },
+      {
+        "name": "elev-pressed",
+        "value": "0 1px 1px rgb(29 35 64 / 0.2), 0 2px 4px -2px rgb(29 35 64 / 0.35)",
+        "purpose": "The shadow a pressed button or tile sinks into (shadow-pressed)."
+      },
+      {
+        "name": "elev-tile",
+        "value": "0 1px 0 rgb(29 35 64 / 0.06), 0 2px 3px rgb(29 35 64 / 0.08), 0 8px 16px -10px rgb(29 35 64 / 0.28)",
+        "purpose": "Pressable cards: scan entry tiles, quiz options (shadow-tile). Dark adds a light top edge."
       }
     ],
     "motion": [
@@ -271,8 +380,18 @@
       },
       {
         "name": "duration",
-        "value": "150ms / 220ms / 300ms",
-        "purpose": "fast / base / slow; transform and opacity only, disabled under prefers-reduced-motion."
+        "value": "140ms press / 150ms / 200-250ms overlays / 280ms skeleton / 300ms",
+        "purpose": "Transform and opacity only; disabled under prefers-reduced-motion (all durations 0.001ms)."
+      },
+      {
+        "name": "press",
+        "value": "translate 0 2px, 140ms ease-out",
+        "purpose": "The pressable utility; motion-safe only."
+      },
+      {
+        "name": "owl-ambient",
+        "value": "occasional blink/glance; capped sleep bob (3D only)",
+        "purpose": "The only looping-feeling motion; demand-driven rendering, none under reduced motion."
       }
     ],
     "breakpoints": [
@@ -290,7 +409,7 @@
       "refersTo": "button-primary",
       "description": "The one primary action.",
       "html": "<button class=\"ds-btn-primary\">Save word</button>",
-      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border-radius:14px;font:700 16px var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;transition:background-color .15s,transform .15s;border:0;background:#F08A24;color:#1D2340;box-shadow:0 1px 2px rgb(29 35 64/.2),0 10px 20px -10px rgb(29 35 64/.55)}.ds-btn-primary:hover{background:rgb(240 138 36/.9)}.ds-btn-primary:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}.ds-btn-primary:active{transform:scale(.98)}"
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border-radius:14px;font:700 16px var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;transition:background-color .14s,translate .14s;touch-action:manipulation;border:0;background:#F08A24;color:#1D2340;box-shadow:0 1px 2px rgb(29 35 64/.2),0 10px 20px -10px rgb(29 35 64/.55)}.ds-btn-primary:hover{background:rgb(240 138 36/.9)}.ds-btn-primary:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}.ds-btn-primary:active{translate:0 2px;box-shadow:0 1px 1px rgb(29 35 64/.2),0 2px 4px -2px rgb(29 35 64/.35)}"
     },
     {
       "name": "Ink Button",
@@ -363,60 +482,108 @@
       "description": "Cloth-colored notebook cover owning a region.",
       "html": "<div class=\"ds-jacket\">Ang Alamat ng Pinya</div>",
       "css": ".ds-jacket{padding:32px 20px;border-radius:24px;background:#2B3A8C;color:#fff;font:800 24px/1.1 'Baloo 2',ui-rounded,system-ui,sans-serif;box-shadow:0 2px 4px rgb(29 35 64/.08),0 14px 32px -14px rgb(29 35 64/.4)}"
+    },
+    {
+      "name": "Letter Tile List Row",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "A list row led by a cloth-colored letter tile instead of emoji.",
+      "html": "<div class=\"ds-row\"><span class=\"ds-tile\">K</span><b>kangkong</b><span class=\"ds-helper\">water spinach</span></div>",
+      "css": ".ds-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#FFFDF7;border:1.5px solid #E3DACA;border-radius:16px;box-shadow:0 1px 0 rgb(29 35 64/.06),0 2px 3px rgb(29 35 64/.08),0 8px 16px -10px rgb(29 35 64/.28);color:#1D2340;font-family:var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;touch-action:manipulation}.ds-row b{font:700 1.1875rem var(--font-heading,'Baloo 2',ui-rounded,system-ui,sans-serif)}.ds-tile{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#2E7D55;color:#fff;font:800 1.25rem var(--font-heading,'Baloo 2',sans-serif)}.ds-helper{font-size:.9375rem;color:#4A5070}.ds-row:active{translate:0 2px}.ds-row:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}"
+    },
+    {
+      "name": "Speech Tag",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "The owl's voice: a small paper tag with a tail.",
+      "html": "<div class=\"ds-speech\">Tap any word!</div>",
+      "css": ".ds-speech{position:relative;display:inline-block;padding:10px 14px;background:#FFFDF7;color:#1D2340;border:1.5px solid #E3DACA;border-radius:16px;box-shadow:0 1px 2px rgb(29 35 64/.08),0 4px 10px -6px rgb(29 35 64/.18);font:400 .9375rem var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif)}.ds-speech::after{content:'';position:absolute;left:18px;bottom:-7px;width:12px;height:12px;background:#FFFDF7;border-right:1.5px solid #E3DACA;border-bottom:1.5px solid #E3DACA;transform:rotate(45deg)}"
+    },
+    {
+      "name": "Locked Sticker Chip",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "A locked sticker: washed art with a lock chip.",
+      "html": "<div class=\"ds-sticker\"><span class=\"ds-art\"></span><span class=\"ds-lock\">&#128274;</span></div>",
+      "css": ".ds-sticker{position:relative;width:88px;height:88px}.ds-art{display:block;width:100%;height:100%;border-radius:50%;background:#F2D3A0;border:3px solid #fff;box-shadow:0 2px 6px rgb(29 35 64/.2);filter:grayscale(1);opacity:.55}.ds-lock{position:absolute;right:0;bottom:0;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#FBF7EE;border:2px solid #7F849C;font-size:.75rem}"
     }
   ],
   "narrative": {
     "northStar": "The Pad Paper Storybook",
-    "overview": "The child's page becomes their own pad paper. Reading text sits on quiet blue rules with one red margin line, warm off-white paper, deep navy ink, and every word can be tapped. Saturated book-jacket cloth (indigo, mango, kangkong green, gumamela red) acts as the notebook cover and owns whole regions. Rewards are rubber-stamp stars and teacher check marks, never confetti. The owl mascot is the only character.\n\nThe system is calm and low-density: one thing burns brightest at a time. Sunrise orange marks the single primary action and the tapped word. It refuses the category default of candy-gradient cards, emoji chrome and stacked stat tiles. Dark mode is a night pad under one bulb, same structure with lowered paper.",
+    "overview": "The child's page is their own pad paper. Reading text sits on quiet blue rules with one red margin line, warm off-white paper, deep navy ink, and every word can be tapped. Saturated book-jacket cloth (indigo, mango, kangkong green, gumamela red) is the notebook cover and owns whole regions. Rewards are rubber-stamp stars, teacher check marks and die-cut stickers in a sticker book. The owl is the single character, and it speaks through a small speech tag.\n\nThe system is calm and low-density: one thing burns brightest at a time, and nothing loops. It is cute through one drawn character family (flat SVG owl, toon-shaded 3D owl, covers, stickers, empty-state art, card back, scan doodles) rather than through decoration: each shares the dark brown outline, warm owl browns and the same rounded forms. It refuses candy-gradient cards, emoji chrome, stat tiles and confetti-by-default. Dark mode is a night pad under one bulb, same structure with lowered paper.",
     "keyCharacteristics": [
       "Real baseline grid: the rule pitch equals the reading line-height at every font-size setting.",
       "Warm paper neutrals, navy ink, flat cloth-colored jackets, one orange accent.",
+      "One character family: owl (idle, cheer, think, wave, sleep; no outfit, glasses, cap, bow) across flat art, 3D, covers, stickers and empty states.",
       "State by shape first (circle/square/triangle difficulty stamps), color only reinforces.",
       "Offline-to-AI upgrades restyle in place with reserved space, no layout shift.",
-      "Motion is transform and opacity only, 150-300ms, once per flow, off under reduced motion.",
+      "Motion is transform and opacity, 140-300ms, once per flow, off under reduced motion; no looping decoration.",
       "Large targets (44px minimum, 48-60px for actions) for ages 6-12."
     ],
     "rules": [
       {
         "name": "The One Burner Rule",
-        "body": "Orange goes on the single primary action per screen and the tapped word. The raised Scan button in the nav is a deliberate, user-approved second occurrence; do not extend that exception.",
+        "body": "Orange goes on the single in-page primary action and the tapped word. The raised Scan button in the nav is a deliberate, user-approved second occurrence because Scan is the product's primary action everywhere; do not extend that exception to other controls.",
         "section": "colors"
       },
       {
         "name": "The Mixed-Tint Rule",
-        "body": "Reading overlays are mixed into the paper at 12-16% and never laid over text. Contrast is asserted in src/styles/contrast.test.ts.",
+        "body": "Reading overlays (yellow, blue, pink) are mixed into the paper at 12-16% and never laid over text, so ink contrast holds. Contrast pairs are asserted in `src/styles/contrast.test.ts`; change a token only with that test green.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paper-on-Cloth Rule",
+        "body": "Anything that is a piece of paper (notebook label, ruled pad) stays light in dark mode; only the surrounding page darkens.",
         "section": "colors"
       },
       {
         "name": "The Baseline Rule",
-        "body": "Reading text uses .pad-text, whose line-height is the rule pitch; sizes are rem-based so pitch and text scale together.",
+        "body": "Reading text uses `.pad-text`, whose line-height is the rule pitch. Sizes are rem-based and the html font-size class scales pitch and text together, so words always sit on the rules.",
         "section": "typography"
       },
       {
         "name": "The Sentence Case Rule",
-        "body": "Labels are sentence case, bold, small. No uppercase tracked labels.",
+        "body": "Labels are sentence case, bold, small. No uppercase tracked labels, no kickers or eyebrows above titles.",
+        "section": "typography"
+      },
+      {
+        "name": "The Named Step Rule",
+        "body": "Off-scale sizes exist only as the named steps above (helper, example, word title small, display-desktop, nav label at Large text). Add a new literal size only by adding a step here.",
         "section": "typography"
       },
       {
         "name": "The Soft Navy Shadow Rule",
-        "body": "Shadows are blurred, offset-down, and navy-tinted. No hard offset shadows.",
+        "body": "Shadows are blurred, offset-down, and navy-tinted (black in dark). No hard offset shadows.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Sink Rule",
+        "body": "The `pressable` utility gives every tappable thing a pointer cursor, `touch-action: manipulation`, a 140ms transition and a 2px downward press (motion-safe); pressed shadow tokens accompany it. Hover colors apply only on hover-capable pointers.",
         "section": "elevation"
       }
     ],
     "dos": [
-      "Do read tokens only from the CSS custom properties / Tailwind utilities (bg-paper, text-ink, bg-sunrise, shadow-cta).",
-      "Do lay reading text on .pad / .pad-text so line-height equals the rule pitch.",
-      "Do pair every difficulty color with its shape and label.",
-      "Do use ink navy text on sunrise and mango, white on indigo, kangkong, and gumamela.",
-      "Do gate every GSAP helper on reduced motion and animate only transform and opacity.",
-      "Do reserve space for content that upgrades in place."
+      "**Do** read tokens only from the CSS custom properties / Tailwind utilities (`bg-paper`, `text-ink`, `bg-sunrise`, `shadow-cta`, `shadow-tile`).",
+      "**Do** lay reading text on `.pad` / `.pad-text` so line-height equals the rule pitch.",
+      "**Do** pair every difficulty color with its shape (circle, square, triangle) and label.",
+      "**Do** use ink navy text on sunrise and mango, white on indigo, kangkong, and gumamela.",
+      "**Do** gate every GSAP helper (enterPanel, markWord, stampIn, fadeRoute) and every celebration on reduced motion and animate only transform and opacity.",
+      "**Do** reserve space for content that upgrades in place.",
+      "**Do** use `pressable` on every tappable thing, and letter tiles instead of emoji in lists.",
+      "**Do** load optional heavy pieces (3D owl, rewards, celebration) through `softDynamic` so a failure falls back silently.",
+      "**Do** show locked stickers as washed art with a lock chip.",
+      "**Do** keep owl-voice and sticker copy short; it awaits native-speaker review in Hiligaynon and Tagalog."
     ],
     "donts": [
-      "Don't add a second sunrise action on a screen beyond the nav Scan button.",
-      "Don't use candy gradients, stacked stat tiles, or emoji as chrome.",
-      "Don't convey state by color alone.",
-      "Don't put a color overlay over text; mix it into the paper.",
-      "Don't use hard offset shadows or glow."
+      "**Don't** add a second sunrise action on a screen beyond the nav Scan button.",
+      "**Don't** put a loop on decoration; the only ambient motion is the owl's occasional blink and glance and the capped 3D sleep bob.",
+      "**Don't** use candy gradients, stacked stat tiles, or emoji as chrome.",
+      "**Don't** convey state by color alone.",
+      "**Don't** put a color overlay over text; mix it into the paper.",
+      "**Don't** use hard offset shadows or glow.",
+      "**Don't** load the 3D owl on slow, save-data, very low-end or software-WebGL devices, or under reduced motion.",
+      "**Don't** name a control differently from its visible text.",
+      "**Don't** put a timer on the Pares game."
     ]
   }
 }

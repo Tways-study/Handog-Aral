@@ -33,6 +33,19 @@ colors:
   night-margin: "#8F3E3A"
   night-sunrise: "#F39A3D"
   night-marker: "#6B4A1E"
+  label-paper: "#FFFDF7"
+  label-ink: "#1D2340"
+  label-ink-2: "#4A5070"
+  label-rule: "#C3D3EE"
+  owl-body: "#A86B34"
+  owl-wing: "#8A5A2B"
+  owl-belly: "#F2D3A0"
+  owl-chevron: "#C99A5E"
+  owl-outline: "#3A2412"
+  owl-cheek: "#F29A8A"
+  owl-gold: "#F5C542"
+  owl-cap: "#34409B"
+  owl-bow: "#3F4FB8"
 typography:
   display:
     fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
@@ -65,6 +78,36 @@ typography:
     fontSize: "0.8125rem"
     fontWeight: 700
     lineHeight: 1.4
+  helper:
+    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontSize: "0.9375rem"
+    fontWeight: 400
+    lineHeight: 1.45
+  example:
+    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontSize: "1.0625rem"
+    fontWeight: 400
+    lineHeight: 1.5
+  word-title-small:
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
+    fontSize: "1.1875rem"
+    fontWeight: 700
+    lineHeight: 1.15
+  display-desktop:
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
+    fontSize: "2.75rem"
+    fontWeight: 800
+    lineHeight: 1
+  nav-label-large-text:
+    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontSize: "0.5625rem"
+    fontWeight: 700
+    lineHeight: 1.1
+  root-small:
+    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontSize: "14px"
+    fontWeight: 400
+    lineHeight: 1.5
 rounded:
   sm: "8px"
   md: "12px"
@@ -72,6 +115,9 @@ rounded:
   xl: "24px"
   button: "14px"
   cta: "22px"
+  mark: "6px"
+  label-card: "9px"
+  xxl: "28px"
 spacing:
   pitch: "36px"
   pitch-desktop: "40px"
@@ -127,6 +173,14 @@ components:
     textColor: "{colors.sunrise-ink}"
     rounded: "{rounded.cta}"
     size: "64px"
+  notebook-label:
+    backgroundColor: "{colors.label-paper}"
+    textColor: "{colors.label-ink}"
+    rounded: "{rounded.label-card}"
+  word-mark-tapped:
+    backgroundColor: "{colors.marker}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.mark}"
   word-panel:
     backgroundColor: "{colors.paper}"
     textColor: "{colors.ink}"
@@ -139,68 +193,92 @@ components:
 
 **Creative North Star: "The Pad Paper Storybook"**
 
-The child's page becomes their own pad paper. Reading text sits on quiet blue rules with one red margin line, warm off-white paper, deep navy ink, and every word can be tapped. Saturated book-jacket cloth (indigo, mango, kangkong green, gumamela red) acts as the notebook cover and owns whole regions. Rewards are rubber-stamp stars and teacher check marks, never confetti. The owl mascot is the only character.
+The child's page is their own pad paper. Reading text sits on quiet blue rules with one red margin line, warm off-white paper, deep navy ink, and every word can be tapped. Saturated book-jacket cloth (indigo, mango, kangkong green, gumamela red) is the notebook cover and owns whole regions. Rewards are rubber-stamp stars, teacher check marks and die-cut stickers in a sticker book. The owl is the single character, and it speaks through a small speech tag.
 
-The system is calm and low-density: one thing burns brightest at a time. Sunrise orange marks the single primary action and the tapped word. It refuses the category default of candy-gradient cards, emoji chrome and stacked stat tiles. Dark mode is a night pad under one bulb, same structure with lowered paper.
+The system is calm and low-density: one thing burns brightest at a time, and nothing loops. It is cute through one drawn character family (flat SVG owl, toon-shaded 3D owl, covers, stickers, empty-state art, card back, scan doodles) rather than through decoration: each shares the dark brown outline, warm owl browns and the same rounded forms. It refuses candy-gradient cards, emoji chrome, stat tiles and confetti-by-default. Dark mode is a night pad under one bulb, same structure with lowered paper.
 
 **Key Characteristics:**
 - Real baseline grid: the rule pitch equals the reading line-height at every font-size setting.
 - Warm paper neutrals, navy ink, flat cloth-colored jackets, one orange accent.
+- One character family: owl (idle, cheer, think, wave, sleep; no outfit, glasses, cap, bow) across flat art, 3D, covers, stickers and empty states.
 - State by shape first (circle/square/triangle difficulty stamps), color only reinforces.
 - Offline-to-AI upgrades restyle in place with reserved space, no layout shift.
-- Motion is transform and opacity only, 150-300ms, once per flow, off under reduced motion.
+- Motion is transform and opacity, 140-300ms, once per flow, off under reduced motion; no looping decoration.
 - Large targets (44px minimum, 48-60px for actions) for ages 6-12.
 
 ## Colors
 
-Warm paper and navy ink carry nearly everything; cloth jacket colors take whole regions; orange appears once.
+Warm paper and navy ink carry nearly everything; cloth jacket colors take whole regions; orange appears once per screen (plus the nav Scan).
 
 ### Primary
-- **Sunrise Orange** (`sunrise`): the single primary action (Scan a page, Save, check), the active-tab pip, and the tapped-word underline. Text on it is ink navy (`sunrise-ink`), never white.
+- **Sunrise Orange** (`sunrise`): the single in-page primary action, the active-tab pip, the tapped-word underline and the owl's beak. Text on it is ink navy (`sunrise-ink`), never white. Home's primary is "Padayon sa pagbasa" / "Umpisahan ta" / "Basaha liwat"; scan there is a paper secondary.
 
 ### Secondary
-- **Jacket Indigo** (`indigo`), **Mango** (`mango`), **Kangkong Green** (`kangkong`), **Gumamela Red** (`gumamela`): notebook-cover fields owning a region (book cover, Home cover). Each pairs with its text color (white on indigo, kangkong, gumamela; ink on mango). Kangkong also marks saved words and "easy" / success; indigo marks "medium" and the focus ring; gumamela marks "hard" and destructive.
+- **Jacket Indigo** (`indigo`), **Mango** (`mango`), **Kangkong Green** (`kangkong`), **Gumamela Red** (`gumamela`): notebook-cover fields owning a region (book cover, Home cover). Each pairs with its text color (white on indigo, kangkong, gumamela; ink on mango). Kangkong marks saved words and "easy" / success; indigo marks "medium" and the focus ring; gumamela marks "hard" and destructive.
+
+### Tertiary: owl feathers
+- **Owl Brown family** (`owl-body`, `owl-wing`, `owl-belly`, `owl-chevron`, `owl-cheek`, `owl-gold`, `owl-cap`, `owl-bow`) and **Owl Outline** (`owl-outline`, a dark warm brown): the character's palette, used by the flat Mascot, the 3D owl (`owlModel.ts`), stickers and art. Not UI chrome. Beak is `sunrise`, eye ink is `ink`. Outfits cap and bow use the indigo-blue `owl-cap` / `owl-bow`.
 
 ### Neutral
 - **Pad Paper** (`paper`): page background. **Second Paper** (`paper-2`): quiet fills, answer wells, disabled buttons. **Card Cream** (`card-surface`): cards, popovers, inputs.
 - **Navy Ink** (`ink`) body text; **Soft Ink** (`ink-2`) secondary text and labels.
 - **Blue Rule** (`rule`) ruled lines; **Margin Red** (`margin`) the single margin line; **Fine Line** (`line`) borders; **Strong Line** (`line-strong`) input borders and scrollbar thumbs.
 - **Marker Peach** (`marker`): the tapped-word highlight and text selection.
-- Night variants (`night-*`) are the `.dark` overrides; sunrise lifts to `night-sunrise`, stamps lighten to #6CC596, #8E9BEA, #F08A8F.
+- **Notebook Label** (`label-paper`, `label-ink`, `label-ink-2`, `label-rule`): the label card stuck on a book cover. It is paper on cloth, so it stays light in dark mode and is deliberately not overridden under `.dark`.
+- Night variants (`night-*`) are the `.dark` overrides; sunrise lifts to `night-sunrise`, stamps lighten to #6CC596, #8E9BEA, #F08A8F, indigo lifts to #3A4AA8.
 
 ### Named Rules
-**The One Burner Rule.** Orange goes on the single primary action per screen and the tapped word. The raised Scan button in the nav is a deliberate, user-approved second occurrence because Scan is the product's primary action everywhere; do not extend that exception to other controls.
+**The One Burner Rule.** Orange goes on the single in-page primary action and the tapped word. The raised Scan button in the nav is a deliberate, user-approved second occurrence because Scan is the product's primary action everywhere; do not extend that exception to other controls.
 
 **The Mixed-Tint Rule.** Reading overlays (yellow, blue, pink) are mixed into the paper at 12-16% and never laid over text, so ink contrast holds. Contrast pairs are asserted in `src/styles/contrast.test.ts`; change a token only with that test green.
+
+**The Paper-on-Cloth Rule.** Anything that is a piece of paper (notebook label, ruled pad) stays light in dark mode; only the surrounding page darkens.
 
 ## Typography
 
 **Display Font:** Baloo 2 (with ui-rounded, system-ui)
 **Body Font:** Atkinson Hyperlegible (with system-ui)
-**Option:** OpenDyslexic replaces both when `body.dyslexia-font` is on, with extra word (0.3em) and letter (0.05em) spacing.
+**Option:** OpenDyslexic replaces both when `body.dyslexia-font` is on, with extra word (0.3em) and letter (0.05em) spacing; headings stop tightening letter-spacing.
 
-**Character:** Round, friendly Baloo for names and titles over a highly legible, unambiguous-letterform body. Fonts are self-hosted so they work offline.
+**Character:** Round, friendly Baloo for names and titles over a highly legible, unambiguous-letterform body. Fonts are self-hosted so they work offline. Headings use `text-wrap: balance`, short copy `text-wrap: pretty`,.
 
 ### Hierarchy
-- **Display** (800, 2.25rem / 2.75rem at lg, line-height 1): the tapped word in the word panel.
+- **Display** (800, 2.25rem, line-height 1; `display-desktop` 2.75rem at lg): the tapped word in the word panel. The mobile size is `min(2.25rem, 9.5vw)` so long words fit.
 - **Headline** (700, 1.25rem+, 1.25): card and section titles, cover title (scales with container width, min 1rem).
 - **Title** (800, 1.25rem, ~1.2): large-button label (xl size) and screen titles up to 2xl-4xl.
-- **Body** (400, 1rem, 1.5): UI copy; 0.9375rem for descriptions; 1.0625rem for example sentences.
+- **Word title small** (700, 1.1875rem, 1.15): a vocabulary word inside a list row or Home's recent-words line, in Baloo.
+- **Body** (400, 1rem, 1.5): UI copy.
+- **Helper** (400, 0.9375rem, ~1.45): descriptions, hints, helper and form-label text; the most used step after body.
+- **Example** (400, 1.0625rem, 1.5): example sentences in the word panel.
 - **Reading** (400, 1.25rem / 1.375rem at lg, line-height equals the pitch 2.25rem / 2.5rem): scanned and story text on the pad.
-- **Label** (700, 0.8125rem to 0.75rem, normal case): field labels, nav labels, source notes.
+- **Label** (700, 0.8125rem to 0.75rem, normal case): field labels, nav labels, source notes. The bottom-nav label drops to 0.5625rem only at Large text, clamped to two lines.
+- **Root sizes:** the html class sets 14px (Small), 16px (Medium), 20px (Large); everything else is rem and scales with it.
 
 ### Named Rules
-**The Baseline Rule.** Reading text uses `.pad-text`, whose line-height is the rule pitch. Sizes are rem-based and the html font-size class (14/16/20px) scales pitch and text together, so words always sit on the rules.
+**The Baseline Rule.** Reading text uses `.pad-text`, whose line-height is the rule pitch. Sizes are rem-based and the html font-size class scales pitch and text together, so words always sit on the rules.
 
-**The Sentence Case Rule.** Labels are sentence case, bold, small. No uppercase tracked labels.
+**The Sentence Case Rule.** Labels are sentence case, bold, small. No uppercase tracked labels, no kickers or eyebrows above titles.
+
+**The Named Step Rule.** Off-scale sizes exist only as the named steps above (helper, example, word title small, display-desktop, nav label at Large text). Add a new literal size only by adding a step here.
 
 ## Layout
 
-Mobile-first single column with a fixed bottom nav (5 slots, 58px tall, scaling 52/58/70px with font size, plus safe-area inset); content pads bottom for it (`pb-nav`). At 1024px (lg) the bottom nav gives way to a 96px left rail, content is capped near 64rem, the reader becomes two panes, and the word explanation docks at 400px on the right instead of a bottom drawer. The pad has a 36px pitch (40px at lg), a margin line at 44px (66px at lg), and text gutters just beyond it. Spacing is Tailwind's 4px scale; cards use 20px padding, action rows 10-12px gaps. Known gaps: desktop Home ends early with blank lower space.
+Mobile-first single column with a fixed bottom nav (5 slots, 58px tall, scaling 52/58/70px with font size, plus safe-area inset) holding the raised Scan; content pads bottom for it (`pb-nav`). At 1024px (lg) the bottom nav gives way to a 96px left rail with Scan as the same raised tile, content is capped near 64rem, the reader becomes two panes, and the word explanation docks at 400px on the right instead of a bottom drawer (vaul drawer ~60dvh on phones). The pad has a 36px pitch (40px at lg), a margin line at 44px (66px at lg), and text gutters just beyond it. Spacing is Tailwind's 4px scale; cards use 20px padding, action rows 10-12px gaps.
+
+Screen structure:
+- **Home:** hero with the owl stage and speech tag; the cover sits beside the progress bar with compact art on phones, and is hidden at Large text and in dyslexia mode. One primary action.
+- **Books:** two columns of jackets.
+- **Welcome:** a two-step flow ending in the "first superpower" step (tap a dotted-underlined word).
+- **Play ("Pares"):** untimed memory-match board, 2 columns at the narrowest, 3 columns from 340px, 4 from sm, 2 again at Large text on phones; pad-ruled board, a two-column layout at lg with the owl beside the board.
+- **Quiz:** a sticky feedback bar sits above the bottom nav; results show stars filling from the left and "Liwat naton ini" review cards.
+- **Sticker book:** earned stickers first, the locked ones nearest to earning next.
+- Lists use a letter tile (first letter on cloth color) instead of emoji.
+
+Known gaps: desktop Home, Scan and Reader leave empty paper below short content; this is the pad metaphor, accepted rather than filled. Throttled-mobile Lighthouse performance is about 85 on Welcome, 78 on `/` and 83 in the reader; the 3D owl and new features cost a few points.
 
 ## Elevation & Depth
 
-Mostly flat paper with 1.5px borders; depth is soft, navy-tinted, and sparse. Surfaces rest on borders, jackets and sheets lift with shadow.
+Mostly flat paper with 1.5px borders; depth is soft, navy-tinted, and sparse. Surfaces rest on borders, jackets and sheets lift with shadow, and pressable things physically sink.
 
 ### Shadow Vocabulary
 - **Small** (`0 1px 2px rgb(29 35 64 / 0.08), 0 4px 10px -6px rgb(29 35 64 / 0.18)`): cards.
@@ -208,27 +286,32 @@ Mostly flat paper with 1.5px borders; depth is soft, navy-tinted, and sparse. Su
 - **Large** (`0 2px 4px rgb(29 35 64 / 0.08), 0 14px 32px -14px rgb(29 35 64 / 0.4)`): dialogs and jackets.
 - **Sheet** (`0 -12px 40px -16px rgb(29 35 64 / 0.45)`): the bottom drawer.
 - **CTA** (`0 1px 2px rgb(29 35 64 / 0.2), 0 10px 20px -10px rgb(29 35 64 / 0.55)`): sunrise buttons and the nav Scan button.
+- **Pressed** (`0 1px 1px rgb(29 35 64 / 0.2), 0 2px 4px -2px rgb(29 35 64 / 0.35)`): the shadow a pressed button or tile sinks into.
+- **Tile** (`0 1px 0 rgb(29 35 64 / 0.06), 0 2px 3px rgb(29 35 64 / 0.08), 0 8px 16px -10px rgb(29 35 64 / 0.28)`): cards you press (scan entry tiles, quiz options); in dark it adds a faint light top edge.
 - **Scrim** (`rgb(29 35 64 / 0.28)`; 0.5 black in dark): behind overlays.
 
 ### Named Rules
 **The Soft Navy Shadow Rule.** Shadows are blurred, offset-down, and navy-tinted (black in dark). No hard offset shadows.
 
+**The Sink Rule.** The `pressable` utility gives every tappable thing a pointer cursor, `touch-action: manipulation`, a 140ms transition and a 2px downward press (motion-safe); pressed shadow tokens accompany it. Hover colors apply only on hover-capable pointers.
+
 ## Shapes
 
-Friendly, rounded, never pill-everything: 8/12/16/24px scale (sm, md, lg, xl), buttons and inputs at 14px, the raised Scan button 22px, word marks 6px. Borders are 1.5px in `line` (cards) or `line-strong` (inputs). Difficulty is geometry: concentric circle (easy), rounded square (medium), triangle (hard), 22px, 2.2 stroke, always with its label. Rewards are authored SVG rubber stamps (StampStar, StampCheck) that land with a scale and rotate settle. Book covers are authored SVG jackets with the owl perched on the top edge.
+Friendly, rounded, never pill-everything: 8/12/16/24/28px scale (sm, md, lg, xl, xxl), buttons and inputs at 14px, the raised Scan button 22px. Two small named radii: word marks 6px (`mark`) and the notebook label card on a cover 9px (`label-card`). Borders are 1.5px in `line` (cards) or `line-strong` (inputs). Difficulty is geometry: concentric circle (easy), rounded square (medium), triangle (hard), 22px, 2.2 stroke, always with its label. Rewards are authored SVG: rubber-stamp StampStar and StampCheck that land with an ink-bleed scale and rotate settle, and 14 die-cut stickers with a white cut border. A locked sticker is its own art washed to grey with a small lock chip, so the collection shows what is left to find. Book covers are authored jackets with the owl perched on the top edge; the card back, empty-state scenes and scan doodles share the owl's outline weight and browns. The 3D owl is toon-shaded with a thin dark back-face outline to match the flat art.
 
 ## Components
 
 ### Buttons
 - **Shape:** 14px radius; lg 16px; xl (Scan a page) 18px, Baloo 20px extrabold.
 - **Primary:** sunrise fill, ink text, CTA shadow, 48px tall (44 sm, 56 lg, 60 xl). **Ink:** navy fill, paper text. **Secondary/outline:** paper fill, 1.5px line border. **Destructive:** gumamela.
-- **Focus / Press:** 3px ring-colored outline offset 2px; press scales to 0.98 (motion-safe). Disabled is a neutral paper button with a line border, never sunrise.
+- **Focus / Press:** 3px ring-colored outline offset 2px; `pressable` 2px press. Disabled is a neutral paper button with a line border, never sunrise.
+- Accessible names come from the visible text (WCAG 2.5.3), enforced by the axe gate; icon-only controls do not hide a different label.
 
 ### Cards / Containers
-- 16px radius, card cream, 1.5px line border, small shadow, 20px padding. Ruled areas use the pad background instead of a card.
+- 16px radius, card cream, 1.5px line border, small shadow, 20px padding. Ruled areas use the pad background instead of a card. Skeletons are static pad-paper shapes with one fade-in, never a shimmer loop.
 
 ### Inputs / Fields
-- 48px, 14px radius, card-cream fill, 1.5px strong border; focus is the 3px indigo outline; invalid switches the border to gumamela.
+- 48px, 14px radius, card-cream fill, 1.5px strong border; focus is the 3px indigo outline; invalid switches the border to gumamela. Focused fields stay at least 16px to avoid iOS zoom.
 
 ### Navigation
 - Bottom bar below lg: icon (22px) over a 12px bold label, active ink with a 3px sunrise pip. The center Scan is a 64px raised sunrise tile (22px radius, CTA shadow). At lg: 96px left rail with the owl on top, Scan as the same tile, Settings pinned to the bottom.
@@ -237,24 +320,45 @@ Friendly, rounded, never pill-everything: 8/12/16/24px scale (sm, md, lg, xl), b
 - Mobile: vaul drawer about 60dvh. Desktop: docked 400px panel. Shows the word (display), phonetic, difficulty stamp, a star stamp, a Listen button, a paper-2 well for the home-language meaning, English meaning, source note, and a sticky Listen/Save row. Offline entries reserve the space the AI upgrade will fill so nothing shifts.
 
 ### Tapped Word
-- A peach marker sweeps in behind the word (scaleX from the left) with a sunrise underline; saved words keep a 2px kangkong underline, independent of the tap state.
+- A peach marker sweeps in behind the word (scaleX from the left) with a sunrise underline; saved words keep a 2px kangkong underline, independent of the tap state. In the Welcome superpower step every tappable word wears a dotted underline and the first unknown one nudges once.
+
+### Owl (character)
+- `Owl` renders the flat SVG `Mascot` first; a procedural three.js 3D owl loads lazily only when allowed. Moods: idle, cheer, think, wave, sleep. Outfits: none, glasses, cap, bow (saved in settings, worn from the sticker-book wardrobe). Only one 3D owl per page (`priority="hero"` wins the slot); others stay flat. Rendering is demand-driven (no idle frame loop) with fallbacks to the flat owl on any failure.
+- **3D load policy:** window load, then idle, then a calm main thread; never on slow connections (2g/3g), save-data, very low-end devices (about 1 GB RAM or 2 cores or fewer), software WebGL, or reduced motion.
+- **Motion:** the only ambient movement is an occasional blink and glance and a capped sleep bob (3D only). Reduced motion means no 3D, no confetti, instant states.
+- **Speech tag** (`SpeechTag`): a small paper tag with a tail; it is the owl's voice for hints and capability moments.
+
+### Rewards and Delight
+- **Stickers:** 14 die-cut stickers (first word, 5/10/25 words, hard word, first scan, first listen, first quiz, perfect quiz, first match, 3 and 7 day streak, first book, all books). Sticker book shows earned first, nearest-to-earn locked next.
+- **Stamps:** StampStar and StampCheck; the first save gets a big stamp.
+- **Celebration dialog:** queued (`queue.ts`); capability moments (first tap, save, scan, quiz via `useMoments`) mark first-time actions.
+- **Pares:** untimed memory match with the card back art.
+- **Sound and haptics:** short synthesized sounds, off by default (shared classroom devices); haptics where supported.
 
 ### Mascot and Covers
-- Owl in idle, cheer, and think moods, flat SVG. BookCover draws a jacket in one of four cloth colors with title in Baloo.
+- BookCover draws a jacket in one of four cloth colors with title in Baloo and a notebook label card (`label-*` tokens) that stays light in dark mode.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** read tokens only from the CSS custom properties / Tailwind utilities (`bg-paper`, `text-ink`, `bg-sunrise`, `shadow-cta`).
+- **Do** read tokens only from the CSS custom properties / Tailwind utilities (`bg-paper`, `text-ink`, `bg-sunrise`, `shadow-cta`, `shadow-tile`).
 - **Do** lay reading text on `.pad` / `.pad-text` so line-height equals the rule pitch.
-- **Do** pair every difficulty color with its shape and label.
+- **Do** pair every difficulty color with its shape (circle, square, triangle) and label.
 - **Do** use ink navy text on sunrise and mango, white on indigo, kangkong, and gumamela.
-- **Do** gate every GSAP helper (enterPanel, markWord, stampIn, fadeRoute) on reduced motion and animate only transform and opacity.
+- **Do** gate every GSAP helper (enterPanel, markWord, stampIn, fadeRoute) and every celebration on reduced motion and animate only transform and opacity.
 - **Do** reserve space for content that upgrades in place.
+- **Do** use `pressable` on every tappable thing, and letter tiles instead of emoji in lists.
+- **Do** load optional heavy pieces (3D owl, rewards, celebration) through `softDynamic` so a failure falls back silently.
+- **Do** show locked stickers as washed art with a lock chip.
+- **Do** keep owl-voice and sticker copy short; it awaits native-speaker review in Hiligaynon and Tagalog.
 
 ### Don't:
 - **Don't** add a second sunrise action on a screen beyond the nav Scan button.
+- **Don't** put a loop on decoration; the only ambient motion is the owl's occasional blink and glance and the capped 3D sleep bob.
 - **Don't** use candy gradients, stacked stat tiles, or emoji as chrome.
 - **Don't** convey state by color alone.
 - **Don't** put a color overlay over text; mix it into the paper.
 - **Don't** use hard offset shadows or glow.
+- **Don't** load the 3D owl on slow, save-data, very low-end or software-WebGL devices, or under reduced motion.
+- **Don't** name a control differently from its visible text.
+- **Don't** put a timer on the Pares game.
