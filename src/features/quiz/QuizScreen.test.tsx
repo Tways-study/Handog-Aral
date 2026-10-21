@@ -73,4 +73,32 @@ describe("QuizScreen", () => {
     expect(screen.getByRole("status", { hidden: true }).textContent).toMatch(/Tama!|Indi pa tama/);
     expect(opts.some((b) => b.getAttribute("data-state") === "right")).toBe(true);
   });
+
+  it("shows the saved entry's real phonetic and English, and never a placeholder phonetic or empty English", () => {
+    mockWords = [
+      { ...mk("cat", "iring"), phonetic: "/kat/", english: "A small pet." },
+      { ...mk("dog", "ido"), phonetic: "/dog/", english: "" },
+      mk("sun", "adlaw"),
+      mk("moon", "bulan"),
+    ];
+    for (let n = 0; n < 12; n++) {
+      cleanup();
+      render(<QuizScreen />);
+      const word = screen.getByRole("heading", { level: 2 }).textContent!;
+      expect(screen.queryByText(`/${word}/`)).toBeNull();
+      if (word === "cat") expect(screen.getByText("/kat/")).toBeTruthy();
+      if (word === "cat") expect(screen.getByText("A small pet.")).toBeTruthy();
+    }
+  });
+
+  it("stamps a check on a correct answer, with the text alternative kept", () => {
+    mockWords = FIVE;
+    render(<QuizScreen />);
+    const answers: Record<string, string> = Object.fromEntries(FIVE.map((w) => [w.word, w.translation]));
+    const word = screen.getByRole("heading", { level: 2 }).textContent!;
+    const opts = screen.getAllByRole("button").filter((b) => /^[A-D]\. /.test(b.getAttribute("aria-label") ?? ""));
+    fireEvent.click(opts.find((b) => b.getAttribute("aria-label")!.endsWith(answers[word]))!);
+    expect(document.querySelector("[data-slot=stamp-check]")).toBeTruthy();
+    expect(screen.getByRole("status", { hidden: true }).textContent).toContain("Tama!");
+  });
 });

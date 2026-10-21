@@ -408,7 +408,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
           >
             <DrawerTitle className="sr-only">{t.popup.sheetTitle(entry?.word ?? "")}</DrawerTitle>
             <DrawerDescription className="sr-only">{t.popup.sheetTitle(entry?.word ?? "")}</DrawerDescription>
-            <div className="max-h-[75dvh] overflow-y-auto px-5 pt-3 pb-6" data-vaul-no-drag>
+            <div className="max-h-[calc(60dvh-1rem)] overflow-y-auto overscroll-contain px-5 pt-3" data-vaul-no-drag>
               {panelNode}
             </div>
           </DrawerContent>

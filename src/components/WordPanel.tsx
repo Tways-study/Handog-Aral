@@ -1,18 +1,23 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
-import { BookmarkCheck, BookmarkPlus, Info, Sparkles, Volume2, WifiOff } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { BookmarkPlus, Info, Sparkles, Volume2, WifiOff } from "lucide-react";
 import DifficultyStamp from "@/components/DifficultyStamp";
+import StampCheck from "@/components/StampCheck";
+import StampStar from "@/components/StampStar";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/hooks/useT";
 import { useMotion } from "@/lib/motion";
+import { realEnglish, realPhonetic } from "@/lib/phonetic";
+import { cn } from "@/lib/utils";
 import type { ResolvedExplanation } from "@/shared/schemas";
 
 /**
  * Word explanation, shared by the reader (drawer below lg, docked column at lg+) and the vocabulary
  * list. It owns no data fetching and no container: callers wrap it in a Drawer / docked column.
- * Home-language explanation leads; blocks keep a minimum height so a pending lookup, or an offline
- * entry upgraded in place, never shifts the layout.
+ * Home-language explanation leads. Blocks reserve a minimum height only for a word whose content could still
+ * change in place (a pending lookup, or an `offline` entry awaiting its upgrade, and the settled
+ * entry that replaces it) so that swap never shifts the layout; any other entry sizes to its content.
  */
 export interface WordPanelProps {
   entry: ResolvedExplanation;
@@ -46,10 +51,21 @@ export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, spe
   const { stampIn } = useMotion();
   const stampRef = useRef<HTMLSpanElement>(null);
   const saveIconRef = useRef<HTMLSpanElement>(null);
+  const starRef = useRef<HTMLSpanElement>(null);
   const prevSource = useRef(entry.source);
   const prevSaved = useRef(saved);
 
   const loading = pending && !entry.translation;
+  // An offline entry is provisional: its reserve is held for the word after the upgrade lands, so the
+  // in-place swap to the settled entry never shrinks the panel. A plain pending lookup reserves only while pending.
+  const [heldWord, setHeldWord] = useState<string | null>(null);
+  const offline = entry.source === "offline";
+  // (the reader's placeholder while a lookup is pending is also `offline`; that is covered by `pending`)
+  if (offline && !pending && heldWord !== entry.word) setHeldWord(entry.word);
+  const reserve = pending || offline || heldWord === entry.word;
+  const phonetic = realPhonetic(entry.phonetic, entry.word);
+  const english = realEnglish(entry.english);
+  const showExample = !loading && !!entry.example;
 
   // An offline entry upgraded in place: a small stamp-in on the difficulty stamp, no layout change.
   useEffect(() => {
@@ -61,7 +77,11 @@ export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, spe
   useEffect(() => {
     const was = prevSaved.current;
     prevSaved.current = saved;
-    if (!was && saved) return stampIn(saveIconRef.current);
+    if (!was && saved) {
+      const a = stampIn(starRef.current);
+      const b = stampIn(saveIconRef.current);
+      return () => (a(), b());
+    }
   }, [saved, stampIn]);
 
   const p = t.popup;
@@ -70,12 +90,12 @@ export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, spe
   const SourceIcon = entry.source === "ai" ? Sparkles : entry.source === "offline" ? WifiOff : Info;
 
   return (
-    <div data-slot="word-panel" data-source={entry.source} data-pending={loading || undefined}>
+    <div data-slot="word-panel" data-source={entry.source} data-pending={loading || undefined} data-reserve={reserve || undefined}>
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           <h2 className="font-heading text-[2.25rem] leading-none font-extrabold break-words lg:text-[2.75rem]">{entry.word}</h2>
-          <p className="mt-1 min-h-6 text-base text-ink-2">{entry.phonetic}</p>
-          <div className="mt-2 min-h-[1.625rem]">
+          {(phonetic || reserve) && <p className={cn("mt-1 text-base text-ink-2", reserve && "min-h-6")}>{phonetic}</p>}
+          <div className={cn("mt-2", reserve && "min-h-[1.625rem]")}>
             {!loading && (
               <span ref={stampRef} className="inline-flex">
                 <DifficultyStamp level={entry.difficulty} />
@@ -83,44 +103,66 @@ export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, spe
             )}
           </div>
         </div>
+        {saved && (
+          <span ref={starRef} className="inline-flex shrink-0 self-center">
+            <StampStar size={52} seed={entry.word.length} label={p.starEarned} />
+          </span>
+        )}
         <Button type="button" variant="ink" size="icon-lg" className="size-14" onClick={onSpeak} aria-label={`${p.speakBtn}: ${entry.word}`}>
           <Volume2 aria-hidden="true" />
         </Button>
       </div>
 
-      <div className="mt-4 min-h-[7rem] rounded-xl bg-paper-2 px-4 py-3.5">
+      <div className={cn("mt-4 rounded-xl bg-paper-2 px-4 py-3.5", reserve && "min-h-[7rem]")}>
         <p className="text-[0.8125rem] font-bold text-ink-2">{p.translationLabel}</p>
         <p className="mt-1 text-xl leading-normal font-bold" lang={entry.language === "tagalog" ? "tl" : "hil"}>
           {loading ? <span className="font-normal text-ink-2">{p.pending}</span> : entry.translation}
         </p>
       </div>
 
-      <div className="mt-3 min-h-[4.5rem] px-1">
-        <p className="text-[0.8125rem] font-bold text-ink-2">{p.englishLabel}</p>
-        <p className="mt-0.5 text-[1.0625rem] leading-relaxed">{loading ? "" : entry.english}</p>
-      </div>
+      {(english || reserve) && (
+        <div className={cn("mt-3 px-1", reserve && "min-h-[4.5rem]")}>
+          {(english || loading) && <p className="text-[0.8125rem] font-bold text-ink-2">{p.englishLabel}</p>}
+          <p className="mt-0.5 text-[1.0625rem] leading-relaxed">{loading ? "" : english}</p>
+        </div>
+      )}
 
-      <div className="mt-3 min-h-[4.75rem] border-t-[1.5px] border-dashed border-line px-1 pt-3 text-[1.0625rem] leading-relaxed text-ink-2">
-        {!loading && entry.example ? markWordIn(entry.example, entry.word) : null}
-      </div>
+      {(showExample || reserve) && (
+        <div
+          className={cn(
+            "mt-3 border-t-[1.5px] border-dashed px-1 pt-3 text-[1.0625rem] leading-relaxed text-ink-2",
+            showExample ? "border-line" : "border-transparent",
+            reserve && "min-h-[4.75rem]",
+          )}
+        >
+          {showExample ? markWordIn(entry.example!, entry.word) : null}
+        </div>
+      )}
 
-      <div className="mt-4 grid grid-cols-2 gap-2.5">
+      <p className={cn("mt-3 flex items-start gap-1.5 text-[0.8125rem] leading-snug text-ink-2", reserve && "min-h-10")}>
+        <SourceIcon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+        <span>{loading ? "" : sourceText}</span>
+      </p>
+      <div className="sticky bottom-0 z-10 -mx-5 mt-2 grid grid-cols-2 gap-2.5 bg-background px-5 pt-3 pb-6 lg:static lg:mx-0 lg:mt-4 lg:bg-transparent lg:p-0">
         <Button type="button" variant="secondary" size="lg" className="h-14" onClick={onSpeak} aria-busy={speaking}>
           <Volume2 aria-hidden="true" />
           {speaking ? p.speakingBtn : p.speakBtn}
         </Button>
-        <Button type="button" size="lg" className="h-14" aria-pressed={saved} onClick={saved ? onRemove : onSave} disabled={loading}>
+        <Button
+          type="button"
+          size="lg"
+          variant={saved ? "secondary" : "default"}
+          className="h-14"
+          aria-pressed={saved}
+          onClick={saved ? onRemove : onSave}
+          disabled={loading}
+        >
           <span ref={saveIconRef} className="inline-flex">
-            {saved ? <BookmarkCheck aria-hidden="true" /> : <BookmarkPlus aria-hidden="true" />}
+            {saved ? <StampCheck size={26} seed={entry.word.length} /> : <BookmarkPlus aria-hidden="true" />}
           </span>
           {saved ? p.savedBtn : p.saveBtn}
         </Button>
       </div>
-
-      <p className="mt-3 flex min-h-10 items-start gap-1.5 text-[0.8125rem] leading-snug text-ink-2">
-        <SourceIcon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-        <span>{loading ? "" : sourceText}</span>
-      </p>
     </div>
   );
 }

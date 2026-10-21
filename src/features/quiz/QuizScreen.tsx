@@ -5,12 +5,14 @@ import Link from "next/link";
 import { Camera, Check, RotateCcw, Volume2, X } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/PageLayout";
 import Mascot from "@/components/Mascot";
+import StampCheck from "@/components/StampCheck";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSavedWords } from "@/hooks/useSavedWords";
 import { useT } from "@/hooks/useT";
 import { useMotion } from "@/lib/motion";
+import { realEnglish, realPhonetic } from "@/lib/phonetic";
 import { buildQuiz, MIN_QUIZ_WORDS, type Quiz } from "@/lib/quiz";
 import { speak } from "@/lib/tts";
 import { selectTotalStars, useProgress } from "@/stores/progress";
@@ -109,6 +111,8 @@ function QuestionView({
   const answered = chosen !== null;
   const correct = chosen === q.answerIndex;
   const last = index + 1 >= total;
+  const phonetic = realPhonetic(q.phonetic, q.word);
+  const english = realEnglish(q.english);
 
   useEffect(() => {
     if (answered && correct) return stampIn(stampRef.current);
@@ -116,7 +120,7 @@ function QuestionView({
 
   return (
     <div className="px-5 lg:px-8">
-      <div className="mx-auto max-w-2xl">
+      <div className="max-w-2xl">
         <div className="mb-3 flex items-center gap-3">
           <p className="shrink-0 font-bold" aria-live="polite">
             {t.quiz.progress(index + 1, total)}
@@ -131,8 +135,8 @@ function QuestionView({
               <Volume2 aria-hidden="true" />
             </Button>
           </div>
-          <p className="pad-line text-ink-2">{q.phonetic}</p>
-          <p className="pad-line">{q.english}</p>
+          {phonetic && <p className="pad-line text-ink-2">{phonetic}</p>}
+          {english && <p className="pad-line">{english}</p>}
         </div>
 
         <p className="mt-4 mb-2 font-bold">{t.quiz.prompt}</p>
@@ -176,8 +180,8 @@ function QuestionView({
           {answered && (
             <div className="flex items-center gap-3">
               {correct && (
-                <span ref={stampRef} className="grid size-12 shrink-0 place-items-center rounded-full border-[3px] border-success text-success">
-                  <Check aria-hidden="true" className="size-7" strokeWidth={3} />
+                <span ref={stampRef} className="inline-grid size-14 shrink-0 place-items-center">
+                  <StampCheck size={52} seed={index} />
                 </span>
               )}
               <div>
@@ -215,7 +219,7 @@ function QuizResults({ quiz, picks, onRetry }: { quiz: Quiz; picks: number[]; on
 
   return (
     <div className="px-5 lg:px-8">
-      <div className="mx-auto max-w-2xl">
+      <div className="max-w-2xl">
         <div className="flex items-center gap-4">
           <Mascot mood={good ? "cheer" : "think"} size={88} />
           <div>
