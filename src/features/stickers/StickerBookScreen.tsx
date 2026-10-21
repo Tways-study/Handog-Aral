@@ -77,10 +77,18 @@ function StickerPage() {
   // The NEW markers stay while the child is on the page; they clear once she has really looked
   // (the page was open long enough) and then left. A flash visit keeps them.
   useEffect(() => {
+    const clear = () => {
+      if (looked.current) for (const sticker of selectUnseen(useRewards.getState())) useRewards.getState().markSeen(sticker);
+    };
+    const onHide = () => document.visibilityState === "hidden" && clear();
     const id = setTimeout(() => (looked.current = true), LOOKED_AT_MS);
+    document.addEventListener("visibilitychange", onHide);
+    window.addEventListener("pagehide", clear);
     return () => {
       clearTimeout(id);
-      if (looked.current) for (const sticker of selectUnseen(useRewards.getState())) useRewards.getState().markSeen(sticker);
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener("pagehide", clear);
+      clear();
     };
   }, []);
 
