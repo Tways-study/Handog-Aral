@@ -1,9 +1,13 @@
 import { cn } from "@/lib/utils";
 
-export type MascotMood = "idle" | "cheer" | "think";
+import type { OwlOutfit } from "@/stores/settings";
+
+export type MascotMood = "idle" | "cheer" | "think" | "wave" | "sleep";
 
 interface MascotProps {
   mood?: MascotMood;
+  /** Accessory the owl wears. The art track draws them; until then the attribute only records the choice. */
+  outfit?: OwlOutfit;
   /** Pixel size (number) or any CSS length. */
   size?: number | string;
   className?: string;
@@ -17,7 +21,7 @@ const INK = "#1D2340";
 const BEAK = "#F08A24";
 
 /** The Handog owl. Flat gouache shapes from the approved comp. No animation by default. */
-export default function Mascot({ mood = "idle", size = 96, className, title }: MascotProps) {
+export default function Mascot({ mood = "idle", outfit = "none", size = 96, className, title }: MascotProps) {
   const px = typeof size === "number" ? `${size}px` : size;
   // Pupils: centred (idle), up-and-right (think), slightly larger and lower (cheer).
   const pupil =
@@ -31,6 +35,7 @@ export default function Mascot({ mood = "idle", size = 96, className, title }: M
       className={cn("inline-block shrink-0 select-none", className)}
       {...(title ? { role: "img", "aria-label": title } : { "aria-hidden": true, focusable: "false" })}
       data-mood={mood}
+      data-outfit={outfit}
     >
       {/* ear tufts */}
       <path d="M22 36 L30 14 L44 30 Z" fill={BROWN} />

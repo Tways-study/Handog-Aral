@@ -32,6 +32,6 @@ export interface OwlProps {
  * `Mascot` until the three.js track replaces it with the lazy 3D owl (same props, same 1:1 box, SVG
  * fallback for reduced motion / no WebGL / slow devices / the `owl3d` setting off).
  */
-export default function Owl({ mood = "idle", size = 96, className, title }: OwlProps) {
-  return <Mascot mood={mood === "cheer" || mood === "think" ? mood : "idle"} size={size} className={className} title={title} />;
+export default function Owl({ mood = "idle", outfit = "none", size = 96, className, title }: OwlProps) {
+  return <Mascot mood={mood} outfit={outfit} size={size} className={className} title={title} />;
 }
