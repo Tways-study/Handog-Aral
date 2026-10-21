@@ -132,13 +132,14 @@ function Round({ words, onAgain }: { words: SavedWord[]; onAgain: () => void }) 
   }, [game.won, game.moves, game.pairs]);
 
   function onKeyDown(e: React.KeyboardEvent<HTMLUListElement>) {
-    const keys: Record<string, number> = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 3, ArrowUp: -3 };
-    const step = keys[e.key];
-    if (!step || !grid.current) return;
+    if (!grid.current) return;
+    const cols = columnsNow(grid.current);
+    const step = ({ ArrowRight: 1, ArrowLeft: -1, ArrowDown: cols, ArrowUp: -cols } as Record<string, number | undefined>)[e.key];
+    if (!step) return;
     const buttons = Array.from(grid.current.querySelectorAll<HTMLButtonElement>("button"));
     const at = buttons.indexOf(document.activeElement as HTMLButtonElement);
     if (at < 0) return;
-    const to = Math.max(0, Math.min(buttons.length - 1, at + (Math.abs(step) === 3 ? step * columnsNow(grid.current) / 3 : step)));
+    const to = Math.max(0, Math.min(buttons.length - 1, at + step));
     e.preventDefault();
     buttons[to].focus();
   }
@@ -157,7 +158,7 @@ function Round({ words, onAgain }: { words: SavedWord[]; onAgain: () => void }) 
         ref={grid}
         aria-label={t.play.boardLabel}
         onKeyDown={onKeyDown}
-        className="pad grid grid-cols-3 gap-2 rounded-xl border-[1.5px] border-line p-2 before:hidden sm:grid-cols-4 sm:gap-3 sm:p-4"
+        className="pad grid grid-cols-2 gap-2 rounded-xl border-[1.5px] border-line p-2 before:hidden min-[380px]:grid-cols-3 sm:grid-cols-4 sm:gap-3 sm:p-4"
         data-testid="board"
       >
         {game.cards.map((card, i) => (
@@ -206,7 +207,7 @@ function Card({ card, index, up, matched, onFlip }: { card: MatchCard; index: nu
           aria-hidden={up || undefined}
         >
           <BookOpen aria-hidden="true" className="size-7" />
-          <span aria-hidden="true" className="font-heading text-lg font-bold tabular-nums">
+          <span aria-hidden="true" className="rounded-md bg-paper px-2.5 font-heading text-lg leading-snug font-bold text-ink tabular-nums">
             {index + 1}
           </span>
           {!up && <span className="sr-only">{t.play.faceDownIndex(index + 1)}</span>}

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Ban, Camera, GraduationCap, Gamepad2, Glasses, Lock, Ribbon, Sparkles, Star, type LucideIcon } from "lucide-react";
+import { Ban, Camera, Check, GraduationCap, Gamepad2, Glasses, Lock, Ribbon, Sparkles, Star, type LucideIcon } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/PageLayout";
 import Owl, { type OwlReaction } from "@/components/owl/Owl";
 import StickerArt from "@/components/stickers/StickerArt";
@@ -36,20 +36,18 @@ export default function StickerBookScreen() {
       <PageHeader
         title={t.stickers.title}
         subtitle={t.stickers.subtitle(name)}
-        trailing={
-          <p className="inline-flex min-h-11 items-center gap-2 rounded-full bg-mango px-4 font-bold text-mango-fg tabular-nums" data-testid="sticker-count">
-            <Star aria-hidden="true" className="size-5" />
-            {t.stickers.count(count, STICKER_IDS.length)}
-          </p>
-        }
       />
+      <p className="mb-3 inline-flex min-h-11 items-center gap-2 rounded-full bg-mango px-4 font-bold text-mango-fg tabular-nums" data-testid="sticker-count">
+        <Star aria-hidden="true" className="size-5" />
+        {t.stickers.count(count, STICKER_IDS.length)}
+      </p>
       {ready && (
         <Tabs defaultValue="stickers">
-          <TabsList className="w-full sm:w-fit">
-            <TabsTrigger value="stickers" className="min-h-11 flex-1 sm:flex-none sm:px-6">
+          <TabsList className="h-auto! w-full sm:w-fit">
+            <TabsTrigger value="stickers" className="min-h-11 min-w-0 flex-1 whitespace-normal sm:flex-none sm:px-6">
               {t.stickers.tabStickers}
             </TabsTrigger>
-            <TabsTrigger value="owl" className="min-h-11 flex-1 sm:flex-none sm:px-6">
+            <TabsTrigger value="owl" className="min-h-11 min-w-0 flex-1 whitespace-normal sm:flex-none sm:px-6">
               {t.stickers.tabOwl}
             </TabsTrigger>
           </TabsList>
@@ -218,7 +216,7 @@ function Wardrobe() {
 
   return (
     <div className="flex flex-col items-center gap-4 pb-4" data-testid="wardrobe">
-      <div className="pad flex w-full flex-col items-center gap-2 rounded-xl border-[1.5px] border-line px-4 py-6 text-center before:hidden">
+      <div className="flex w-full flex-col items-center gap-2 rounded-xl bg-paper-2 px-4 py-6 text-center">
         <Owl mood="idle" outfit={outfit} size={160} reaction={reaction} interactive onTap={() => setReaction((r) => ({ kind: "hop", key: (r?.key ?? 0) + 1 }))} />
         <h2 className="font-heading text-2xl font-bold">{t.stickers.wardrobeTitle}</h2>
         <p className="max-w-prose text-ink-2">{t.stickers.wardrobeBody}</p>
@@ -247,12 +245,13 @@ function Wardrobe() {
               aria-disabled={!unlocked || undefined}
               data-locked={!unlocked || undefined}
               className={cn(
-                "h-auto min-h-24 flex-col gap-1 rounded-2xl border-[1.5px] border-line bg-card px-2 py-3 text-ink shadow-tile data-[state=on]:border-ink data-[state=on]:bg-mango data-[state=on]:text-mango-fg",
+                "relative h-auto min-h-24 flex-col gap-1 rounded-2xl border-[1.5px] border-line bg-card px-2 py-3 text-ink shadow-tile data-[state=on]:border-ink data-[state=on]:bg-mango data-[state=on]:text-mango-fg",
                 !unlocked && "border-dashed border-line-strong bg-paper text-ink-2 shadow-none",
               )}
             >
               {unlocked ? <Icon aria-hidden="true" className="size-6" /> : <Lock aria-hidden="true" className="size-6" />}
               <span className="font-heading text-base font-bold">{t.stickers.outfits[o]}</span>
+              {outfit === o && <Check aria-hidden="true" className="absolute top-2 right-2 size-5" strokeWidth={3} />}
               {o !== "none" && !unlocked && (
                 <span className="text-xs leading-tight font-normal text-balance">{t.stickers.unlockedBy(stickerTitle(OUTFIT_UNLOCKS[o], language))}</span>
               )}
