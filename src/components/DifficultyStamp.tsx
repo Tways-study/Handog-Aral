@@ -18,7 +18,7 @@ export function StampShape({ level, className }: { level: StampLevel; className?
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={2.2}
+      strokeWidth={2.6}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -32,14 +32,14 @@ export function StampShape({ level, className }: { level: StampLevel; className?
       )}
       {level === "medium" && (
         <>
-          <rect x="3.5" y="3.5" width="17" height="17" rx="3" />
-          <rect x="8.5" y="8.5" width="7" height="7" rx="1" />
+          <rect x="3.5" y="3.5" width="17" height="17" rx="5.5" />
+          <rect x="8.5" y="8.5" width="7" height="7" rx="2.5" />
         </>
       )}
       {level === "hard" && (
         <>
-          <path d="M12 3 21.5 20h-19z" />
-          <path d="M12 10.5 15.5 17h-7z" />
+          <path d="M12 3.5 21 19.500H3z" strokeWidth={3.2} />
+          <path d="M12 11.5 14.5 16h-5z" />
         </>
       )}
     </svg>

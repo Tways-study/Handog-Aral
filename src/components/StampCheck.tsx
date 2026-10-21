@@ -28,15 +28,15 @@ export default function StampCheck({ size = 28, seed = 0, label, className }: St
       style={{ transform: `rotate(${stampTilt(seed + 1)}deg)` }}
     >
       <defs>
-        <filter id={filterId} x="-10%" y="-10%" width="120%" height="120%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed={(Math.abs(seed) % 9) + 5} result="noise" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.6" xChannelSelector="R" yChannelSelector="G" />
+        <filter id={filterId} x="-15%" y="-15%" width="130%" height="130%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed={(Math.abs(seed) % 9) + 5} result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.6" xChannelSelector="R" yChannelSelector="G" />
         </filter>
       </defs>
       <g filter={`url(#${filterId})`} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="32" cy="32" r="29" strokeWidth="2.6" />
-        <circle cx="32" cy="32" r="24.5" strokeWidth="1.2" />
-        <path d="M17.5 33.5 27.5 43.5 47 21" strokeWidth="7" />
+        <circle cx="32" cy="32" r="28.5" strokeWidth="3.4" />
+        <circle cx="32" cy="32" r="23" strokeWidth="1.6" strokeDasharray="0.1 5.2" />
+        <path d="M17.5 33.5 27.5 43.5 47 21" strokeWidth="8" />
       </g>
     </svg>
   );
