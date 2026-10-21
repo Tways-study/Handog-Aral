@@ -43,6 +43,7 @@ const C = {
   cheek: "#F29A8A",
   mouth: "#B83A1B",
   gold: "#F5C542",
+  cap: "#34409B",
   bow: "#3F4FB8",
 } as const;
 
@@ -381,9 +382,9 @@ export function buildOwl(): OwlModel {
   glasses.add(bridge);
 
   const cap = new Group();
-  const skull = mesh(geo(new CylinderGeometry(0.46, 0.5, 0.26, 18)), C.ink);
+  const skull = mesh(geo(new CylinderGeometry(0.46, 0.5, 0.26, 18)), C.cap);
   skull.position.y = 0.93;
-  const board = mesh(geo(new BoxGeometry(1.1, 0.09, 1.1)), C.ink);
+  const board = mesh(geo(new BoxGeometry(1.1, 0.09, 1.1)), C.cap);
   board.position.y = 1.07;
   board.rotation.y = Math.PI / 4;
   const button = mesh(sphere(0.06, 8, 6), C.gold);
