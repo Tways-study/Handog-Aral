@@ -1,6 +1,6 @@
 # Handog Aral v3: stack upgrade, UI overhaul, AI/OCR and offline hardening
 
-## Status and how to resume (updated 2026-10-18)
+## Status and how to resume (updated 2026-10-21)
 
 Branch: **`v3-overhaul`** (not pushed).
 
@@ -14,7 +14,14 @@ Branch: **`v3-overhaul`** (not pushed).
 | Phase 4 prep | Done: translations split per feature (`src/data/strings/*`), reading settings applied from the settings store, shared `src/lib/vocabulary.ts` (learnWord/forgetWord keep progress in sync) and `useSavedWords` hook | `d03aa20`, `2ccf128`, `499dd86` |
 | 4. Screens (D/E/F) | Done and integrated. Reader (`/scan`, `/read/[bookId]`, WordPanel, camera), Home/Books/Welcome (first-run onboarding), Words/Quiz/Settings (offline pack control, no API-key card). Legacy `AppContext`, Gemini client, old services and legacy CSS removed; hydration gate added. typecheck, lint, 227 tests, web and Capacitor builds pass (verified); mechanical design detector: no findings | `5cb721d`..`9ee1604` |
 | 5. Offline dictionary build | **Blocked on a `GEMINI_API_KEY` on the dev machine** (script not written yet) | none |
-| 6. Audit + polish | In progress: Playwright e2e (agent), then Impeccable audit/critique, `/qa`, README + CLAUDE.md update, DESIGN.md | none |
+| 6. Audit + polish | Done except the items listed below. Playwright e2e (83 tests per run at 375x812 and 1280x800; found and fixed 5 real bugs), Impeccable finish review (two rounds, final disposition ship) with the approved-comp record, `DESIGN.md` + `.impeccable/design.json` written by the documenter, README and CLAUDE.md rewritten, hard-coded colours moved into tokens. typecheck, lint, 247 unit tests, web and Android builds pass (verified). | `e745760`..`dbd1610` |
+
+### Not done / not verified yet
+- **Phase 5, the 2,000-word offline dictionary:** blocked on a `GEMINI_API_KEY` on the dev machine (`scripts/build-dictionary.ts` is not written). The app uses the ~280 curated words plus the online dictionary until then. Generated entries need a native-speaker review (`reviewed: false`).
+- **Real Gemini calls:** never made (no key). The proxy is covered by mocked tests and a production-build smoke test of its guard rails (health 200, bad origin 403, Android origin preflight 204, fail-closed 503 without Upstash).
+- **Deployment:** needs a Vercel project with `GEMINI_API_KEY` and an Upstash Redis database (`UPSTASH_REDIS_REST_URL`/`_TOKEN`); nothing is deployed or pushed.
+- **On-device checks not run:** camera permission and capture, native TTS and the Android back button in the Capacitor build; the service-worker update prompt in a real browser (only unit/e2e-level checks); Lighthouse PWA/accessibility scores; `@axe-core/playwright` (not installed); `/qa` via `/browse` on a deployed preview.
+- **Known polish gaps (accepted at the review):** desktop Home ends early with blank space below; on mobile Home the raised Scan button sits ~1px from the "Mag-pasulit" button; the stamp star at chip size reads a little like a medal; the orange Scan button next to a page's orange primary action is a deliberate, user-approved exception to "one thing burns brightest".
 
 ### Before resuming
 Check `df -h /` (keep at least 5 GB free). Then tell Claude: "resume the v3 plan from docs/v3-plan.md".
