@@ -1,8 +1,10 @@
 # Handog Aral v3: stack upgrade, UI overhaul, AI/OCR and offline hardening
 
-## Status and how to resume (updated 2026-10-21)
+## Status and how to resume (updated 2026-10-22)
 
-Branch: **`v3-overhaul`** (not pushed).
+**Shipped to `main`** (fast-forward from `v3-overhaul`, tip `1eaeb6e`). Everything below the table was verified on that tree: typecheck, lint, 475 unit tests, 220 end-to-end tests (14 skipped by design; axe WCAG 2.1 AA clean on every route, light and dark, both viewports), Android export, web build, design detector 0 findings. The "fun and cute" round (3D owl, stickers, Pares game, Welcome first superpower, celebrations, redrawn art) and its final Impeccable review are done; `DESIGN.md` is current.
+
+Branch history: **`v3-overhaul`** is merged into `main` and can be deleted.
 
 | Phase | State | Commit |
 |---|---|---|
@@ -19,8 +21,10 @@ Branch: **`v3-overhaul`** (not pushed).
 ### Not done / not verified yet
 - **Phase 5, the 2,000-word offline dictionary:** blocked on a `GEMINI_API_KEY` on the dev machine (`scripts/build-dictionary.ts` is not written). The app uses the ~280 curated words plus the online dictionary until then. Generated entries need a native-speaker review (`reviewed: false`).
 - **Real Gemini calls:** never made (no key). The proxy is covered by mocked tests and a production-build smoke test of its guard rails (health 200, bad origin 403, Android origin preflight 204, fail-closed 503 without Upstash).
-- **Deployment:** needs a Vercel project with `GEMINI_API_KEY` and an Upstash Redis database (`UPSTASH_REDIS_REST_URL`/`_TOKEN`); nothing is deployed or pushed.
+- **Deployment:** needs a Vercel project with `GEMINI_API_KEY` and an Upstash Redis database (`UPSTASH_REDIS_REST_URL`/`_TOKEN`); nothing is deployed yet (see `docs/release-checklist.md`).
 - **On-device checks not run:** camera permission and capture, native TTS and the Android back button in the Capacitor build; the service-worker update prompt in a real browser (only unit/e2e-level checks); Lighthouse PWA/accessibility scores; `@axe-core/playwright` (not installed); `/qa` via `/browse` on a deployed preview.
+- **Performance cost of the fun-and-cute round (throttled mobile Lighthouse, noisy machine):** Welcome ~85, `/` ~78, reader ~83 vs 87/84/86 before it; Welcome blocking time ~114 ms vs ~35 ms. The 3D owl loads only after load + idle + a calm main thread and never on slow connections, very low-end devices, save-data or software WebGL; the performance pass was stopped before the 3-page targets (Welcome ≥ 87, TBT ≤ 100 ms) were reached. Real Android hardware is untested.
+- **Copy awaiting a native-speaker review** (Hiligaynon and Tagalog; marked `// REVIEW: native speaker` in `src/data/strings/*`): the owl's lines ("Kamusta! Ako si Kuwago…"), the Welcome superpower step, the sticker names and hints, the Pares game, and the quiz encouragement lines.
 - **Known polish gaps (accepted at the review):** desktop Home ends early with blank space below; on mobile Home the raised Scan button sits ~1px from the "Mag-pasulit" button; the stamp star at chip size reads a little like a medal; the orange Scan button next to a page's orange primary action is a deliberate, user-approved exception to "one thing burns brightest".
 
 ### Before resuming
