@@ -6,6 +6,7 @@ import Mascot from "@/components/Mascot";
 import { cn } from "@/lib/utils";
 import { gsap, motionAllowed } from "@/lib/motion";
 import {
+  detectWebGL,
   getOwlCapabilityEpoch,
   owl3dAllowed,
   subscribeOwlCapability,
@@ -82,7 +83,7 @@ export default function Owl({
   // Capability (client only). Reduced motion / save-data changes at runtime flip it off again.
   useEffect(() => {
     const check = () => {
-      setStaticOk(owl3dAllowed({ owl3d, ignoreVisibility: true }));
+      setStaticOk(owl3dAllowed({ owl3d, ignoreVisibility: true, skipWebGL: true }));
       setVisible(document.visibilityState === "visible");
     };
     check();
@@ -99,7 +100,8 @@ export default function Owl({
     if (!staticOk || gateOpen) return;
     let live = true;
     void owl3dLoadGate().then((ok) => {
-      if (live && ok) setGateOpen(true);
+      // The WebGL probe waits for the gate too: even a throwaway context is a costly call on a weak GPU.
+      if (live && ok && detectWebGL()) setGateOpen(true);
     });
     return () => {
       live = false;

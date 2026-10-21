@@ -35,9 +35,28 @@ describe("owl3dAllowed", () => {
     mockEnv();
     expect(owl3dAllowed({ owl3d: false })).toBe(false);
   });
+  it("skips the WebGL probe on request", () => {
+    mockEnv({ webgl: false });
+    expect(owl3dAllowed({ owl3d: true, skipWebGL: true })).toBe(true);
+  });
   it("refuses without WebGL", () => {
     mockEnv({ webgl: false });
     expect(owl3dAllowed({ owl3d: true })).toBe(false);
+  });
+  it("refuses a software WebGL renderer unless the QA switch is on", () => {
+    mockEnv();
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(((type: string) =>
+      type === "webgl2" || type === "webgl"
+        ? ({
+            getExtension: (n: string) => (n === "WEBGL_debug_renderer_info" ? { UNMASKED_RENDERER_WEBGL: 37446 } : null),
+            getParameter: () => "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero)), SwiftShader driver)",
+          } as unknown)
+        : null) as never);
+    expect(owl3dAllowed({ owl3d: true })).toBe(false);
+    resetOwlCapability();
+    localStorage.setItem("handog-owl3d-software", "1");
+    expect(owl3dAllowed({ owl3d: true })).toBe(true);
+    localStorage.removeItem("handog-owl3d-software");
   });
   it("refuses with reduced motion", () => {
     mockEnv({ reduced: true });

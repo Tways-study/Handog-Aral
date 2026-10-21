@@ -37,72 +37,38 @@ export function useOwlRenderer(hostRef: RefObject<HTMLDivElement | null>, opts: 
     canvas.setAttribute("aria-hidden", "true");
     canvas.style.cssText = "display:block;width:100%;height:100%";
     host.appendChild(canvas);
-    let renderer: WebGLRenderer;
-    try {
-      renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "low-power" });
-    } catch {
-      canvas.remove();
-      o.current.onFail();
-      return;
-    }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
-    renderer.setSize(o.current.size, o.current.size, false);
-    renderer.setClearColor(0x000000, 0);
-    rendererRef.current = renderer;
-    const model = buildOwl();
 
+    // Start-up is split into short tasks (context, model, first frame) with a yield between each, so no single
+    // long task blocks a tap or scroll on a slow phone. `torn` makes every stage safe to abandon.
     let torn = false;
+    let renderer: WebGLRenderer | undefined;
+    let model: ReturnType<typeof buildOwl> | undefined;
+    let guard: ReturnType<typeof attachRendererGuard> | undefined;
+    let motion: OwlMotion | undefined;
+    let leaveTimer: ReturnType<typeof setTimeout> | undefined;
+    let lastMove = 0;
+    let following = false;
+
     const teardown = () => {
       if (torn) return;
       torn = true;
-      guard.dispose();
-      motion.dispose();
+      guard?.dispose();
+      motion?.dispose();
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("pointerdown", onPointer);
       clearTimeout(leaveTimer);
-      model.dispose();
-      renderer.dispose();
-      renderer.forceContextLoss();
+      model?.dispose();
+      renderer?.dispose();
+      renderer?.forceContextLoss();
       canvas.remove();
       rendererRef.current = null;
       motionRef.current = null;
     };
-
-    const guard = attachRendererGuard(canvas, {
-      onFail: () => {
-        teardown();
-        o.current.onFail();
-      },
-    });
-
-    const motion = createOwlMotion({
-      render: () => renderer.render(model.scene, model.camera),
-      applyPose: model.applyPose,
-      showOutfit: model.showOutfit,
-      onFrame: (dt) => {
-        recordOwlFrame(dt);
-        if (dt > 0) guard.recordFrame(dt);
-      },
-    });
-    motionRef.current = motion;
-    motion.setMood(o.current.mood, true);
-    motion.setOutfit(o.current.outfit, false);
-    motion.renderOnce();
-    recordOwlFrame(0);
-    o.current.onReady();
-
-    const onVisibility = () => motion.setActive(document.visibilityState === "visible");
-    document.addEventListener("visibilitychange", onVisibility);
-    if (document.visibilityState === "visible") motion.startIdle();
-    else motion.setActive(false);
-
+    const onVisibility = () => motion?.setActive(document.visibilityState === "visible");
     // Head follows the pointer while it is near the owl (interactive owls only, throttled).
-    let lastMove = 0;
-    let leaveTimer: ReturnType<typeof setTimeout> | undefined;
-    let following = false;
     function onPointer(e: PointerEvent) {
-      if (!o.current.interactive) return;
+      if (!o.current.interactive || !motion) return;
       const now = performance.now();
       if (e.type === "pointermove" && now - lastMove < 60) return;
       lastMove = now;
@@ -123,11 +89,64 @@ export function useOwlRenderer(hostRef: RefObject<HTMLDivElement | null>, opts: 
       clearTimeout(leaveTimer);
       leaveTimer = setTimeout(() => {
         following = false;
-        motion.look(null);
+        motion?.look(null);
       }, 2200);
     }
-    window.addEventListener("pointermove", onPointer, { passive: true });
-    window.addEventListener("pointerdown", onPointer, { passive: true });
+
+    const tick = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+    void (async () => {
+      try {
+        renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "low-power" });
+      } catch {
+        teardown();
+        o.current.onFail();
+        return;
+      }
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+      renderer.setSize(o.current.size, o.current.size, false);
+      renderer.setClearColor(0x000000, 0);
+      rendererRef.current = renderer;
+      await tick();
+      if (torn) return;
+      const built = buildOwl();
+      model = built;
+      const r = renderer;
+      // Compile the toon shaders off the main thread (KHR_parallel_shader_compile where the GPU has it), so the
+      // first frame is a cheap draw instead of a long blocking link. Falls back to the plain path on any error.
+      try {
+        await r.compileAsync(built.scene, built.camera);
+      } catch {
+        await tick();
+      }
+      if (torn) return;
+      guard = attachRendererGuard(canvas, {
+        onFail: () => {
+          teardown();
+          o.current.onFail();
+        },
+      });
+      motion = createOwlMotion({
+        render: () => r.render(built.scene, built.camera),
+        applyPose: built.applyPose,
+        showOutfit: built.showOutfit,
+        onFrame: (dt) => {
+          recordOwlFrame(dt);
+          if (dt > 0) guard?.recordFrame(dt);
+        },
+      });
+      motionRef.current = motion;
+      motion.setMood(o.current.mood, true);
+      motion.setOutfit(o.current.outfit, false);
+      motion.renderOnce();
+      recordOwlFrame(0);
+      o.current.onReady();
+
+      document.addEventListener("visibilitychange", onVisibility);
+      if (document.visibilityState === "visible") motion.startIdle();
+      else motion.setActive(false);
+      window.addEventListener("pointermove", onPointer, { passive: true });
+      window.addEventListener("pointerdown", onPointer, { passive: true });
+    })();
 
     return teardown;
   }, [hostRef]);

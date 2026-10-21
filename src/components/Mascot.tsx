@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 import OwlGroup from "@/components/art/OwlGroup";
 
@@ -21,7 +22,7 @@ interface MascotProps {
  * Static (no animation inside); every part is a `data-part` group so GSAP can target it. The 3D
  * owl falls back to this one.
  */
-export default function Mascot({ mood = "idle", outfit = "none", size = 96, className, title }: MascotProps) {
+function Mascot({ mood = "idle", outfit = "none", size = 96, className, title }: MascotProps) {
   const px = typeof size === "number" ? `${size}px` : size;
   return (
     <svg
@@ -37,3 +38,6 @@ export default function Mascot({ mood = "idle", outfit = "none", size = 96, clas
     </svg>
   );
 }
+
+// The SVG is a few hundred nodes: skip re-rendering it when only the owl's loading state changes around it.
+export default memo(Mascot);

@@ -14,6 +14,11 @@ test.use({
   },
 });
 
+// The gate refuses software WebGL (SwiftShader is what headless CI has); this QA switch lets the dev run exercise 3D anyway.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("handog-owl3d-software", "1"));
+});
+
 const hero = (page: Page) => page.getByTestId("interactive-owl").locator("button");
 
 function trackThree(page: Page): string[] {

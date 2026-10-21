@@ -15,14 +15,37 @@ function bump(): void {
   listeners.forEach((l) => l());
 }
 
-/** Try a throwaway canvas. The result is cached (a device does not gain WebGL mid-session). */
+/** QA/dev escape hatch (the dev e2e renders through SwiftShader on purpose): localStorage "handog-owl3d-software" = "1". */
+export const OWL_SOFTWARE_KEY = "handog-owl3d-software";
+
+const SOFTWARE_GL = /swiftshader|llvmpipe|softpipe|software|basic render/i;
+
+function softwareAllowed(): boolean {
+  try {
+    return localStorage.getItem(OWL_SOFTWARE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Try a throwaway canvas. The result is cached (a device does not gain WebGL mid-session).
+ * A SOFTWARE renderer (SwiftShader, llvmpipe: what Chrome falls back to when the GPU is blocklisted, typically the
+ * oldest phones) counts as "no WebGL": drawing the owl on the CPU would cost far more than the flat SVG is worth.
+ */
 export function detectWebGL(): boolean {
   if (webglCache !== null) return webglCache;
   if (typeof document === "undefined") return false;
   try {
     const canvas = document.createElement("canvas");
     const gl = (canvas.getContext("webgl2") || canvas.getContext("webgl")) as WebGLRenderingContext | null;
-    webglCache = !!gl;
+    let software = false;
+    if (gl) {
+      const info = gl.getExtension?.("WEBGL_debug_renderer_info");
+      const renderer = info ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL) ?? "") : "";
+      software = SOFTWARE_GL.test(renderer) && !softwareAllowed();
+    }
+    webglCache = !!gl && !software;
     // Hand the context straight back so the probe does not eat into the browser's context budget.
     gl?.getExtension?.("WEBGL_lose_context")?.loseContext();
   } catch {
@@ -86,10 +109,15 @@ export interface CapabilityInput {
   owl3d: boolean;
   /** Skip the page-visibility rule (used to decide whether an already-loaded owl may stay). */
   ignoreVisibility?: boolean;
+  /**
+   * Skip the WebGL probe. Creating even a throwaway GL context is a costly synchronous call on weak GPUs, so the
+   * owl asks the cheap questions first and only probes once the load gate has opened.
+   */
+  skipWebGL?: boolean;
 }
 
 /** True when the 3D owl may be loaded: setting on, WebGL, no reduced motion, no save-data, not a low-end device, page visible, not failed. */
-export function owl3dAllowed({ owl3d, ignoreVisibility = false }: CapabilityInput): boolean {
+export function owl3dAllowed({ owl3d, ignoreVisibility = false, skipWebGL = false }: CapabilityInput): boolean {
   if (typeof window === "undefined") return false;
   if (!owl3d || forceSvg) return false;
   if (hasOwl3dFailed()) return false;
@@ -97,7 +125,7 @@ export function owl3dAllowed({ owl3d, ignoreVisibility = false }: CapabilityInpu
   if (saveDataOn()) return false;
   if (lowEndDevice()) return false;
   if (!ignoreVisibility && typeof document !== "undefined" && document.visibilityState === "hidden") return false;
-  return detectWebGL();
+  return skipWebGL || detectWebGL();
 }
 
 /** For useSyncExternalStore: changes whenever forceSvg or the failure flag changes. */

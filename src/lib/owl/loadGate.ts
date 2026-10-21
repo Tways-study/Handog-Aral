@@ -10,7 +10,7 @@
  * The gate resolves once per page load and every owl shares the answer.
  */
 
-export const LOAD_SETTLE_MS = 2000;
+export const LOAD_SETTLE_MS = 2500;
 export const IDLE_TIMEOUT_MS = 3000;
 export const BUSY_WINDOW_MS = 2000;
 export const BUSY_LIMIT_MS = 300;
