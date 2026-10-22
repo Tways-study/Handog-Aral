@@ -30,19 +30,19 @@ import {
 } from "three";
 import type { OwlOutfit } from "@/stores/settings";
 
-/** Palette from DESIGN.md. */
+/** Palette sampled from public/mascot/owl-expression-sheet.png (same as OWL in art/OwlGroup.tsx). */
 const C = {
-  body: "#A86B34",
-  wing: "#8A5A2B",
-  belly: "#F2D3A0",
-  chevron: "#C99A5E",
-  beak: "#F08A24",
-  ink: "#1D2340",
-  outline: "#3A2412",
-  sclera: "#FFF8EA",
-  cheek: "#F29A8A",
-  mouth: "#B83A1B",
-  gold: "#F5C542",
+  body: "#B46F45",
+  wing: "#9C5936",
+  belly: "#F8E0BD",
+  chevron: "#D9AE86",
+  beak: "#F8A23D",
+  ink: "#27273E",
+  outline: "#7A4526", // soft brown, not black: the reference owl has no hard outline
+  sclera: "#FDEDD9",
+  cheek: "#F6A29B",
+  mouth: "#E0644A",
+  gold: "#F5C53F",
   cap: "#34409B",
   bow: "#3F4FB8",
 } as const;

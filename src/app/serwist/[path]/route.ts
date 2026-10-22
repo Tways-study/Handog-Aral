@@ -16,7 +16,7 @@ export const { dynamic, dynamicParams, revalidate, generateStaticParams, GET } =
     "public/**/*",
   ],
   // The ~10MB Tesseract pack is opt-in (warmOfflinePack) and cached at runtime, never precached.
-  globIgnores: ["public/tesseract/**", "public/screenshots/**", "**/*.map"],
+  globIgnores: ["public/tesseract/**", "public/screenshots/**", "public/mascot/**", "**/*.map"],
   // Server-rendered offline fallback document, see `fallbacks` in sw.ts.
   additionalPrecacheEntries: [{ url: "/offline", revision: randomUUID() }],
 });
