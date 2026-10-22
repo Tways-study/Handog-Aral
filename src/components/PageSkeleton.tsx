@@ -17,10 +17,12 @@ interface SkeletonProps {
 export function HomeSkeleton({ label, className }: SkeletonProps) {
   return (
     <PageContainer className={className}>
-      <div role="status" aria-busy="true" aria-label={label} data-slot="home-skeleton" className="grid gap-5 pt-6 lg:grid-cols-2 lg:gap-8 lg:pt-10">
+      <div role="status" aria-busy="true" aria-label={label} data-slot="home-skeleton" className="grid gap-5 lg:grid-cols-2 lg:gap-8">
         <div className="grid content-start gap-3 lg:col-span-2">
-          <Skeleton className="h-9 w-3/5 max-w-sm rounded-lg" />
-          <Skeleton className="h-4 w-2/5 max-w-[14rem]" />
+          <div className="page-band grid gap-3 pt-6 pb-7 lg:pt-10">
+            <Skeleton className="h-9 w-3/5 max-w-sm rounded-lg bg-white/30" />
+            <Skeleton className="h-4 w-2/5 max-w-[14rem] bg-white/30" />
+          </div>
           <div className="flex gap-2 pt-1">
             <Skeleton className="h-11 w-32 rounded-full" />
             <Skeleton className="h-11 w-28 rounded-full" />
@@ -51,12 +53,14 @@ export function HomeSkeleton({ label, className }: SkeletonProps) {
   );
 }
 
-/** A page title and a ruled list of word rows (Words, Books, Stickers and Quiz while their data loads). */
+/** A page title band and a list of word rows (Words, Books, Stickers and Quiz while their data loads). */
 export function ListSkeleton({ label, className }: SkeletonProps) {
   return (
     <PageContainer className={className}>
-      <div className="grid gap-4 pt-6 lg:pt-10">
-        <Skeleton className="h-9 w-1/2 max-w-xs rounded-lg" />
+      <div className="grid gap-4">
+        <div className="page-band pt-6 pb-7 lg:pt-10">
+          <Skeleton className="h-9 w-1/2 max-w-xs rounded-lg bg-white/30" />
+        </div>
         <Skeleton className="h-11 w-full max-w-md rounded-full" />
         <PadSkeleton rows={6} label={label} className="rounded-xl" />
       </div>

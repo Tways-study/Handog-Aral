@@ -218,7 +218,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div className="min-h-dvh text-foreground">
+    <div className="min-h-dvh overflow-x-clip text-foreground">
       <a
         href="#main"
         className="sr-only z-50 rounded-[0.875rem] bg-foreground px-4 py-3 font-bold text-background focus:not-sr-only focus:fixed focus:left-3 focus:top-3"

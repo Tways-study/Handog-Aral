@@ -3,22 +3,22 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ==========================================================================
-   Handog Aral: Sticker Sheet tokens (lilac ground, white sticker cards).
+   Handog Aral: Sticker Sheet tokens (quiet cream ground, a purple header band with confetti, white sticker cards).
    Source of truth: .impeccable/mocks/home-reader-comp.html
    All NEW code uses only the tokens in this section. Hex on purpose: the
    values are verified by src/styles/contrast.test.ts, which parses this file.
    ========================================================================== */
 
 :root {
-  /* ground, sheet and ink: --paper is the lilac page ground; cards are white stickers */
-  --paper: #EDE6FF;
-  --paper-2: #E1D7FB;
+  /* ground, sheet and ink: --paper is the near-white warm page ground; cards are white stickers; --paper-2 is a lilac tint */
+  --paper: #FFFDF9;
+  --paper-2: #F3EEFD;
   --card-surface: #FFFFFF;
   --ink: #1D2340;
   --ink-2: #4A5070;
-  --rule: #D6CBF2;
+  --rule: #DDD3F3;
   --margin: #E0756C;
-  --line: #D6CBF2;
+  --line: #DDD3F3;
   --line-strong: #7F849C;
 
   /* the notebook label card on a book cover: it is paper stuck on cloth, so it stays light in dark mode
@@ -96,7 +96,12 @@
 
   /* sticker sheet: the white keyline and the soft lilac drop that make a card read as a sticker */
   --sticker: 0 0 0 3px #FFFFFF, 0 5px 0 3px rgb(91 75 181 / 0.22);
-  --confetti: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='460' height='460' viewBox='0 0 460 460'><g opacity='0.6'><polygon points='96.0,37.0 100.1,46.4 110.3,47.4 102.6,54.1 104.8,64.1 96.0,58.9 87.2,64.1 89.4,54.1 81.7,47.4 91.9,46.4' fill='%23F5C53F' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='392.0,120.0 395.2,127.5 403.4,128.3 397.2,133.7 399.1,141.7 392.0,137.5 384.9,141.7 386.8,133.7 380.6,128.3 388.8,127.5' fill='%238A6FF0' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='212.0,223.0 215.5,231.2 224.4,232.0 217.7,237.8 219.6,246.5 212.0,242.0 204.4,246.5 206.3,237.8 199.6,232.0 208.5,231.2' fill='%23F08A24' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='58.0,319.0 61.0,325.9 68.5,326.6 62.8,331.6 64.5,338.9 58.0,335.1 51.5,338.9 53.2,331.6 47.5,326.6 55.0,325.9' fill='%23F5C53F' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='342.0,382.0 345.8,390.8 355.3,391.7 348.1,398.0 350.2,407.3 342.0,402.4 333.8,407.3 335.9,398.0 328.7,391.7 338.2,390.8' fill='%23F08A24' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><circle cx='210' cy='60' r='6' fill='%23FFFFFF'/><circle cx='300' cy='40' r='5' fill='%23FFFFFF'/><circle cx='412' cy='248' r='7' fill='%23FFFFFF'/><circle cx='120' cy='176' r='7' fill='%23FFFFFF'/><circle cx='36' cy='236' r='5' fill='%23FFFFFF'/><circle cx='262' cy='330' r='7' fill='%23FFFFFF'/><circle cx='176' cy='420' r='6' fill='%23FFFFFF'/><circle cx='436' cy='430' r='5' fill='%23FFFFFF'/><path d='M250 120q9-12 18 0t18 0' fill='none' stroke='%23FFFFFF' stroke-width='11' stroke-linecap='round'/><path d='M250 120q9-12 18 0t18 0' fill='none' stroke='%23E9577A' stroke-width='4.5' stroke-linecap='round'/><path d='M40 416q9-12 18 0t18 0' fill='none' stroke='%23FFFFFF' stroke-width='11' stroke-linecap='round'/><path d='M40 416q9-12 18 0t18 0' fill='none' stroke='%23E9577A' stroke-width='4.5' stroke-linecap='round'/><path d='M330 300q9-12 18 0t18 0' fill='none' stroke='%23FFFFFF' stroke-width='11' stroke-linecap='round'/><path d='M330 300q9-12 18 0t18 0' fill='none' stroke='%23F5C53F' stroke-width='4.5' stroke-linecap='round'/><path d='M120 266q9-12 18 0t18 0' fill='none' stroke='%23FFFFFF' stroke-width='11' stroke-linecap='round'/><path d='M120 266q9-12 18 0t18 0' fill='none' stroke='%23F5C53F' stroke-width='4.5' stroke-linecap='round'/><path d='M360 40l14-24 14 24z' fill='%238A6FF0' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><path d='M180 330l14-24 14 24z' fill='%238A6FF0' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><rect x='40' y='120' width='24' height='24' rx='7' transform='rotate(14 52 132)' fill='%234CC3A8' stroke='%23FFFFFF' stroke-width='4' paint-order='stroke'/><rect x='414' y='334' width='24' height='24' rx='7' transform='rotate(14 426 346)' fill='%234CC3A8' stroke='%23FFFFFF' stroke-width='4' paint-order='stroke'/><rect x='262' y='420' width='24' height='24' rx='7' transform='rotate(14 274 432)' fill='%234CC3A8' stroke='%23FFFFFF' stroke-width='4' paint-order='stroke'/></g></svg>");
+
+  /* page band: the pale lilac block behind every screen title, with a quiet confetti tile (ink on band text contrast is checked) */
+  --band: #E7DFFF;
+  --band-ink: #1D2340;
+  --band-ink-2: #3B4468;
+  --band-confetti: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='360' viewBox='0 0 360 360'><g opacity='0.7'><polygon points='70.0,36.0 73.8,44.8 83.3,45.7 76.1,52.0 78.2,61.3 70.0,56.4 61.8,61.3 63.9,52.0 56.7,45.7 66.2,44.8' fill='%23F5C53F'/><polygon points='300.0,109.0 303.0,115.9 310.5,116.6 304.8,121.6 306.5,128.9 300.0,125.1 293.5,128.9 295.2,121.6 289.5,116.6 297.0,115.9' fill='%23F08A24'/><polygon points='170.0,238.0 173.2,245.5 181.4,246.3 175.2,251.7 177.1,259.7 170.0,255.5 162.9,259.7 164.8,251.7 158.6,246.3 166.8,245.5' fill='%23F5C53F'/><polygon points='40.0,290.0 42.7,296.3 49.5,296.9 44.4,301.4 45.9,308.1 40.0,304.6 34.1,308.1 35.6,301.4 30.5,296.9 37.3,296.3' fill='%23F08A24'/><circle cx='150' cy='60' r='5' fill='%234CC3A8'/><circle cx='250' cy='40' r='4' fill='%238A6FF0'/><circle cx='330' cy='230' r='6' fill='%234CC3A8'/><circle cx='100' cy='160' r='5' fill='%238A6FF0'/><circle cx='30' cy='200' r='4' fill='%234CC3A8'/><circle cx='240' cy='330' r='5' fill='%238A6FF0'/><path d='M210 110q9-12 18 0t18 0' fill='none' stroke='%23F08A24' stroke-width='5' stroke-linecap='round'/><path d='M20 110q9-12 18 0t18 0' fill='none' stroke='%238A6FF0' stroke-width='5' stroke-linecap='round'/><path d='M270 300q9-12 18 0t18 0' fill='none' stroke='%23F5C53F' stroke-width='5' stroke-linecap='round'/><path d='M290 30l12-21 12 21z' fill='%238A6FF0'/><path d='M110 310l12-21 12 21z' fill='%23F08A24'/><rect x='30' y='40' width='20' height='20' rx='6' transform='rotate(14 40 50)' fill='%234CC3A8'/><rect x='320' y='330' width='20' height='20' rx='6' transform='rotate(14 330 340)' fill='%234CC3A8'/><rect x='120' y='230' width='20' height='20' rx='6' transform='rotate(14 130 240)' fill='%23F5C53F'/></g></svg>");
 
   /* reading sheet: one pitch (line height and row height), rem-based so it scales with html.font-* */
   --pitch: 2.25rem;
@@ -122,7 +127,11 @@
   --line: #3B3260;
   --line-strong: #8A84AE;
   --sticker: 0 0 0 3px #3B3260, 0 5px 0 3px rgb(0 0 0 / 0.35);
-  --confetti: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='460' height='460' viewBox='0 0 460 460'><g opacity='0.5'><polygon points='96.0,37.0 100.1,46.4 110.3,47.4 102.6,54.1 104.8,64.1 96.0,58.9 87.2,64.1 89.4,54.1 81.7,47.4 91.9,46.4' fill='%23F5C53F' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='392.0,120.0 395.2,127.5 403.4,128.3 397.2,133.7 399.1,141.7 392.0,137.5 384.9,141.7 386.8,133.7 380.6,128.3 388.8,127.5' fill='%238A6FF0' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='212.0,223.0 215.5,231.2 224.4,232.0 217.7,237.8 219.6,246.5 212.0,242.0 204.4,246.5 206.3,237.8 199.6,232.0 208.5,231.2' fill='%23F08A24' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='58.0,319.0 61.0,325.9 68.5,326.6 62.8,331.6 64.5,338.9 58.0,335.1 51.5,338.9 53.2,331.6 47.5,326.6 55.0,325.9' fill='%23F5C53F' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='342.0,382.0 345.8,390.8 355.3,391.7 348.1,398.0 350.2,407.3 342.0,402.4 333.8,407.3 335.9,398.0 328.7,391.7 338.2,390.8' fill='%23F08A24' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><circle cx='210' cy='60' r='6' fill='%232E2655'/><circle cx='300' cy='40' r='5' fill='%232E2655'/><circle cx='412' cy='248' r='7' fill='%232E2655'/><circle cx='120' cy='176' r='7' fill='%232E2655'/><circle cx='36' cy='236' r='5' fill='%232E2655'/><circle cx='262' cy='330' r='7' fill='%232E2655'/><circle cx='176' cy='420' r='6' fill='%232E2655'/><circle cx='436' cy='430' r='5' fill='%232E2655'/><path d='M250 120q9-12 18 0t18 0' fill='none' stroke='%232E2655' stroke-width='11' stroke-linecap='round'/><path d='M250 120q9-12 18 0t18 0' fill='none' stroke='%23E9577A' stroke-width='4.5' stroke-linecap='round'/><path d='M40 416q9-12 18 0t18 0' fill='none' stroke='%232E2655' stroke-width='11' stroke-linecap='round'/><path d='M40 416q9-12 18 0t18 0' fill='none' stroke='%23E9577A' stroke-width='4.5' stroke-linecap='round'/><path d='M330 300q9-12 18 0t18 0' fill='none' stroke='%232E2655' stroke-width='11' stroke-linecap='round'/><path d='M330 300q9-12 18 0t18 0' fill='none' stroke='%23F5C53F' stroke-width='4.5' stroke-linecap='round'/><path d='M120 266q9-12 18 0t18 0' fill='none' stroke='%232E2655' stroke-width='11' stroke-linecap='round'/><path d='M120 266q9-12 18 0t18 0' fill='none' stroke='%23F5C53F' stroke-width='4.5' stroke-linecap='round'/><path d='M360 40l14-24 14 24z' fill='%238A6FF0' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><path d='M180 330l14-24 14 24z' fill='%238A6FF0' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><rect x='40' y='120' width='24' height='24' rx='7' transform='rotate(14 52 132)' fill='%234CC3A8' stroke='%232E2655' stroke-width='4' paint-order='stroke'/><rect x='414' y='334' width='24' height='24' rx='7' transform='rotate(14 426 346)' fill='%234CC3A8' stroke='%232E2655' stroke-width='4' paint-order='stroke'/><rect x='262' y='420' width='24' height='24' rx='7' transform='rotate(14 274 432)' fill='%234CC3A8' stroke='%232E2655' stroke-width='4' paint-order='stroke'/></g></svg>");
+
+  --band: #3A2E7A;
+  --band-ink: #FFFFFF;
+  --band-ink-2: #E4DDFB;
+  --band-confetti: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='360' viewBox='0 0 360 360'><g opacity='0.2'><polygon points='70.0,36.0 73.8,44.8 83.3,45.7 76.1,52.0 78.2,61.3 70.0,56.4 61.8,61.3 63.9,52.0 56.7,45.7 66.2,44.8' fill='%23F5C53F'/><polygon points='300.0,109.0 303.0,115.9 310.5,116.6 304.8,121.6 306.5,128.9 300.0,125.1 293.5,128.9 295.2,121.6 289.5,116.6 297.0,115.9' fill='%23FFFFFF'/><polygon points='170.0,238.0 173.2,245.5 181.4,246.3 175.2,251.7 177.1,259.7 170.0,255.5 162.9,259.7 164.8,251.7 158.6,246.3 166.8,245.5' fill='%23F5C53F'/><polygon points='40.0,290.0 42.7,296.3 49.5,296.9 44.4,301.4 45.9,308.1 40.0,304.6 34.1,308.1 35.6,301.4 30.5,296.9 37.3,296.3' fill='%23FFFFFF'/><circle cx='150' cy='60' r='5' fill='%23FFFFFF'/><circle cx='250' cy='40' r='4' fill='%23FFFFFF'/><circle cx='330' cy='230' r='6' fill='%23FFFFFF'/><circle cx='100' cy='160' r='5' fill='%23FFFFFF'/><circle cx='30' cy='200' r='4' fill='%23FFFFFF'/><circle cx='240' cy='330' r='5' fill='%23FFFFFF'/><path d='M210 110q9-12 18 0t18 0' fill='none' stroke='%23F5A1B5' stroke-width='5' stroke-linecap='round'/><path d='M20 110q9-12 18 0t18 0' fill='none' stroke='%23FFFFFF' stroke-width='5' stroke-linecap='round'/><path d='M270 300q9-12 18 0t18 0' fill='none' stroke='%23F5C53F' stroke-width='5' stroke-linecap='round'/><path d='M290 30l12-21 12 21z' fill='%23FFFFFF'/><path d='M110 310l12-21 12 21z' fill='%23F5A1B5'/><rect x='30' y='40' width='20' height='20' rx='6' transform='rotate(14 40 50)' fill='%2380E0C8'/><rect x='320' y='330' width='20' height='20' rx='6' transform='rotate(14 330 340)' fill='%2380E0C8'/><rect x='120' y='230' width='20' height='20' rx='6' transform='rotate(14 130 240)' fill='%23FFFFFF'/></g></svg>");
 
   --sunrise: #F39A3D;
   --sunrise-ink: #1D2340;
@@ -264,8 +273,6 @@ body {
   font-family: var(--font-body);
   color: var(--foreground);
   background-color: var(--background);
-  background-image: var(--confetti);
-  background-size: 460px 460px;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
@@ -324,6 +331,35 @@ a { text-underline-offset: 4px; }
   position: relative;
   background-color: var(--pad-bg, var(--card-surface));
   box-shadow: var(--sticker);
+}
+/* The page band: a full-width pale lilac block behind the screen title, curved at the bottom, with a quiet confetti tile.
+   It is the one place the confetti lives; the ground stays quiet and the reading sheet stays plain. */
+.page-band { position: relative; isolation: isolate; color: var(--band-ink); }
+.page-band::before,
+.page-band::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  border-radius: 0 0 2rem 2rem;
+}
+.page-band::before { background-color: var(--band); }
+/* The confetti fades out under the title so no shape ever sits behind text. */
+.page-band::after {
+  background-image: var(--band-confetti);
+  background-size: 360px 360px;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 62%, #000 92%);
+  mask-image: linear-gradient(to right, transparent 0, transparent 62%, #000 92%);
+}
+@media (min-width: 1024px) {
+  .page-band::after {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 46%, #000 78%);
+    mask-image: linear-gradient(to right, transparent 0, transparent 46%, #000 78%);
+  }
 }
 .pad-text {
   font-size: var(--pad-text-size);

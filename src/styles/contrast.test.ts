@@ -65,6 +65,8 @@ const PAIRS: [string, string, number, string][] = [
   ["--ink-2", "--card", 4.5, "secondary on card"],
   ["--muted-foreground", "--muted", 4.5, "muted text"],
   ["--ink", "--marker", 4.5, "tapped word"],
+  ["--band-ink", "--band", 4.5, "page band title"],
+  ["--band-ink-2", "--band", 4.5, "page band subtitle"],
   ["--primary-foreground", "--primary", 4.5, "sunrise button text"],
   ["--destructive-foreground", "--destructive", 4.5, "destructive button text"],
   ["--success-foreground", "--success", 4.5, "success fill text"],

@@ -153,7 +153,7 @@ export default function HomeScreen() {
       <div ref={rootRef}>
         <div data-rise>
           <PageHeader title={greeting} subtitle={sub} />
-          <ul aria-label={t.home.tallyLabel} className="flex flex-wrap gap-2 pb-2 [html.font-large_&]:grid [html.font-large_&]:grid-cols-2">
+          <ul aria-label={t.home.tallyLabel} className="mt-4 flex flex-wrap gap-2 pb-2 [html.font-large_&]:grid [html.font-large_&]:grid-cols-2">
             <Chip icon={<StampStar size={26} seed={stars} className="-my-1" />}>{t.home.chipStars(stars)}</Chip>
             <Chip icon={<Flame className="size-[1.25rem] text-margin" aria-hidden="true" />}>{t.home.chipStreak(streak)}</Chip>
           </ul>
