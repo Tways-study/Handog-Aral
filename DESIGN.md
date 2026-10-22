@@ -1,14 +1,14 @@
 ---
 name: Handog Aral
-description: A lilac sticker sheet of white sticker cards and confetti, where every printed word can be tapped and understood.
+description: A quiet warm-white sheet of white sticker cards under a pale lilac confetti page band, where every printed word can be tapped and understood.
 colors:
-  paper: "#EDE6FF"
-  paper-2: "#E1D7FB"
+  paper: "#FFFDF9"
+  paper-2: "#F3EEFD"
   card-surface: "#FFFFFF"
   ink: "#1D2340"
   ink-2: "#4A5070"
-  rule: "#D6CBF2"
-  line: "#D6CBF2"
+  rule: "#DDD3F3"
+  line: "#DDD3F3"
   line-strong: "#7F849C"
   sunrise: "#F08A24"
   sunrise-ink: "#1D2340"
@@ -26,6 +26,12 @@ colors:
   warning-text: "#8A5A00"
   destructive-text: "#BE2D35"
   focus-ring: "#2B3A8C"
+  band: "#E7DFFF"
+  band-ink: "#1D2340"
+  band-ink-2: "#3B4468"
+  night-band: "#3A2E7A"
+  night-band-ink: "#FFFFFF"
+  night-band-ink-2: "#E4DDFB"
   confetti-violet: "#8A6FF0"
   confetti-gold: "#F5C53F"
   confetti-pink: "#E9577A"
@@ -50,6 +56,7 @@ colors:
   owl-belly: "#F2D3A0"
   owl-chevron: "#C99A5E"
   owl-outline: "#3A2412"
+  owl-outline-soft: "#7A4526"
   owl-cheek: "#F29A8A"
   owl-gold: "#F5C542"
   owl-cap: "#34409B"
@@ -126,6 +133,7 @@ rounded:
   mark: "6px"
   label-card: "9px"
   xxl: "28px"
+  band: "32px"
 spacing:
   pitch: "36px"
   pitch-desktop: "40px"
@@ -201,13 +209,13 @@ components:
 
 **Creative North Star: "The Sticker Sheet"**
 
-The page is a lilac sticker sheet scattered with light confetti (stars, squiggles, triangles, rounded squares, dots, each with a white keyline). Everything the child works with is a white sticker card lifted off it: a white keyline ring and a soft lilac drop. Reading text always sits on the plain white sticker, never on the confetti. Deep navy ink, a sunrise orange primary, and saturated book-jacket cloth (indigo, mango, kangkong green, gumamela red) that owns whole regions. Rewards are rubber-stamp stars, teacher check marks and die-cut stickers in a sticker book. The owl (purple #8A6FF0 app-icon tile) is the single character, and it speaks through a small speech tag.
+The page is a quiet, near-white warm sheet (#FFFDF9). Everything the child works with is a white sticker card lifted off it: a white keyline ring and a soft lilac drop. Reading text always sits on the plain white sticker. The one place the system gets playful is the page band: a full-width pale lilac block behind every screen title, curved at the bottom, carrying a quiet confetti tile (stars, squiggles, triangles, rounded squares, dots) that fades out under the title so no shape ever sits behind text. Deep navy ink, a sunrise orange primary, and saturated book-jacket cloth (indigo, mango, kangkong green, gumamela red) that owns whole regions. Rewards are rubber-stamp stars, teacher check marks and die-cut stickers in a sticker book. The owl (purple #8A6FF0 app-icon tile) is the single character, and it speaks through a small speech tag.
 
-The system is calm and low-density in its controls: one thing burns brightest at a time, and nothing loops. The confetti is a static, low-opacity ground tile (460px, about 0.6 opacity light, 0.5 dark), not animated and not placed behind text. It is cute through one drawn character family (flat SVG owl redrawn from the expression sheet, toon-shaded 3D owl, covers, stickers, empty-state art, card back, scan doodles) sharing the dark brown outline, warm owl browns and rounded forms. It refuses candy-gradient cards, emoji chrome and stat tiles. Dark mode is a deep-violet night sheet with the same structure: dark violet ground, #2A2350 sticker cards, a dark keyline, and darker confetti outlines.
+The system is calm and low-density in its controls: one thing burns brightest at a time, and nothing loops. The band confetti is a static 360px tile (about 0.7 opacity light, 0.2 dark), not animated and masked away from the title. It is cute through one drawn character family (flat SVG owl, toon-shaded 3D owl, covers, stickers, empty-state art, card back, scan doodles) sharing the dark brown outline, warm owl browns and rounded forms. It refuses candy-gradient cards, emoji chrome and stat tiles. Dark mode is a deep-violet night sheet with the same structure: dark violet ground (#1B1633), #2A2350 sticker cards, a dark keyline, and a deeper violet band (#3A2E7A) with white ink and faint confetti. Browser toolbar color (themeColor, ThemeSync, manifest) follows the band: #E7DFFF light, #3A2E7A dark. The app icon tile stays purple #8A6FF0.
 
 **Key Characteristics:**
 - One vertical rhythm: `--pitch` sets reading line-height and row height at every font-size setting, even though the sheet is no longer ruled.
-- Lilac ground with static confetti, white keylined sticker cards, navy ink, flat cloth-colored jackets, one orange accent.
+- Quiet warm-white ground, a lilac confetti page band behind each title, white keylined sticker cards, navy ink, flat cloth-colored jackets, one orange accent.
 - One character family: owl (idle, cheer, think, wave, sleep; outfits none, glasses, cap, bow) across flat art, 3D, covers, stickers and empty states.
 - State by shape first (circle/square/triangle difficulty stamps), color only reinforces.
 - Offline-to-AI upgrades restyle in place with reserved space, no layout shift.
@@ -216,7 +224,7 @@ The system is calm and low-density in its controls: one thing burns brightest at
 
 ## Colors
 
-Lilac ground, white sticker cards and navy ink carry nearly everything; cloth jacket colors take whole regions; orange appears once per screen (plus the nav Scan).
+Warm-white ground, white sticker cards and navy ink carry nearly everything; the lilac band is the one tinted block; cloth jacket colors take whole regions; orange appears once per screen (plus the nav Scan).
 
 ### Primary
 - **Sunrise Orange** (`sunrise`): the single in-page primary action, the active-tab pip, the tapped-word underline and the owl's beak. Text on it is ink navy (`sunrise-ink`), never white. Home's primary is "Padayon sa pagbasa" / "Umpisahan ta" / "Basaha liwat"; scan there is a paper secondary.
@@ -225,14 +233,15 @@ Lilac ground, white sticker cards and navy ink carry nearly everything; cloth ja
 - **Jacket Indigo** (`indigo`), **Mango** (`mango`), **Kangkong Green** (`kangkong`), **Gumamela Red** (`gumamela`): notebook-cover fields owning a region (book cover, Home cover). Each pairs with its text color (white on indigo, kangkong, gumamela; ink on mango). Kangkong marks saved words and "easy" / success; indigo marks "medium" and the focus ring; gumamela marks "hard" and destructive.
 
 ### Tertiary: owl feathers
-- **Owl Brown family** (`owl-body`, `owl-wing`, `owl-belly`, `owl-chevron`, `owl-cheek`, `owl-gold`, `owl-cap`, `owl-bow`) and **Owl Outline** (`owl-outline`, a dark warm brown): the character's palette, used by the flat Mascot, the 3D owl (`owlModel.ts`), stickers and art. Not UI chrome. Beak is `sunrise`, eye ink is `ink`. Outfits cap and bow use the indigo-blue `owl-cap` / `owl-bow`.
+- **Owl Brown family** (`owl-body`, `owl-wing`, `owl-belly`, `owl-chevron`, `owl-cheek`, `owl-gold`, `owl-cap`, `owl-bow`) and **Owl Outline** (`owl-outline`, a dark warm brown; the 3D owl in `owlModel.ts` uses the softer `owl-outline-soft` #7A4526 because the reference has no hard outline): the character's palette, used by the flat Mascot, the 3D owl (`owlModel.ts`), stickers and art. Not UI chrome. Beak is `sunrise`, eye ink is `ink`. Outfits cap and bow use the indigo-blue `owl-cap` / `owl-bow`.
 
 ### Neutral
-- **Lilac Sheet** (`paper`, #EDE6FF; dark #1B1633): the page ground, carrying the confetti. **Deeper Lilac** (`paper-2`): quiet fills, answer wells, disabled buttons. **Sticker White** (`card-surface`, #FFFFFF; dark #2A2350): sticker cards, the reading sheet, popovers, inputs.
-- **Confetti** (`confetti-violet`, `confetti-gold`, `confetti-pink`, `confetti-mint`, plus sunrise orange): the colors of the ground tile only (var `--confetti` on body); they are decoration, not UI chrome. Each shape has a white keyline in light and a #2E2655 keyline in dark.
+- **Warm Sheet** (`paper`, #FFFDF9; dark #1B1633): the quiet page ground. **Pale Lilac** (`paper-2`, #F3EEFD; dark #261F45): quiet fills, answer wells, disabled buttons. **Sticker White** (`card-surface`, #FFFFFF; dark #2A2350): sticker cards, the reading sheet, popovers, inputs.
+- **Page Band** (`band`, #E7DFFF; dark #3A2E7A) with `band-ink` (#1D2340; dark white) and `band-ink-2` (#3B4468; dark #E4DDFB): the full-width block behind every screen title (PageHeader), also drawn by the HomeSkeleton and ListSkeleton. Ink-on-band contrast is checked in `contrast.test.ts`.
+- **Confetti** (`confetti-violet`, `confetti-gold`, `confetti-pink`, `confetti-mint`, plus sunrise orange; dark tile swaps to white, #F5A1B5 and #80E0C8): the colors of the band tile only (`--band-confetti`); decoration, not UI chrome.
 - **Navy Ink** (`ink`) body text; **Soft Ink** (`ink-2`) secondary text and labels.
-- **Lilac Line** (`line`, `rule`, #D6CBF2; dark #3B3260): card and control borders. **Strong Line** (`line-strong`, #7F849C; dark #8A84AE): input borders and scrollbar thumbs.
-- **Success** (`success`, #2A7450) and **Destructive text** (`destructive-text`, #BE2D35) are darkened so text holds 4.5:1 on the lilac ground; dark mode lifts them to #6CC596 and #F08A8F.
+- **Lilac Line** (`line`, `rule`, #DDD3F3; dark #3B3260): card and control borders. **Strong Line** (`line-strong`, #7F849C; dark #8A84AE): input borders and scrollbar thumbs.
+- **Success** (`success`, #2A7450) and **Destructive text** (`destructive-text`, #BE2D35) are darkened so text holds 4.5:1 on the ground; dark mode lifts them to #6CC596 and #F08A8F.
 - **Marker Peach** (`marker`): the tapped-word highlight and text selection.
 - **Notebook Label** (`label-paper`, `label-ink`, `label-ink-2`, `label-rule`): the label card stuck on a book cover. It is paper on cloth, so it stays light in dark mode and is deliberately not overridden under `.dark`.
 - Night variants (`night-*`) are the `.dark` overrides (ink stays warm cream #EFE7D6); sunrise lifts to `night-sunrise`, stamps lighten to #6CC596, #8E9BEA, #F08A8F, indigo lifts to #3A4AA8.
@@ -244,7 +253,9 @@ Lilac ground, white sticker cards and navy ink carry nearly everything; cloth ja
 
 **The Label-on-Cloth Rule.** The notebook label stuck on a book cover is paper on cloth and stays light in dark mode; only the surrounding sheet darkens. (Sticker cards themselves do darken to #2A2350.)
 
-**The Plain-Sheet Rule.** Reading text sits only on the plain white sticker card, never directly on the confetti ground.
+**The Plain-Sheet Rule.** Reading text sits only on the plain white sticker card.
+
+**The Band-Only Confetti Rule.** Confetti lives only in the page band (`.page-band`), never on the page ground or a card, and never behind text: the tile is masked to be empty under the title (left ~62% of the band on phones, ~46% at lg). Static, no animation.
 
 ## Typography
 
@@ -286,7 +297,9 @@ Screen structure:
 - **Sticker book:** earned stickers first, the locked ones nearest to earning next.
 - Lists use a letter tile (first letter on cloth color) instead of emoji.
 
-Known gaps: desktop Home, Scan and Reader leave empty ground below short content; the confetti ground shows there, accepted rather than filled. Throttled-mobile Lighthouse performance is about 85 on Welcome, 78 on `/` and 83 in the reader; the 3D owl and new features cost a few points.
+Page band: `.page-band` wraps the screen title via `PageHeader`; it bleeds to the viewport width (100vw), has a `2rem` bottom radius (`0 0 2rem 2rem`) and two layers (`::before` fill, `::after` masked confetti).
+
+Known gaps: desktop Home, Scan and Reader leave empty ground below short content; the plain warm ground shows there, accepted rather than filled. Throttled-mobile Lighthouse performance is about 85 on Welcome, 78 on `/` and 83 in the reader; the 3D owl and new features cost a few points.
 
 ## Elevation & Depth
 
@@ -312,14 +325,14 @@ Sticker cards are lifted by a keyline ring plus a soft lilac drop; other depth i
 
 ## Shapes
 
-Friendly, rounded, never pill-everything: 8/12/16/24/28px scale (sm, md, lg, xl, xxl), buttons and inputs at 14px, the raised Scan button 22px. Two small named radii: word marks 6px (`mark`) and the notebook label card on a cover 9px (`label-card`). Borders are 1.5px in `line` (controls) or `line-strong` (inputs). Difficulty is geometry: concentric circle (easy), rounded square (medium), triangle (hard), 22px, 2.2 stroke, always with its label. Rewards are authored SVG: rubber-stamp StampStar and StampCheck that land with an ink-bleed scale and rotate settle, and 14 die-cut stickers with a white cut border, the same keyline as the sheet cards. A locked sticker is its own art washed to grey with a small lock chip, so the collection shows what is left to find. Book covers are authored jackets with the owl perched on the top edge; the card back, empty-state scenes and scan doodles share the owl's outline weight and browns. The 3D owl is toon-shaded with a thin dark back-face outline to match the flat art.
+Friendly, rounded, never pill-everything: 8/12/16/24/28px scale (sm, md, lg, xl, xxl), plus the page band bottom corners at 32px (`2rem`, band only), buttons and inputs at 14px, the raised Scan button 22px. Two small named radii: word marks 6px (`mark`) and the notebook label card on a cover 9px (`label-card`). Borders are 1.5px in `line` (controls) or `line-strong` (inputs). Difficulty is geometry: concentric circle (easy), rounded square (medium), triangle (hard), 22px, 2.2 stroke, always with its label. Rewards are authored SVG: rubber-stamp StampStar and StampCheck that land with an ink-bleed scale and rotate settle, and 14 die-cut stickers with a white cut border, the same keyline as the sheet cards. A locked sticker is its own art washed to grey with a small lock chip, so the collection shows what is left to find. Book covers are authored jackets with the owl perched on the top edge; the card back, empty-state scenes and scan doodles share the owl's outline weight and browns. The 3D owl is toon-shaded with a thin dark back-face outline to match the flat art.
 
 ## Components
 
 ### Buttons
 - **Shape:** 14px radius; lg 16px; xl (Scan a page) 18px, Baloo 20px extrabold.
-- **Primary:** sunrise fill, ink text, CTA shadow, 48px tall (44 sm, 56 lg, 60 xl). **Ink:** navy fill, lilac-paper text. **Secondary/outline:** lilac paper fill, 1.5px line border. **Destructive:** gumamela.
-- **Focus / Press:** 3px ring-colored outline offset 2px; `pressable` 2px press. Disabled is a neutral lilac button with a line border, never sunrise.
+- **Primary:** sunrise fill, ink text, CTA shadow, 48px tall (44 sm, 56 lg, 60 xl). **Ink:** navy fill, paper text. **Secondary/outline:** paper fill, 1.5px line border. **Destructive:** gumamela.
+- **Focus / Press:** 3px ring-colored outline offset 2px; `pressable` 2px press. Disabled is a neutral pale-lilac button with a line border, never sunrise.
 - Accessible names come from the visible text (WCAG 2.5.3), enforced by the axe gate; icon-only controls do not hide a different label.
 
 ### Cards / Containers
@@ -357,6 +370,7 @@ Friendly, rounded, never pill-everything: 8/12/16/24/28px scale (sm, md, lg, xl,
 
 ### Do:
 - **Do** read tokens only from the CSS custom properties / Tailwind utilities (`bg-paper`, `text-ink`, `bg-sunrise`, `shadow-cta`, `shadow-tile`).
+- **Do** put a page band behind every screen title (PageHeader, skeletons included).
 - **Do** lay reading text on `.pad` / `.pad-text` (the white sticker sheet) so line-height equals the pitch.
 - **Do** pair every difficulty color with its shape (circle, square, triangle) and label.
 - **Do** use ink navy text on sunrise and mango, white on indigo, kangkong, and gumamela.
@@ -373,7 +387,7 @@ Friendly, rounded, never pill-everything: 8/12/16/24/28px scale (sm, md, lg, xl,
 - **Don't** use candy gradients, stacked stat tiles, or emoji as chrome.
 - **Don't** convey state by color alone.
 - **Don't** put a color overlay over text; mix it into the sticker sheet.
-- **Don't** put reading text on the confetti, or animate the confetti.
+- **Don't** put confetti anywhere but the page band, behind any text, or animate it.
 - **Don't** use hard offset shadows or glow.
 - **Don't** load the 3D owl on slow, save-data, very low-end or software-WebGL devices, or under reduced motion.
 - **Don't** name a control differently from its visible text.
