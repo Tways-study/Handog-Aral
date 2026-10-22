@@ -3,26 +3,33 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import OwlGroup from "@/components/art/OwlGroup";
 import StickerArt from "@/components/stickers/StickerArt";
-import { Sparkle } from "@/components/art/parts";
 import type { StickerId } from "@/lib/stickers/ids";
 
 export const owlMarkup = (): string => renderToStaticMarkup(<OwlGroup mood="idle" />);
 
 export const stickerMarkup = (id: StickerId, size: number): string => renderToStaticMarkup(<StickerArt id={id} size={size} />);
 
-/** 512 canvas. Sun and owl sit inside the 80% maskable safe zone (a circle of radius 205 about the centre). */
+/**
+ * 512 canvas. A solid purple tile with the owl's face filling it and bleeding off the bottom edge,
+ * like the app-icon style we chose. The maskable (square) variant draws the owl smaller so its face
+ * stays inside the 80% safe zone (a circle of radius 205 about the centre).
+ */
 export function iconSvg({ rounded }: { rounded: boolean }): string {
+  const scale = rounded ? 5 : 3.4;
+  const tx = 256 - 60 * scale;
+  const ty = (rounded ? 270 : 262) - 60 * scale;
   return renderToStaticMarkup(
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
-      <rect width="512" height="512" rx={rounded ? 112 : 0} fill="#FBF7EE" />
-      <circle cx="256" cy="262" r="178" fill="#F08A24" />
-      <circle cx="256" cy="262" r="178" fill="none" stroke="#FFD49A" strokeWidth="8" strokeDasharray="1 22" strokeLinecap="round" opacity="0.8" />
-      <g transform="translate(106 92) scale(2.5)">
-        <OwlGroup mood="idle" />
-      </g>
-      <g transform="translate(0 0)">
-        <Sparkle cx={110} cy={150} s={20} />
-        <Sparkle cx={410} cy={120} s={15} fill="#fff" />
+      <defs>
+        <clipPath id="tile">
+          <rect width="512" height="512" rx={rounded ? 112 : 0} />
+        </clipPath>
+      </defs>
+      <g clipPath="url(#tile)">
+        <rect width="512" height="512" fill="#8A6FF0" />
+        <g transform={`translate(${tx} ${ty}) scale(${scale})`}>
+          <OwlGroup mood="idle" />
+        </g>
       </g>
     </svg>,
   );
