@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { sampleBooks } from "@/data/books";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useT } from "@/hooks/useT";
+import { HomeSkeleton } from "@/components/PageSkeleton";
 import { useSavedWords } from "@/hooks/useSavedWords";
 import { buzz } from "@/lib/haptics";
 import { pageIn } from "@/lib/motionPages";
@@ -102,7 +103,7 @@ export default function HomeScreen() {
     return { count: got.length, ids: [...got, ...rest].slice(0, 3) };
   }, [earned, savedWordCount, streak]);
 
-  if (!ready) return <PageContainer><div ref={rootRef} aria-busy="true" className="min-h-[60vh]" /></PageContainer>;
+  if (!ready) return <div ref={rootRef}><HomeSkeleton label={t.shell.loading} /></div>;
 
   const book = sampleBooks.find((b) => b.id === currentBookId) ?? sampleBooks[0];
   const pct = Math.max(0, Math.min(100, bookProgress[book.id] ?? 0));
