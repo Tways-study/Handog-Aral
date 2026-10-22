@@ -218,21 +218,21 @@ export function buildOwl(): OwlModel {
 
   // belly + feather scallops
   const belly = mesh(sphere(1, 24, 16), C.belly);
-  belly.scale.set(0.62, 0.64, 0.56);
-  belly.position.set(0, -0.5, 0.39);
+  belly.scale.set(0.74, 0.6, 0.66);
+  belly.position.set(0, -0.42, 0.42);
   body.add(belly);
 
   const chevGeo = geo(new TorusGeometry(0.075, 0.017, 5, 10, Math.PI));
   const chev = new InstancedMesh(chevGeo, toon(C.chevron), 3);
   const spots: [number, number, number][] = [
-    [-0.24, -0.4, 1],
-    [0.24, -0.4, 1],
-    [0, -0.62, 1.7],
+    [-0.26, -0.26, 1],
+    [0.26, -0.26, 1],
+    [0, -0.5, 1.7],
   ];
   const tmp = new Matrix4();
   spots.forEach(([x, y, k], i) => {
-    const nz = Math.sqrt(Math.max(0, 1 - (x / 0.62) ** 2 - ((y + 0.5) / 0.64) ** 2));
-    const z = 0.39 + 0.56 * nz + 0.012;
+    const nz = Math.sqrt(Math.max(0, 1 - (x / 0.74) ** 2 - ((y + 0.42) / 0.6) ** 2));
+    const z = 0.42 + 0.66 * nz + 0.012;
     tmp.compose(new Vector3(x, y, z), new Quaternion().setFromEuler(new Euler(-0.1, 0, Math.PI)), new Vector3(k, k, 1));
     chev.setMatrixAt(i, tmp);
   });
@@ -277,11 +277,12 @@ export function buildOwl(): OwlModel {
   body.add(face);
 
   // ear tufts
-  const tuftGeo = geo(new ConeGeometry(0.27, 0.5, 14));
+  const tuftGeo = geo(new SphereGeometry(1, 14, 10));
+  tuftGeo.scale(0.21, 0.46, 0.18);
   for (const s of [-1, 1]) {
     const t = mesh(tuftGeo, C.wing, 1.07);
-    t.position.set(s * 0.52, 0.88, -0.02);
-    t.rotation.z = -s * 0.55;
+    t.position.set(s * 0.53, 0.86, -0.02);
+    t.rotation.z = -s * 0.5;
     t.rotation.x = 0.15;
     face.add(t);
   }
@@ -289,10 +290,10 @@ export function buildOwl(): OwlModel {
   // eyes
   type Eye = { group: Group; pupil: Group; up: Mesh; low: Mesh; arc: Mesh };
   const eyes: Eye[] = [];
-  const scleraGeo = sphere(0.43, 22, 16);
-  const lidUpGeo = geo(new SphereGeometry(0.49, 18, 8, 0, Math.PI * 2, 0, Math.PI / 2));
-  const lidLowGeo = geo(new SphereGeometry(0.49, 18, 8, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2));
-  const pupilGeo = sphere(0.275, 16, 12);
+  const scleraGeo = sphere(0.385, 22, 16);
+  const lidUpGeo = geo(new SphereGeometry(0.44, 18, 8, 0, Math.PI * 2, 0, Math.PI / 2));
+  const lidLowGeo = geo(new SphereGeometry(0.44, 18, 8, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2));
+  const pupilGeo = sphere(0.255, 16, 12);
   const glintBig = sphere(0.09, 8, 6);
   const glintSmall = sphere(0.045, 8, 6);
   const glintMat = basic("#ffffff");
@@ -301,11 +302,11 @@ export function buildOwl(): OwlModel {
   const EYE_Y = 0.28;
   for (const s of [-1, 1]) {
     const g = new Group();
-    const x = s * 0.42;
+    const x = s * 0.385;
     g.position.set(x, EYE_Y, surfaceZ(x, EYE_Y) - 0.03);
     g.rotation.y = s * 0.3;
     const inner = new Group();
-    inner.scale.set(1, 1, 0.62);
+    inner.scale.set(1, 1, 0.3);
     g.add(inner);
     inner.add(mesh(scleraGeo, C.sclera, 1.06));
     const pupil = new Group();
@@ -319,7 +320,7 @@ export function buildOwl(): OwlModel {
     g2.position.set(-0.085, -0.1, 0.1);
     g2.scale.z = 0.5;
     pupil.add(g1, g2);
-    pupil.position.set(0, 0, 0.42);
+    pupil.position.set(0, 0, 0.375);
     inner.add(pupil);
     const up = mesh(lidUpGeo, C.body);
     const low = mesh(lidLowGeo, C.body);
@@ -333,7 +334,7 @@ export function buildOwl(): OwlModel {
   }
 
   // beak (upper + hinged lower) and the little mouth inside
-  const beakUpGeo = geo(new ConeGeometry(0.13, 0.25, 12));
+  const beakUpGeo = geo(new ConeGeometry(0.16, 0.28, 12));
   beakUpGeo.rotateX(Math.PI / 2);
   const beakLowGeo = geo(new ConeGeometry(0.1, 0.18, 10));
   beakLowGeo.rotateX(Math.PI / 2);
@@ -365,7 +366,7 @@ export function buildOwl(): OwlModel {
 
   // ----- accessories -----
   const glasses = new Group();
-  const rimGeo = geo(new TorusGeometry(0.45, 0.045, 8, 28));
+  const rimGeo = geo(new TorusGeometry(0.42, 0.045, 8, 28));
   for (const e of eyes) {
     const rim = mesh(rimGeo, C.ink);
     rim.position.set(0, 0, 0.25);
