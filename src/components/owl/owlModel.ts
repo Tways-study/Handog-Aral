@@ -107,6 +107,7 @@ export interface OwlModel {
   triangles: number;
 }
 
+const OUTLINES = false;
 const FEET_Y = 1.09; // body group sits this far above the rig origin (the floor)
 
 /** Egg radius at height y (y in -1..1): chubby, a little wider at the bottom. */
@@ -131,7 +132,7 @@ export function buildOwl(): OwlModel {
 
   // Three-step toon ramp (shadow / mid / light), nearest-filtered so the bands stay crisp.
   const ramp = track(
-    new DataTexture(new Uint8Array([168, 168, 168, 255, 224, 224, 224, 255, 255, 255, 255, 255]), 3, 1, RGBAFormat, UnsignedByteType),
+    new DataTexture(new Uint8Array([222, 222, 222, 255, 244, 244, 244, 255, 255, 255, 255, 255]), 3, 1, RGBAFormat, UnsignedByteType),
   );
   ramp.minFilter = NearestFilter;
   ramp.magFilter = NearestFilter;
@@ -157,7 +158,8 @@ export function buildOwl(): OwlModel {
 
   const mesh = (g: BufferGeometry, hex: string, outline = 0): Mesh => {
     const m = new Mesh(g, toon(hex));
-    if (outline) {
+    // The reference owl has no outline, so the flat SVG and this model match; flip OUTLINES to bring the ink line back.
+    if (OUTLINES && outline) {
       const o = new Mesh(g, outlineMat);
       o.scale.setScalar(outline);
       m.add(o);
