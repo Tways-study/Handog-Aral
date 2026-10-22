@@ -3,9 +3,9 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { useSettings, useSettingsHydrated } from "@/stores/settings";
 
-/** Plain localStorage mirror of the theme, read by the inline script in layout.tsx to avoid a flash. */
+/** Browser toolbar color (the purple of the app icon; a deeper purple in dark mode). Plain localStorage mirror of the theme, read by the inline script in layout.tsx to avoid a flash. */
 export const THEME_STORAGE_KEY = "handog-theme";
-export const THEME_COLOR = { light: "#FBF7EE", dark: "#1A1D2A" } as const;
+export const THEME_COLOR = { light: "#8A6FF0", dark: "#4A3C96" } as const;
 
 const QUERY = "(prefers-color-scheme: dark)";
 
