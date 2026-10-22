@@ -263,19 +263,46 @@
         "role": "neutral",
         "displayName": "Page Band",
         "canonical": "#E7DFFF",
-        "tonalRamp": ["#76737F", "#C9C0E6", "#E7DFFF", "#EEE8FF", "#F3EFFF", "#F8F6FF", "#FCFBFF", "#FEFEFF"]
+        "tonalRamp": [
+          "#76737F",
+          "#C9C0E6",
+          "#E7DFFF",
+          "#EEE8FF",
+          "#F3EFFF",
+          "#F8F6FF",
+          "#FCFBFF",
+          "#FEFEFF"
+        ]
       },
       "band-ink-2": {
         "role": "neutral",
         "displayName": "Band Soft Ink",
         "canonical": "#3B4468",
-        "tonalRamp": ["#1D2234", "#2D3350", "#4E577E", "#8890AA", "#B1B6C7", "#D3D6DF", "#E9EAEF", "#F8F8FA"]
+        "tonalRamp": [
+          "#1D2234",
+          "#2D3350",
+          "#4E577E",
+          "#8890AA",
+          "#B1B6C7",
+          "#D3D6DF",
+          "#E9EAEF",
+          "#F8F8FA"
+        ]
       },
       "owl-outline-soft": {
         "role": "tertiary",
         "displayName": "Owl Soft Outline",
         "canonical": "#7A4526",
-        "tonalRamp": ["#38200F", "#512D19", "#693A20", "#82492A", "#A5775D", "#C4A593", "#E0D0C6", "#F4EEEA"]
+        "tonalRamp": [
+          "#38200F",
+          "#512D19",
+          "#693A20",
+          "#82492A",
+          "#A5775D",
+          "#C4A593",
+          "#E0D0C6",
+          "#F4EEEA"
+        ]
       },
       "confetti-violet": {
         "role": "accent",
@@ -357,7 +384,7 @@
       },
       "reading": {
         "displayName": "Reading",
-        "purpose": "Scanned and story text on the white sticker sheet; line height equals --pitch."
+        "purpose": "Scanned and story text sitting directly on the ground; line height equals --pitch."
       },
       "label": {
         "displayName": "Label",
@@ -392,7 +419,7 @@
       {
         "name": "sticker",
         "value": "0 0 0 3px #FFFFFF, 0 5px 0 3px rgb(91 75 181 / 0.22)",
-        "purpose": "--sticker on .pad: white keyline ring plus flat lilac drop (dark: 0 0 0 3px #3B3260, 0 5px 0 3px rgb(0 0 0 / 0.35))."
+        "purpose": "--sticker: white keyline ring plus flat lilac drop; retained for special sticker moments only, not lists or reading text (dark: 0 0 0 3px #3B3260, 0 5px 0 3px rgb(0 0 0 / 0.35))."
       },
       {
         "name": "elev-sm",
@@ -432,7 +459,7 @@
       {
         "name": "elev-tile",
         "value": "0 1px 0 rgb(29 35 64 / 0.06), 0 2px 3px rgb(29 35 64 / 0.08), 0 8px 16px -10px rgb(29 35 64 / 0.28)",
-        "purpose": "Pressable cards: scan entry tiles, quiz options (shadow-tile). Dark adds a light top edge."
+        "purpose": "Pressable physical objects such as memory cards (scan tiles and quiz options are now flat tinted pills). Dark adds a light top edge."
       }
     ],
     "motion": [
@@ -472,6 +499,22 @@
   },
   "components": [
     {
+      "name": "Wavy Section Title",
+      "kind": "custom",
+      "refersTo": "headline",
+      "description": "Section heading with a repeating wavy sunrise-orange underline (.section-title).",
+      "html": "<h2 class=\"ds-section-title\">My words</h2>",
+      "css": ".ds-section-title{display:inline-block;margin:0;padding-bottom:.35rem;font:700 20px/1.25 'Baloo 2',ui-rounded,system-ui,sans-serif;color:#1D2340;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='6' viewBox='0 0 24 6'%3E%3Cpath d='M0 3q3-3 6 0t6 0 6 0 6 0' fill='none' stroke='%23F08A24' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:repeat-x;background-position:left bottom;background-size:24px 6px}"
+    },
+    {
+      "name": "Tinted Pill",
+      "kind": "chip",
+      "refersTo": "button-disabled",
+      "description": "paper-2 tinted pill, no border or shadow: owl tag, Home chips, quiz option, scan tile, nudge.",
+      "html": "<span class=\"ds-pill\">Tap any word</span>",
+      "css": ".ds-pill{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;background:#F3EEFD;color:#1D2340;font:700 15px 'Atkinson Hyperlegible',system-ui,sans-serif}"
+    },
+    {
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
@@ -507,17 +550,17 @@
       "name": "Card",
       "kind": "card",
       "refersTo": "card",
-      "description": "White sticker card with keyline and lilac drop.",
+      "description": "Physical-object card only (cover, label, memory card); not for lists or reading text.",
       "html": "<div class=\"ds-card\"><div class=\"ds-card-t\">Today's words</div><p>Tap a word to hear it.</p></div>",
       "css": ".ds-card{padding:20px;border:1.5px solid #DDD3F3;border-radius:16px;background:#FFFFFF;color:#1D2340;box-shadow:0 0 0 3px #FFFFFF,0 5px 0 3px rgb(91 75 181/.22)}.ds-card-t{font:700 20px 'Baloo 2',ui-rounded,system-ui,sans-serif;line-height:1.2}.ds-card p{margin:8px 0 0;font:400 15px 'Atkinson Hyperlegible',system-ui,sans-serif;color:#4A5070}"
     },
     {
-      "name": "Sticker Sheet",
+      "name": "Open Reading Page",
       "kind": "custom",
       "refersTo": "reading",
-      "description": "White reading sticker with keyline and lilac drop; no ruling. Line height equals --pitch.",
+      "description": "Reading text directly on the ground: transparent, no box, no shadow, no gutter. Line height equals --pitch.",
       "html": "<div class=\"ds-pad\"><p>The owl reads a book by the window.</p><p>Tap any word.</p></div>",
-      "css": ".ds-pad{position:relative;padding:8px 20px;border-radius:16px;background-color:#FFFFFF;box-shadow:0 0 0 3px #FFFFFF,0 5px 0 3px rgb(91 75 181/.22);color:#1D2340}.ds-pad p{margin:0;font:400 20px/36px 'Atkinson Hyperlegible',system-ui,sans-serif}"
+      "css": ".ds-pad{position:relative;background:transparent;color:#1D2340}.ds-pad p{margin:0;font:400 20px/36px 'Atkinson Hyperlegible',system-ui,sans-serif}"
     },
     {
       "name": "Difficulty Stamp",
@@ -552,36 +595,36 @@
       "css": ".ds-jacket{padding:32px 20px;border-radius:24px;background:#2B3A8C;color:#fff;font:800 24px/1.1 'Baloo 2',ui-rounded,system-ui,sans-serif;box-shadow:0 2px 4px rgb(29 35 64/.08),0 14px 32px -14px rgb(29 35 64/.4)}"
     },
     {
-      "name": "Letter Tile List Row",
+      "name": "Letter Tile Dotted Row",
       "kind": "custom",
       "refersTo": "card",
-      "description": "A list row led by a cloth-colored letter tile instead of emoji.",
+      "description": "An open list row led by a cloth-colored letter tile, divided by a 2px dotted line.",
       "html": "<div class=\"ds-row\"><span class=\"ds-tile\">K</span><b>kangkong</b><span class=\"ds-helper\">water spinach</span></div>",
-      "css": ".ds-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#FFFFFF;border:1.5px solid #DDD3F3;border-radius:16px;box-shadow:0 1px 0 rgb(29 35 64/.06),0 2px 3px rgb(29 35 64/.08),0 8px 16px -10px rgb(29 35 64/.28);color:#1D2340;font-family:var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;touch-action:manipulation}.ds-row b{font:700 1.1875rem var(--font-heading,'Baloo 2',ui-rounded,system-ui,sans-serif)}.ds-tile{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#2E7D55;color:#fff;font:800 1.25rem var(--font-heading,'Baloo 2',sans-serif)}.ds-helper{font-size:.9375rem;color:#4A5070}.ds-row:active{translate:0 2px}.ds-row:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}"
+      "css": ".ds-row{display:flex;align-items:center;gap:12px;padding:12px 0;background:transparent;border-bottom:2px dotted #DDD3F3;color:#1D2340;font-family:var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;touch-action:manipulation}.ds-row b{font:700 1.1875rem var(--font-heading,'Baloo 2',ui-rounded,system-ui,sans-serif)}.ds-tile{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#2E7D55;color:#fff;font:800 1.25rem var(--font-heading,'Baloo 2',sans-serif)}.ds-helper{font-size:.9375rem;color:#4A5070}.ds-row:active{translate:0 2px}.ds-row:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}"
     },
     {
       "name": "Speech Tag",
       "kind": "custom",
       "refersTo": "card",
-      "description": "The owl's voice: a small white sticker tag with a tail.",
+      "description": "The owl's voice: a small paper-2 tinted pill with a tail, no border or shadow.",
       "html": "<div class=\"ds-speech\">Tap any word!</div>",
-      "css": ".ds-speech{position:relative;display:inline-block;padding:10px 14px;background:#FFFFFF;color:#1D2340;border:1.5px solid #DDD3F3;border-radius:16px;box-shadow:0 1px 2px rgb(29 35 64/.08),0 4px 10px -6px rgb(29 35 64/.18);font:400 .9375rem var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif)}.ds-speech::after{content:'';position:absolute;left:18px;bottom:-7px;width:12px;height:12px;background:#FFFFFF;border-right:1.5px solid #DDD3F3;border-bottom:1.5px solid #DDD3F3;transform:rotate(45deg)}"
+      "css": ".ds-speech{position:relative;display:inline-block;padding:10px 14px;background:#F3EEFD;color:#1D2340;border-radius:16px;font:400 .9375rem var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif)}.ds-speech::after{content:'';position:absolute;left:18px;bottom:-6px;width:12px;height:12px;background:#F3EEFD;transform:rotate(45deg)}"
     },
     {
       "name": "Locked Sticker Chip",
       "kind": "custom",
       "refersTo": "card",
-      "description": "A locked sticker: washed art with a lock chip.",
+      "description": "A locked sticker: washed art with a lock chip in a dashed empty-slot outline.",
       "html": "<div class=\"ds-sticker\"><span class=\"ds-art\"></span><span class=\"ds-lock\">&#128274;</span></div>",
       "css": ".ds-sticker{position:relative;width:88px;height:88px}.ds-art{display:block;width:100%;height:100%;border-radius:50%;background:#F2D3A0;border:3px solid #fff;box-shadow:0 2px 6px rgb(29 35 64/.2);filter:grayscale(1);opacity:.55}.ds-lock{position:absolute;right:0;bottom:0;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#FFFDF9;border:2px solid #7F849C;font-size:.75rem}"
     }
   ],
   "narrative": {
-    "northStar": "The Sticker Sheet",
-    "overview": "The page is a quiet, near-white warm sheet. Everything the child works with is a white sticker card lifted off it: a white keyline ring and a soft lilac drop. Reading text always sits on the plain white sticker. The one playful block is the page band: a full-width pale lilac block (#E7DFFF; dark #3A2E7A) behind every screen title, curved at the bottom (2rem), carrying a quiet static confetti tile that is masked to fade out under the title so no shape sits behind text. Deep navy ink, a sunrise orange primary, and saturated book-jacket cloth that owns whole regions. The owl (purple #8A6FF0 app-icon tile) is the single character, and it speaks through a small speech tag.\n\nThe system is calm and low-density in its controls: one thing burns brightest at a time, and nothing loops. Dark mode is a deep-violet night sheet with the same structure: #1B1633 ground, #2A2350 sticker cards, a #3A2E7A band with white ink and faint confetti. Browser toolbar color follows the band (#E7DFFF light, #3A2E7A dark).",
+    "northStar": "The Sticker Sheet (open-page edition)",
+    "overview": "The page is a quiet, near-white warm sheet and it is open: reading text, word lists and settings sit directly on the ground with no card. Lists use dotted divider rows, headings carry a wavy sunrise underline, and small things (owl tag, chips, quiz options, scan tiles, nudges) are paper-2 tinted pills with no border or shadow. Boxes remain only for physical objects: the notebook cover, its label, the memory-game cards. The page band (pale lilac #E7DFFF; dark #3A2E7A, 2rem bottom radius, masked static confetti) sits behind every screen title. Deep navy ink, a sunrise orange primary, cloth-colored jackets, and the owl as the single character.\n\nThe system is calm and low-density: one thing burns brightest at a time, and nothing loops. Dark mode is a deep-violet night sheet (#1B1633) with a #3A2E7A band.",
     "keyCharacteristics": [
       "One vertical rhythm: `--pitch` sets reading line-height and row height at every font-size setting, even though the sheet is no longer ruled.",
-      "Quiet warm-white ground, a lilac confetti page band behind each title, white keylined sticker cards, navy ink, flat cloth-colored jackets, one orange accent.",
+      "Quiet warm-white open ground, a lilac confetti page band behind each title, dotted rows and wavy headings, boxes only for physical objects, navy ink, flat cloth-colored jackets, one orange accent.",
       "One character family: owl (idle, cheer, think, wave, sleep; outfits none, glasses, cap, bow) across flat art, 3D, covers, stickers and empty states.",
       "State by shape first (circle/square/triangle difficulty stamps), color only reinforces.",
       "Offline-to-AI upgrades restyle in place with reserved space, no layout shift.",
@@ -596,7 +639,7 @@
       },
       {
         "name": "The Mixed-Tint Rule",
-        "body": "Reading overlays (yellow, blue, pink) are mixed into the white sticker sheet (`card-surface`) at 12-16% and never laid over text, so ink contrast holds. Contrast pairs are asserted in `src/styles/contrast.test.ts`; change a token only with that test green.",
+        "body": "Reading overlays (yellow, blue, pink) are mixed into the open ground (`--pad-bg` overlay) at 12-16% and never laid over text, so ink contrast holds. Contrast pairs are asserted in `src/styles/contrast.test.ts`; change a token only with that test green.",
         "section": "colors"
       },
       {
@@ -606,7 +649,12 @@
       },
       {
         "name": "The Plain-Sheet Rule",
-        "body": "Reading text sits only on the plain white sticker card.",
+        "body": "Reading text sits directly on the near-white ground (.pad is transparent: no box, no shadow, --pad-gutter 0). Only the mixed colour overlay may tint it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Open-Page Rule",
+        "body": "No cards for lists, reading text or settings. Lists are rows divided by .row-line (2px dotted --line); settings are open sections; headings use .section-title (wavy sunrise underline). Tinted paper-2 pills (no border, no shadow) for chips, owl tag, quiz options, scan tiles, nudges. Boxes only for physical objects: notebook cover, its label, memory-game cards.",
         "section": "colors"
       },
       {
@@ -636,7 +684,7 @@
       },
       {
         "name": "The Sticker Rule",
-        "body": "A card that carries content is a sticker: `--card-surface` fill, the `--sticker` keyline and drop. The keyline is part of the sticker, not a second border.",
+        "body": "The --sticker keyline and drop belong to special sticker moments only; never on lists or reading text.",
         "section": "elevation"
       },
       {
@@ -648,7 +696,7 @@
     "dos": [
       "**Do** read tokens only from the CSS custom properties / Tailwind utilities (`bg-paper`, `text-ink`, `bg-sunrise`, `shadow-cta`, `shadow-tile`).",
       "**Do** put a page band behind every screen title (PageHeader, skeletons included).",
-      "**Do** lay reading text on `.pad` / `.pad-text` (the white sticker sheet) so line-height equals the pitch.",
+      "**Do** lay reading text on `.pad` / `.pad-text` (directly on the ground, no box) so line-height equals the pitch.",
       "**Do** pair every difficulty color with its shape (circle, square, triangle) and label.",
       "**Do** use ink navy text on sunrise and mango, white on indigo, kangkong, and gumamela.",
       "**Do** gate every GSAP helper (enterPanel, markWord, stampIn, fadeRoute) and every celebration on reduced motion and animate only transform and opacity.",
@@ -656,19 +704,23 @@
       "**Do** use `pressable` on every tappable thing, and letter tiles instead of emoji in lists.",
       "**Do** load optional heavy pieces (3D owl, rewards, celebration) through `softDynamic` so a failure falls back silently.",
       "**Do** show locked stickers as washed art with a lock chip.",
-      "**Do** keep owl-voice and sticker copy short; it awaits native-speaker review in Hiligaynon and Tagalog."
+      "**Do** keep owl-voice and sticker copy short; it awaits native-speaker review in Hiligaynon and Tagalog.",
+      "**Do** build lists and settings as open sections: `.row-line` dotted rows under a `.section-title`.",
+      "**Do** use a box only for a physical object (cover, label, memory card)."
     ],
     "donts": [
       "**Don't** add a second sunrise action on a screen beyond the nav Scan button.",
       "**Don't** put a loop on decoration; the only ambient motion is the owl's occasional blink and glance and the capped 3D sleep bob.",
       "**Don't** use candy gradients, stacked stat tiles, or emoji as chrome.",
       "**Don't** convey state by color alone.",
-      "**Don't** put a color overlay over text; mix it into the sticker sheet.",
+      "**Don't** put a color overlay over text; mix it into the ground with --pad-bg.",
       "**Don't** put confetti anywhere but the page band, behind any text, or animate it.",
       "**Don't** use hard offset shadows or glow.",
       "**Don't** load the 3D owl on slow, save-data, very low-end or software-WebGL devices, or under reduced motion.",
       "**Don't** name a control differently from its visible text.",
-      "**Don't** put a timer on the Pares game."
+      "**Don't** put a timer on the Pares game.",
+      "**Don't** wrap lists, reading text or settings groups in cards, borders or shadows; use tinted pills or dotted rows.",
+      "**Don't** use the white --sticker keyline card on lists or reading text."
     ]
   }
 }
