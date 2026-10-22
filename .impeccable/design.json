@@ -1,51 +1,51 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-21T15:32:39.702673+00:00",
+  "generatedAt": "2026-10-22T12:00:00+00:00",
   "title": "Design System: Handog Aral",
   "extensions": {
     "colorMeta": {
       "paper": {
         "role": "neutral",
-        "displayName": "Pad Paper",
-        "canonical": "#FBF7EE",
+        "displayName": "Lilac Sheet",
+        "canonical": "#EDE6FF",
         "tonalRamp": [
-          "#7E7C77",
-          "#C9C6BE",
-          "#FBF8F0",
-          "#FDFAF5",
-          "#FDFCF8",
-          "#FEFDFB",
-          "#FFFEFD",
-          "#FFFFFE"
+          "#76737F",
+          "#D5CFE5",
+          "#F4F0FF",
+          "#F9F7FF",
+          "#FBFAFF",
+          "#FCFCFF",
+          "#FDFDFF",
+          "#FEFEFF"
         ]
       },
       "paper-2": {
         "role": "neutral",
-        "displayName": "Second Paper",
-        "canonical": "#F2EBDC",
+        "displayName": "Deeper Lilac",
+        "canonical": "#E1D7FB",
         "tonalRamp": [
-          "#79766E",
-          "#C2BCB0",
-          "#F3EDE0",
-          "#F7F3EA",
-          "#FAF7F1",
-          "#FCFAF7",
-          "#FDFDFB",
+          "#706B7D",
+          "#CAC1E1",
+          "#EDE7FC",
+          "#F6F3FD",
+          "#F9F7FE",
+          "#FBFAFE",
+          "#FDFCFE",
           "#FEFEFE"
         ]
       },
       "card-surface": {
         "role": "neutral",
-        "displayName": "Card Cream",
-        "canonical": "#FFFDF7",
+        "displayName": "Sticker White",
+        "canonical": "#FFFFFF",
         "tonalRamp": [
-          "#807E7C",
-          "#CCCAC6",
-          "#FFFDF8",
-          "#FFFEFA",
-          "#FFFEFC",
-          "#FFFFFD",
-          "#FFFFFE",
+          "#7F7F7F",
+          "#E5E5E5",
+          "#FFFFFF",
+          "#FFFFFF",
+          "#FFFFFF",
+          "#FFFFFF",
+          "#FFFFFF",
           "#FFFFFF"
         ]
       },
@@ -81,32 +81,17 @@
       },
       "rule": {
         "role": "neutral",
-        "displayName": "Blue Rule",
-        "canonical": "#C3D3EE",
+        "displayName": "Lilac Line",
+        "canonical": "#D6CBF2",
         "tonalRamp": [
-          "#626A77",
-          "#9CA9BE",
-          "#C9D7F0",
-          "#DBE5F5",
-          "#E7EDF8",
-          "#F1F4FB",
-          "#F8FAFD",
-          "#FDFDFE"
-        ]
-      },
-      "margin": {
-        "role": "neutral",
-        "displayName": "Margin Red",
-        "canonical": "#E0756C",
-        "tonalRamp": [
-          "#703A36",
-          "#B35E56",
-          "#E3837B",
-          "#ECACA7",
-          "#F3C8C4",
-          "#F8DEDC",
-          "#FBEEED",
-          "#FEF9F9"
+          "#6B6579",
+          "#C0B6D9",
+          "#E6DFF7",
+          "#F2EFFB",
+          "#F6F4FC",
+          "#FAF8FD",
+          "#FCFBFE",
+          "#FEFDFE"
         ]
       },
       "sunrise": {
@@ -273,6 +258,66 @@
           "#B8BCDC",
           "#E1E2F0"
         ]
+      },
+      "confetti-violet": {
+        "role": "accent",
+        "displayName": "Confetti Violet",
+        "canonical": "#8A6FF0",
+        "tonalRamp": [
+          "#453778",
+          "#7C63D8",
+          "#B8A8F6",
+          "#DBD3FA",
+          "#E7E2FC",
+          "#F0EDFD",
+          "#F7F6FE",
+          "#FCFCFE"
+        ]
+      },
+      "confetti-gold": {
+        "role": "accent",
+        "displayName": "Confetti Gold",
+        "canonical": "#F5C53F",
+        "tonalRamp": [
+          "#7A621F",
+          "#DCB138",
+          "#F9DC8B",
+          "#FCEDC5",
+          "#FDF3D8",
+          "#FDF8E7",
+          "#FEFBF3",
+          "#FEFDFB"
+        ]
+      },
+      "confetti-pink": {
+        "role": "accent",
+        "displayName": "Confetti Pink",
+        "canonical": "#E9577A",
+        "tonalRamp": [
+          "#742B3D",
+          "#D14E6D",
+          "#F19AAF",
+          "#F8CCD7",
+          "#FADDE4",
+          "#FCEAEF",
+          "#FDF4F7",
+          "#FEFBFC"
+        ]
+      },
+      "confetti-mint": {
+        "role": "accent",
+        "displayName": "Confetti Mint",
+        "canonical": "#4CC3A8",
+        "tonalRamp": [
+          "#266154",
+          "#44AF97",
+          "#93DBCA",
+          "#C9EDE4",
+          "#DBF3ED",
+          "#E9F7F4",
+          "#F4FBF9",
+          "#FBFDFD"
+        ]
       }
     },
     "typographyMeta": {
@@ -294,7 +339,7 @@
       },
       "reading": {
         "displayName": "Reading",
-        "purpose": "Scanned and story text on the pad; line height equals rule pitch."
+        "purpose": "Scanned and story text on the white sticker sheet; line height equals --pitch."
       },
       "label": {
         "displayName": "Label",
@@ -326,6 +371,11 @@
       }
     },
     "shadows": [
+      {
+        "name": "sticker",
+        "value": "0 0 0 3px #FFFFFF, 0 5px 0 3px rgb(91 75 181 / 0.22)",
+        "purpose": "--sticker on .pad: white keyline ring plus flat lilac drop (dark: 0 0 0 3px #3B3260, 0 5px 0 3px rgb(0 0 0 / 0.35))."
+      },
       {
         "name": "elev-sm",
         "value": "0 1px 2px rgb(29 35 64 / 0.08), 0 4px 10px -6px rgb(29 35 64 / 0.18)",
@@ -417,7 +467,7 @@
       "refersTo": "button-ink",
       "description": "Strong secondary action.",
       "html": "<button class=\"ds-btn-ink\">Listen</button>",
-      "css": ".ds-btn-ink{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border-radius:14px;font:700 16px var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;transition:background-color .15s,transform .15s;border:0;background:#1D2340;color:#FBF7EE}.ds-btn-ink:hover{background:rgb(29 35 64/.9)}.ds-btn-ink:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}.ds-btn-ink:active{transform:scale(.98)}"
+      "css": ".ds-btn-ink{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border-radius:14px;font:700 16px var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;transition:background-color .15s,transform .15s;border:0;background:#1D2340;color:#EDE6FF}.ds-btn-ink:hover{background:rgb(29 35 64/.9)}.ds-btn-ink:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}.ds-btn-ink:active{transform:scale(.98)}"
     },
     {
       "name": "Secondary Button",
@@ -425,31 +475,31 @@
       "refersTo": "button-secondary",
       "description": "Quiet paper button with a line border.",
       "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
-      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border-radius:14px;font:700 16px var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;transition:background-color .15s,transform .15s;border:1.5px solid #E3DACA;background:#FBF7EE;color:#1D2340}.ds-btn-secondary:hover{background:#F2EBDC}.ds-btn-secondary:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}"
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border-radius:14px;font:700 16px var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;transition:background-color .15s,transform .15s;border:1.5px solid #D6CBF2;background:#EDE6FF;color:#1D2340}.ds-btn-secondary:hover{background:#E1D7FB}.ds-btn-secondary:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}"
     },
     {
       "name": "Text Input",
       "kind": "input",
       "refersTo": "input",
-      "description": "Cream field with strong border.",
+      "description": "White field with strong border.",
       "html": "<input class=\"ds-input\" placeholder=\"Your name\">",
-      "css": ".ds-input{height:48px;width:100%;box-sizing:border-box;padding:0 16px;border:1.5px solid #7F849C;border-radius:14px;background:#FFFDF7;color:#1D2340;font:400 16px 'Atkinson Hyperlegible',system-ui,sans-serif}.ds-input:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}"
+      "css": ".ds-input{height:48px;width:100%;box-sizing:border-box;padding:0 16px;border:1.5px solid #7F849C;border-radius:14px;background:#FFFFFF;color:#1D2340;font:400 16px 'Atkinson Hyperlegible',system-ui,sans-serif}.ds-input:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}"
     },
     {
       "name": "Card",
       "kind": "card",
       "refersTo": "card",
-      "description": "Cream card with fine border and soft shadow.",
+      "description": "White sticker card with keyline and lilac drop.",
       "html": "<div class=\"ds-card\"><div class=\"ds-card-t\">Today's words</div><p>Tap a word to hear it.</p></div>",
-      "css": ".ds-card{padding:20px;border:1.5px solid #E3DACA;border-radius:16px;background:#FFFDF7;color:#1D2340;box-shadow:0 1px 2px rgb(29 35 64/.08),0 4px 10px -6px rgb(29 35 64/.18)}.ds-card-t{font:700 20px 'Baloo 2',ui-rounded,system-ui,sans-serif;line-height:1.2}.ds-card p{margin:8px 0 0;font:400 15px 'Atkinson Hyperlegible',system-ui,sans-serif;color:#4A5070}"
+      "css": ".ds-card{padding:20px;border:1.5px solid #D6CBF2;border-radius:16px;background:#FFFFFF;color:#1D2340;box-shadow:0 0 0 3px #FFFFFF,0 5px 0 3px rgb(91 75 181/.22)}.ds-card-t{font:700 20px 'Baloo 2',ui-rounded,system-ui,sans-serif;line-height:1.2}.ds-card p{margin:8px 0 0;font:400 15px 'Atkinson Hyperlegible',system-ui,sans-serif;color:#4A5070}"
     },
     {
-      "name": "Pad Paper",
+      "name": "Sticker Sheet",
       "kind": "custom",
       "refersTo": "reading",
-      "description": "Ruled reading surface with a red margin; line height equals rule pitch.",
+      "description": "White reading sticker with keyline and lilac drop; no ruling. Line height equals --pitch.",
       "html": "<div class=\"ds-pad\"><p>The owl reads a book by the window.</p><p>Tap any word.</p></div>",
-      "css": ".ds-pad{position:relative;padding:0 20px 0 58px;background-color:#FBF7EE;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 35px,#C3D3EE 35px,#C3D3EE 36px);color:#1D2340}.ds-pad::before{content:'';position:absolute;top:0;bottom:0;left:44px;width:1.5px;background:#E0756C}.ds-pad p{margin:0;font:400 20px/36px 'Atkinson Hyperlegible',system-ui,sans-serif}"
+      "css": ".ds-pad{position:relative;padding:8px 20px;border-radius:16px;background-color:#FFFFFF;box-shadow:0 0 0 3px #FFFFFF,0 5px 0 3px rgb(91 75 181/.22);color:#1D2340}.ds-pad p{margin:0;font:400 20px/36px 'Atkinson Hyperlegible',system-ui,sans-serif}"
     },
     {
       "name": "Difficulty Stamp",
@@ -489,15 +539,15 @@
       "refersTo": "card",
       "description": "A list row led by a cloth-colored letter tile instead of emoji.",
       "html": "<div class=\"ds-row\"><span class=\"ds-tile\">K</span><b>kangkong</b><span class=\"ds-helper\">water spinach</span></div>",
-      "css": ".ds-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#FFFDF7;border:1.5px solid #E3DACA;border-radius:16px;box-shadow:0 1px 0 rgb(29 35 64/.06),0 2px 3px rgb(29 35 64/.08),0 8px 16px -10px rgb(29 35 64/.28);color:#1D2340;font-family:var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;touch-action:manipulation}.ds-row b{font:700 1.1875rem var(--font-heading,'Baloo 2',ui-rounded,system-ui,sans-serif)}.ds-tile{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#2E7D55;color:#fff;font:800 1.25rem var(--font-heading,'Baloo 2',sans-serif)}.ds-helper{font-size:.9375rem;color:#4A5070}.ds-row:active{translate:0 2px}.ds-row:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}"
+      "css": ".ds-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#FFFFFF;border:1.5px solid #D6CBF2;border-radius:16px;box-shadow:0 1px 0 rgb(29 35 64/.06),0 2px 3px rgb(29 35 64/.08),0 8px 16px -10px rgb(29 35 64/.28);color:#1D2340;font-family:var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif);cursor:pointer;touch-action:manipulation}.ds-row b{font:700 1.1875rem var(--font-heading,'Baloo 2',ui-rounded,system-ui,sans-serif)}.ds-tile{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#2E7D55;color:#fff;font:800 1.25rem var(--font-heading,'Baloo 2',sans-serif)}.ds-helper{font-size:.9375rem;color:#4A5070}.ds-row:active{translate:0 2px}.ds-row:focus-visible{outline:3px solid #2B3A8C;outline-offset:2px}"
     },
     {
       "name": "Speech Tag",
       "kind": "custom",
       "refersTo": "card",
-      "description": "The owl's voice: a small paper tag with a tail.",
+      "description": "The owl's voice: a small white sticker tag with a tail.",
       "html": "<div class=\"ds-speech\">Tap any word!</div>",
-      "css": ".ds-speech{position:relative;display:inline-block;padding:10px 14px;background:#FFFDF7;color:#1D2340;border:1.5px solid #E3DACA;border-radius:16px;box-shadow:0 1px 2px rgb(29 35 64/.08),0 4px 10px -6px rgb(29 35 64/.18);font:400 .9375rem var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif)}.ds-speech::after{content:'';position:absolute;left:18px;bottom:-7px;width:12px;height:12px;background:#FFFDF7;border-right:1.5px solid #E3DACA;border-bottom:1.5px solid #E3DACA;transform:rotate(45deg)}"
+      "css": ".ds-speech{position:relative;display:inline-block;padding:10px 14px;background:#FFFFFF;color:#1D2340;border:1.5px solid #D6CBF2;border-radius:16px;box-shadow:0 1px 2px rgb(29 35 64/.08),0 4px 10px -6px rgb(29 35 64/.18);font:400 .9375rem var(--font-body,'Atkinson Hyperlegible',system-ui,sans-serif)}.ds-speech::after{content:'';position:absolute;left:18px;bottom:-7px;width:12px;height:12px;background:#FFFFFF;border-right:1.5px solid #D6CBF2;border-bottom:1.5px solid #D6CBF2;transform:rotate(45deg)}"
     },
     {
       "name": "Locked Sticker Chip",
@@ -505,16 +555,16 @@
       "refersTo": "card",
       "description": "A locked sticker: washed art with a lock chip.",
       "html": "<div class=\"ds-sticker\"><span class=\"ds-art\"></span><span class=\"ds-lock\">&#128274;</span></div>",
-      "css": ".ds-sticker{position:relative;width:88px;height:88px}.ds-art{display:block;width:100%;height:100%;border-radius:50%;background:#F2D3A0;border:3px solid #fff;box-shadow:0 2px 6px rgb(29 35 64/.2);filter:grayscale(1);opacity:.55}.ds-lock{position:absolute;right:0;bottom:0;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#FBF7EE;border:2px solid #7F849C;font-size:.75rem}"
+      "css": ".ds-sticker{position:relative;width:88px;height:88px}.ds-art{display:block;width:100%;height:100%;border-radius:50%;background:#F2D3A0;border:3px solid #fff;box-shadow:0 2px 6px rgb(29 35 64/.2);filter:grayscale(1);opacity:.55}.ds-lock{position:absolute;right:0;bottom:0;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#EDE6FF;border:2px solid #7F849C;font-size:.75rem}"
     }
   ],
   "narrative": {
-    "northStar": "The Pad Paper Storybook",
-    "overview": "The child's page is their own pad paper. Reading text sits on quiet blue rules with one red margin line, warm off-white paper, deep navy ink, and every word can be tapped. Saturated book-jacket cloth (indigo, mango, kangkong green, gumamela red) is the notebook cover and owns whole regions. Rewards are rubber-stamp stars, teacher check marks and die-cut stickers in a sticker book. The owl is the single character, and it speaks through a small speech tag.\n\nThe system is calm and low-density: one thing burns brightest at a time, and nothing loops. It is cute through one drawn character family (flat SVG owl, toon-shaded 3D owl, covers, stickers, empty-state art, card back, scan doodles) rather than through decoration: each shares the dark brown outline, warm owl browns and the same rounded forms. It refuses candy-gradient cards, emoji chrome, stat tiles and confetti-by-default. Dark mode is a night pad under one bulb, same structure with lowered paper.",
+    "northStar": "The Sticker Sheet",
+    "overview": "The page is a lilac sticker sheet scattered with light confetti (stars, squiggles, triangles, rounded squares, dots, each with a white keyline). Everything the child works with is a white sticker card lifted off it: a white keyline ring and a soft lilac drop. Reading text always sits on the plain white sticker, never on the confetti. Deep navy ink, a sunrise orange primary, and saturated book-jacket cloth (indigo, mango, kangkong green, gumamela red) that owns whole regions. Rewards are rubber-stamp stars, teacher check marks and die-cut stickers in a sticker book. The owl (purple #8A6FF0 app-icon tile) is the single character, and it speaks through a small speech tag.\n\nThe system is calm and low-density in its controls: one thing burns brightest at a time, and nothing loops. The confetti is a static, low-opacity ground tile (460px, about 0.6 opacity light, 0.5 dark), not animated and not placed behind text. It is cute through one drawn character family (flat SVG owl redrawn from the expression sheet, toon-shaded 3D owl, covers, stickers, empty-state art, card back, scan doodles) sharing the dark brown outline, warm owl browns and rounded forms. It refuses candy-gradient cards, emoji chrome and stat tiles. Dark mode is a deep-violet night sheet with the same structure: dark violet ground, #2A2350 sticker cards, a dark keyline, and darker confetti outlines.",
     "keyCharacteristics": [
-      "Real baseline grid: the rule pitch equals the reading line-height at every font-size setting.",
-      "Warm paper neutrals, navy ink, flat cloth-colored jackets, one orange accent.",
-      "One character family: owl (idle, cheer, think, wave, sleep; no outfit, glasses, cap, bow) across flat art, 3D, covers, stickers and empty states.",
+      "One vertical rhythm: `--pitch` sets reading line-height and row height at every font-size setting, even though the sheet is no longer ruled.",
+      "Lilac ground with static confetti, white keylined sticker cards, navy ink, flat cloth-colored jackets, one orange accent.",
+      "One character family: owl (idle, cheer, think, wave, sleep; outfits none, glasses, cap, bow) across flat art, 3D, covers, stickers and empty states.",
       "State by shape first (circle/square/triangle difficulty stamps), color only reinforces.",
       "Offline-to-AI upgrades restyle in place with reserved space, no layout shift.",
       "Motion is transform and opacity, 140-300ms, once per flow, off under reduced motion; no looping decoration.",
@@ -528,17 +578,22 @@
       },
       {
         "name": "The Mixed-Tint Rule",
-        "body": "Reading overlays (yellow, blue, pink) are mixed into the paper at 12-16% and never laid over text, so ink contrast holds. Contrast pairs are asserted in `src/styles/contrast.test.ts`; change a token only with that test green.",
+        "body": "Reading overlays (yellow, blue, pink) are mixed into the white sticker sheet (`card-surface`) at 12-16% and never laid over text, so ink contrast holds. Contrast pairs are asserted in `src/styles/contrast.test.ts`; change a token only with that test green.",
         "section": "colors"
       },
       {
-        "name": "The Paper-on-Cloth Rule",
-        "body": "Anything that is a piece of paper (notebook label, ruled pad) stays light in dark mode; only the surrounding page darkens.",
+        "name": "The Label-on-Cloth Rule",
+        "body": "The notebook label stuck on a book cover is paper on cloth and stays light in dark mode; only the surrounding sheet darkens. (Sticker cards themselves do darken to #2A2350.)",
         "section": "colors"
       },
       {
-        "name": "The Baseline Rule",
-        "body": "Reading text uses `.pad-text`, whose line-height is the rule pitch. Sizes are rem-based and the html font-size class scales pitch and text together, so words always sit on the rules.",
+        "name": "The Plain-Sheet Rule",
+        "body": "Reading text sits only on the plain white sticker card, never directly on the confetti ground.",
+        "section": "colors"
+      },
+      {
+        "name": "The Pitch Rule",
+        "body": "Reading text uses `.pad-text`, whose line-height is `--pitch` (2.25rem, 2.5rem at lg). Sizes are rem-based and the html font-size class scales pitch and text together, so line and row heights stay one rhythm. There is no ruling to align to.",
         "section": "typography"
       },
       {
@@ -553,7 +608,12 @@
       },
       {
         "name": "The Soft Navy Shadow Rule",
-        "body": "Shadows are blurred, offset-down, and navy-tinted (black in dark). No hard offset shadows.",
+        "body": "Shadows are blurred, offset-down, and navy-tinted (black in dark). The one exception is the sticker drop, a lilac, unblurred offset that is the sticker device itself; no other hard offset shadows or glow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Sticker Rule",
+        "body": "A card that carries content is a sticker: `--card-surface` fill, the `--sticker` keyline and drop. The keyline is part of the sticker, not a second border.",
         "section": "elevation"
       },
       {
@@ -564,7 +624,7 @@
     ],
     "dos": [
       "**Do** read tokens only from the CSS custom properties / Tailwind utilities (`bg-paper`, `text-ink`, `bg-sunrise`, `shadow-cta`, `shadow-tile`).",
-      "**Do** lay reading text on `.pad` / `.pad-text` so line-height equals the rule pitch.",
+      "**Do** lay reading text on `.pad` / `.pad-text` (the white sticker sheet) so line-height equals the pitch.",
       "**Do** pair every difficulty color with its shape (circle, square, triangle) and label.",
       "**Do** use ink navy text on sunrise and mango, white on indigo, kangkong, and gumamela.",
       "**Do** gate every GSAP helper (enterPanel, markWord, stampIn, fadeRoute) and every celebration on reduced motion and animate only transform and opacity.",
@@ -579,7 +639,8 @@
       "**Don't** put a loop on decoration; the only ambient motion is the owl's occasional blink and glance and the capped 3D sleep bob.",
       "**Don't** use candy gradients, stacked stat tiles, or emoji as chrome.",
       "**Don't** convey state by color alone.",
-      "**Don't** put a color overlay over text; mix it into the paper.",
+      "**Don't** put a color overlay over text; mix it into the sticker sheet.",
+      "**Don't** put reading text on the confetti, or animate the confetti.",
       "**Don't** use hard offset shadows or glow.",
       "**Don't** load the 3D owl on slow, save-data, very low-end or software-WebGL devices, or under reduced motion.",
       "**Don't** name a control differently from its visible text.",
