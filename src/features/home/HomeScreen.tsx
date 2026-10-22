@@ -41,7 +41,7 @@ const DESKTOP_QUERY = "(min-width: 1024px)";
 
 function Chip({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <li className="inline-flex min-h-[2.125rem] items-center gap-1.5 rounded-full border-[1.5px] border-line px-3 py-0.5 text-[0.9375rem] font-bold [html.font-large_&]:w-full">
+    <li className="inline-flex min-h-[2.125rem] items-center gap-1.5 rounded-full border-[1.5px] border-line bg-card px-3 py-0.5 text-[0.9375rem] font-bold [html.font-large_&]:w-full">
       {icon}
       {children}
     </li>

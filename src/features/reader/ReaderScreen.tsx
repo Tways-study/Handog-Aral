@@ -446,7 +446,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
 
         {/* The reading surface: a tap near a word (between words, between lines) picks the nearest word. */}
         <div
-          className={cn("pad flex-1 pb-[calc(var(--nav-h)+env(safe-area-inset-bottom,0px)+5.5rem)] lg:pb-8", overlayClass)}
+          className={cn("pad flex-1 shadow-none pb-[calc(var(--nav-h)+env(safe-area-inset-bottom,0px)+5.5rem)] lg:pb-8", overlayClass)}
           onClick={onSurfaceClick}
           data-slot="reading-surface"
         >

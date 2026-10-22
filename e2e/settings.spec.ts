@@ -20,7 +20,7 @@ test("language switches the UI and persists across reload", async ({ page }) => 
   await expect(page.getByRole("heading", { name: /Magandang (umaga|hapon|gabi), Ana!/ })).toBeVisible();
 });
 
-test("font size changes the html class and scales the pad rule pitch", async ({ page }) => {
+test("font size changes the html class and scales the reading line pitch", async ({ page }) => {
   await gotoAs(page, "/settings");
   const pitch = async () => {
     await page.goto("/read/fox");
@@ -28,8 +28,7 @@ test("font size changes the html class and scales the pad rule pitch", async ({ 
       const text = document.querySelector(".pad-text") as HTMLElement;
       const rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
       const lh = parseFloat(getComputedStyle(text).lineHeight);
-      const pad = getComputedStyle(text.closest(".pad")!).backgroundImage;
-      return { rootPx, lh, rem: lh / rootPx, gradientHasPitch: pad.includes(`${lh}px`) };
+      return { rootPx, lh, rem: lh / rootPx };
     });
   };
   const results: Record<string, Awaited<ReturnType<typeof pitch>>> = {};
@@ -48,7 +47,6 @@ test("font size changes the html class and scales the pad rule pitch", async ({ 
   expect(results.Large.rem).toBeCloseTo(results.Medium.rem, 3);
   expect(results.Small.lh).toBeLessThan(results.Medium.lh);
   expect(results.Medium.lh).toBeLessThan(results.Large.lh);
-  for (const r of Object.values(results)) expect(r.gradientHasPitch, "ruled lines use the same pitch as the line height").toBe(true);
 
   // Persists across reload.
   await page.goto("/settings");

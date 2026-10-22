@@ -3,22 +3,22 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ==========================================================================
-   Handog Aral: Pad Paper Storybook tokens.
+   Handog Aral: Sticker Sheet tokens (lilac ground, white sticker cards).
    Source of truth: .impeccable/mocks/home-reader-comp.html
    All NEW code uses only the tokens in this section. Hex on purpose: the
    values are verified by src/styles/contrast.test.ts, which parses this file.
    ========================================================================== */
 
 :root {
-  /* paper and ink */
-  --paper: #FBF7EE;
-  --paper-2: #F2EBDC;
-  --card-surface: #FFFDF7;
+  /* ground, sheet and ink: --paper is the lilac page ground; cards are white stickers */
+  --paper: #EDE6FF;
+  --paper-2: #E1D7FB;
+  --card-surface: #FFFFFF;
   --ink: #1D2340;
   --ink-2: #4A5070;
-  --rule: #C3D3EE;
+  --rule: #D6CBF2;
   --margin: #E0756C;
-  --line: #E3DACA;
+  --line: #D6CBF2;
   --line-strong: #7F849C;
 
   /* the notebook label card on a book cover: it is paper stuck on cloth, so it stays light in dark mode
@@ -49,12 +49,12 @@
   --stamp-hard: #C8323A;
 
   /* semantic */
-  --success: #2E7D55;
+  --success: #2A7450;
   --success-foreground: #FFFFFF;
   --warning: #F2B233;
   --warning-foreground: #1D2340;
   --warning-text: #8A5A00;
-  --destructive-text: #C8323A;
+  --destructive-text: #BE2D35;
 
   /* colour-overlay tints for reading (mixed into the paper, never over the text) */
   --tint-yellow: #FFD166;
@@ -94,10 +94,13 @@
   --elev-tile: 0 1px 0 rgb(29 35 64 / 0.06), 0 2px 3px rgb(29 35 64 / 0.08), 0 8px 16px -10px rgb(29 35 64 / 0.28);
   --scrim: rgb(29 35 64 / 0.28);
 
-  /* pad paper: one pitch, rem-based so it scales with html.font-* */
+  /* sticker sheet: the white keyline and the soft lilac drop that make a card read as a sticker */
+  --sticker: 0 0 0 3px #FFFFFF, 0 5px 0 3px rgb(91 75 181 / 0.22);
+  --confetti: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='460' height='460' viewBox='0 0 460 460'><g opacity='0.6'><polygon points='96.0,37.0 100.1,46.4 110.3,47.4 102.6,54.1 104.8,64.1 96.0,58.9 87.2,64.1 89.4,54.1 81.7,47.4 91.9,46.4' fill='%23F5C53F' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='392.0,120.0 395.2,127.5 403.4,128.3 397.2,133.7 399.1,141.7 392.0,137.5 384.9,141.7 386.8,133.7 380.6,128.3 388.8,127.5' fill='%238A6FF0' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='212.0,223.0 215.5,231.2 224.4,232.0 217.7,237.8 219.6,246.5 212.0,242.0 204.4,246.5 206.3,237.8 199.6,232.0 208.5,231.2' fill='%23F08A24' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='58.0,319.0 61.0,325.9 68.5,326.6 62.8,331.6 64.5,338.9 58.0,335.1 51.5,338.9 53.2,331.6 47.5,326.6 55.0,325.9' fill='%23F5C53F' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='342.0,382.0 345.8,390.8 355.3,391.7 348.1,398.0 350.2,407.3 342.0,402.4 333.8,407.3 335.9,398.0 328.7,391.7 338.2,390.8' fill='%23F08A24' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><circle cx='210' cy='60' r='6' fill='%23FFFFFF'/><circle cx='300' cy='40' r='5' fill='%23FFFFFF'/><circle cx='412' cy='248' r='7' fill='%23FFFFFF'/><circle cx='120' cy='176' r='7' fill='%23FFFFFF'/><circle cx='36' cy='236' r='5' fill='%23FFFFFF'/><circle cx='262' cy='330' r='7' fill='%23FFFFFF'/><circle cx='176' cy='420' r='6' fill='%23FFFFFF'/><circle cx='436' cy='430' r='5' fill='%23FFFFFF'/><path d='M250 120q9-12 18 0t18 0' fill='none' stroke='%23FFFFFF' stroke-width='11' stroke-linecap='round'/><path d='M250 120q9-12 18 0t18 0' fill='none' stroke='%23E9577A' stroke-width='4.5' stroke-linecap='round'/><path d='M40 416q9-12 18 0t18 0' fill='none' stroke='%23FFFFFF' stroke-width='11' stroke-linecap='round'/><path d='M40 416q9-12 18 0t18 0' fill='none' stroke='%23E9577A' stroke-width='4.5' stroke-linecap='round'/><path d='M330 300q9-12 18 0t18 0' fill='none' stroke='%23FFFFFF' stroke-width='11' stroke-linecap='round'/><path d='M330 300q9-12 18 0t18 0' fill='none' stroke='%23F5C53F' stroke-width='4.5' stroke-linecap='round'/><path d='M120 266q9-12 18 0t18 0' fill='none' stroke='%23FFFFFF' stroke-width='11' stroke-linecap='round'/><path d='M120 266q9-12 18 0t18 0' fill='none' stroke='%23F5C53F' stroke-width='4.5' stroke-linecap='round'/><path d='M360 40l14-24 14 24z' fill='%238A6FF0' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><path d='M180 330l14-24 14 24z' fill='%238A6FF0' stroke='%23FFFFFF' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><rect x='40' y='120' width='24' height='24' rx='7' transform='rotate(14 52 132)' fill='%234CC3A8' stroke='%23FFFFFF' stroke-width='4' paint-order='stroke'/><rect x='414' y='334' width='24' height='24' rx='7' transform='rotate(14 426 346)' fill='%234CC3A8' stroke='%23FFFFFF' stroke-width='4' paint-order='stroke'/><rect x='262' y='420' width='24' height='24' rx='7' transform='rotate(14 274 432)' fill='%234CC3A8' stroke='%23FFFFFF' stroke-width='4' paint-order='stroke'/></g></svg>");
+
+  /* reading sheet: one pitch (line height and row height), rem-based so it scales with html.font-* */
   --pitch: 2.25rem;
-  --pad-margin: 2.75rem;
-  --pad-gutter: calc(var(--pad-margin) + 0.875rem);
+  --pad-gutter: 1.25rem;
   --pad-text-size: 1.25rem;
 
   /* layout */
@@ -109,15 +112,17 @@
 }
 
 .dark {
-  --paper: #1A1D2A;
-  --paper-2: #222636;
-  --card-surface: #222636;
+  --paper: #1B1633;
+  --paper-2: #261F45;
+  --card-surface: #2A2350;
   --ink: #EFE7D6;
   --ink-2: #B9B3A6;
-  --rule: #2F3A57;
+  --rule: #3B3260;
   --margin: #8F3E3A;
-  --line: #2E3346;
-  --line-strong: #7A8099;
+  --line: #3B3260;
+  --line-strong: #8A84AE;
+  --sticker: 0 0 0 3px #3B3260, 0 5px 0 3px rgb(0 0 0 / 0.35);
+  --confetti: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='460' height='460' viewBox='0 0 460 460'><g opacity='0.5'><polygon points='96.0,37.0 100.1,46.4 110.3,47.4 102.6,54.1 104.8,64.1 96.0,58.9 87.2,64.1 89.4,54.1 81.7,47.4 91.9,46.4' fill='%23F5C53F' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='392.0,120.0 395.2,127.5 403.4,128.3 397.2,133.7 399.1,141.7 392.0,137.5 384.9,141.7 386.8,133.7 380.6,128.3 388.8,127.5' fill='%238A6FF0' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='212.0,223.0 215.5,231.2 224.4,232.0 217.7,237.8 219.6,246.5 212.0,242.0 204.4,246.5 206.3,237.8 199.6,232.0 208.5,231.2' fill='%23F08A24' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='58.0,319.0 61.0,325.9 68.5,326.6 62.8,331.6 64.5,338.9 58.0,335.1 51.5,338.9 53.2,331.6 47.5,326.6 55.0,325.9' fill='%23F5C53F' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><polygon points='342.0,382.0 345.8,390.8 355.3,391.7 348.1,398.0 350.2,407.3 342.0,402.4 333.8,407.3 335.9,398.0 328.7,391.7 338.2,390.8' fill='%23F08A24' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><circle cx='210' cy='60' r='6' fill='%232E2655'/><circle cx='300' cy='40' r='5' fill='%232E2655'/><circle cx='412' cy='248' r='7' fill='%232E2655'/><circle cx='120' cy='176' r='7' fill='%232E2655'/><circle cx='36' cy='236' r='5' fill='%232E2655'/><circle cx='262' cy='330' r='7' fill='%232E2655'/><circle cx='176' cy='420' r='6' fill='%232E2655'/><circle cx='436' cy='430' r='5' fill='%232E2655'/><path d='M250 120q9-12 18 0t18 0' fill='none' stroke='%232E2655' stroke-width='11' stroke-linecap='round'/><path d='M250 120q9-12 18 0t18 0' fill='none' stroke='%23E9577A' stroke-width='4.5' stroke-linecap='round'/><path d='M40 416q9-12 18 0t18 0' fill='none' stroke='%232E2655' stroke-width='11' stroke-linecap='round'/><path d='M40 416q9-12 18 0t18 0' fill='none' stroke='%23E9577A' stroke-width='4.5' stroke-linecap='round'/><path d='M330 300q9-12 18 0t18 0' fill='none' stroke='%232E2655' stroke-width='11' stroke-linecap='round'/><path d='M330 300q9-12 18 0t18 0' fill='none' stroke='%23F5C53F' stroke-width='4.5' stroke-linecap='round'/><path d='M120 266q9-12 18 0t18 0' fill='none' stroke='%232E2655' stroke-width='11' stroke-linecap='round'/><path d='M120 266q9-12 18 0t18 0' fill='none' stroke='%23F5C53F' stroke-width='4.5' stroke-linecap='round'/><path d='M360 40l14-24 14 24z' fill='%238A6FF0' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><path d='M180 330l14-24 14 24z' fill='%238A6FF0' stroke='%232E2655' stroke-width='4' stroke-linejoin='round' paint-order='stroke'/><rect x='40' y='120' width='24' height='24' rx='7' transform='rotate(14 52 132)' fill='%234CC3A8' stroke='%232E2655' stroke-width='4' paint-order='stroke'/><rect x='414' y='334' width='24' height='24' rx='7' transform='rotate(14 426 346)' fill='%234CC3A8' stroke='%232E2655' stroke-width='4' paint-order='stroke'/><rect x='262' y='420' width='24' height='24' rx='7' transform='rotate(14 274 432)' fill='%234CC3A8' stroke='%232E2655' stroke-width='4' paint-order='stroke'/></g></svg>");
 
   --sunrise: #F39A3D;
   --sunrise-ink: #1D2340;
@@ -250,7 +255,7 @@ html {
   text-size-adjust: 100%;
 }
 
-/* Font size scaling: everything is rem, so --pitch and the pad scale with it. */
+/* Font size scaling: everything is rem, so --pitch and the sheet scale with it. */
 html.font-small  { font-size: 14px; --nav-h: 52px; }
 html.font-medium { font-size: 16px; --nav-h: 58px; }
 html.font-large  { font-size: 20px; --nav-h: 70px; }
@@ -259,6 +264,8 @@ body {
   font-family: var(--font-body);
   color: var(--foreground);
   background-color: var(--background);
+  background-image: var(--confetti);
+  background-size: 460px 460px;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
@@ -303,35 +310,20 @@ a { text-underline-offset: 4px; }
 }
 @media (min-width: 64rem) {
   .pb-nav { padding-bottom: 2rem; }
-  :root { --pitch: 2.5rem; --pad-margin: 4.125rem; --pad-gutter: calc(var(--pad-margin) + 1.5rem); --pad-text-size: 1.375rem; }
+  :root { --pitch: 2.5rem; --pad-gutter: 1.75rem; --pad-text-size: 1.375rem; }
 }
 
 .safe-bottom { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
 
 @layer components {
-/* ---------- pad paper ---------- */
+/* ---------- sticker sheet ---------- */
 
-/* Ruled paper. line-height of .pad-text equals --pitch, so text sits on the rules at every font size. */
+/* The reading sheet: a white sticker card with a keyline and a soft lilac drop, no ruling. The class is still
+   called .pad (and --pitch still sets line height and row height) so every screen keeps one vertical rhythm. */
 .pad {
   position: relative;
-  background-color: var(--pad-bg, var(--paper));
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent calc(var(--pitch) - 1px),
-    var(--rule) calc(var(--pitch) - 1px),
-    var(--rule) var(--pitch)
-  );
-}
-.pad::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: var(--pad-margin);
-  width: 1.5px;
-  background: var(--margin);
-  pointer-events: none;
+  background-color: var(--pad-bg, var(--card-surface));
+  box-shadow: var(--sticker);
 }
 .pad-text {
   font-size: var(--pad-text-size);
@@ -385,10 +377,10 @@ a { text-underline-offset: 4px; }
   [data-super-paper] .word-mark[data-nudge="true"] { animation: word-nudge 1100ms var(--ease-out) 700ms 1 both; }
 }
 
-/* Colour overlays: the tint is mixed into the paper, text keeps full contrast. */
-.overlay-yellow { --pad-bg: color-mix(in srgb, var(--tint-yellow) 16%, var(--paper)); background-color: var(--pad-bg); }
-.overlay-blue   { --pad-bg: color-mix(in srgb, var(--tint-blue) 16%, var(--paper)); background-color: var(--pad-bg); }
-.overlay-pink   { --pad-bg: color-mix(in srgb, var(--tint-pink) 12%, var(--paper)); background-color: var(--pad-bg); }
+/* Colour overlays: the tint is mixed into the white sheet, text keeps full contrast. */
+.overlay-yellow { --pad-bg: color-mix(in srgb, var(--tint-yellow) 16%, var(--card-surface)); background-color: var(--pad-bg); }
+.overlay-blue   { --pad-bg: color-mix(in srgb, var(--tint-blue) 16%, var(--card-surface)); background-color: var(--pad-bg); }
+.overlay-pink   { --pad-bg: color-mix(in srgb, var(--tint-pink) 12%, var(--card-surface)); background-color: var(--pad-bg); }
 
 }
 
@@ -442,7 +434,7 @@ a { text-underline-offset: 4px; }
   }
 }
 
-/* Static pad-paper placeholder: one gentle fade-in when it mounts, never a loop. */
+/* Static placeholder: one gentle fade-in when it mounts, never a loop. */
 @keyframes skeleton-in { from { opacity: 0; } to { opacity: 1; } }
 @utility skeleton-in {
   animation: skeleton-in 280ms var(--ease-out) both;

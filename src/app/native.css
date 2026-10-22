@@ -205,7 +205,7 @@ select {
 }
 
 /* ---------- increased contrast ---------- */
-/* Strengthen the hairlines and muted ink; the pad rules stay quiet but are no longer ghostly. */
+/* Strengthen the hairlines and muted ink; the sheet keylines stay quiet but are no longer ghostly. */
 @media (prefers-contrast: more) {
   :root,
   :root.dark {

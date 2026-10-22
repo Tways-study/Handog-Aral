@@ -18,7 +18,7 @@ export default function LoadingFrame() {
   if (pathname === "/") return <HomeSkeleton label={t.shell.loading} />;
   if (LIST_ROUTES.has(pathname)) return <ListSkeleton label={t.shell.loading} />;
   return (
-    <div className="pad grid min-h-dvh place-items-center" role="status" aria-busy="true">
+    <div className="grid min-h-dvh place-items-center" role="status" aria-busy="true">
       <div className="skeleton-in flex flex-col items-center gap-3 px-6 text-center">
         <PeekOverNotebook size={176} />
         <p className="font-heading text-lg font-bold text-ink-2">{t.shell.loading}</p>

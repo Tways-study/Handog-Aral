@@ -18,7 +18,7 @@ export default function SystemPage({ kind, onRetry }: { kind: "notFound" | "erro
   const title = kind === "notFound" ? t.notFoundTitle : t.errorTitle;
   const body = kind === "notFound" ? t.notFoundBody : t.errorBody;
   return (
-    <div className="pad min-h-dvh" data-system-page={kind}>
+    <div className="min-h-dvh" data-system-page={kind}>
       <PageContainer className="flex flex-col items-center py-16 text-center">
         {kind === "notFound" ? <NotFoundArt size={200} /> : <Mascot mood="think" size={120} />}
         <h1 className="mt-6 font-heading text-3xl font-bold text-balance">{title}</h1>

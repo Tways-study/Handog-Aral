@@ -26,7 +26,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
   return (
     <html lang="fil" className={`${baloo.variable} ${atkinson.variable} ${openDyslexic.variable}`}>
       <body>
-        <main className="pad grid min-h-dvh place-items-center px-5 py-16 text-center">
+        <main className="grid min-h-dvh place-items-center px-5 py-16 text-center">
           <div className="flex flex-col items-center">
             <Mascot mood="think" size={120} />
             <h1 className="mt-6 font-heading text-3xl font-bold text-balance">{t.errorTitle}</h1>
