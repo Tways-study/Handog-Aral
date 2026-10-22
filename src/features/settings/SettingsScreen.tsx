@@ -29,14 +29,14 @@ import { useSettings, type ColorOverlay, type FontSize, type Theme } from "@/sto
 import type { Language } from "@/shared/schemas";
 import { APP_VERSION } from "./version";
 
-/** A settings group: one calm paper surface, heading, then rows divided by fine rules. */
+/** A settings group: an open heading with a wavy underline, then rows divided by dotted rules. No box. */
 function Section({ id, title, children, className }: { id: string; title: string; children: ReactNode; className?: string }) {
   return (
-    <section aria-labelledby={id} className={cn("rounded-lg border-[1.5px] border-line bg-card shadow-sm", className)}>
-      <h2 id={id} className="px-5 pt-5 font-heading text-xl font-bold">
+    <section aria-labelledby={id} className={cn(className)}>
+      <h2 id={id} className="section-title font-heading text-xl font-bold">
         {title}
       </h2>
-      <div className="divide-y divide-line px-5">{children}</div>
+      <div className="divide-y-2 divide-dotted divide-line">{children}</div>
     </section>
   );
 }
@@ -167,11 +167,11 @@ export default function SettingsScreen() {
         </Section>
 
         {/* Hidden while the install control renders nothing (already installed, native app, unsupported browser). */}
-        <section aria-labelledby="sec-app" className="rounded-lg border-[1.5px] border-line bg-card shadow-sm has-[.install-slot:empty]:hidden">
-          <h2 id="sec-app" className="px-5 pt-5 font-heading text-xl font-bold">
+        <section aria-labelledby="sec-app" className="has-[.install-slot:empty]:hidden">
+          <h2 id="sec-app" className="section-title font-heading text-xl font-bold">
             {t.settings.appHeading}
           </h2>
-          <div className="install-slot px-5 py-4">
+          <div className="install-slot py-4">
             <InstallAppButton />
           </div>
         </section>

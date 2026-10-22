@@ -21,7 +21,7 @@ export default function OwlTag({
   ...rest
 }: { tail?: Tail; className?: string; children: ReactNode } & HTMLAttributes<HTMLDivElement>) {
   return (
-    <div data-slot="owl-tag" className={cn("relative rounded-[1.125rem] border-2 border-line bg-card px-3.5 py-2 text-foreground shadow-sm", className)} {...rest}>
+    <div data-slot="owl-tag" className={cn("relative rounded-[1.125rem] border-2 border-transparent bg-paper-2 px-3.5 py-2 text-foreground", className)} {...rest}>
       <span aria-hidden="true" className={cn("absolute size-3 rotate-45 rounded-[0.1875rem] border-inherit bg-inherit", TAIL[tail])} />
       {children}
     </div>

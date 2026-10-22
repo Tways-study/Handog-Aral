@@ -41,7 +41,7 @@ const DESKTOP_QUERY = "(min-width: 1024px)";
 
 function Chip({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <li className="inline-flex min-h-[2.125rem] items-center gap-1.5 rounded-full border-[1.5px] border-line bg-card px-3 py-0.5 text-[0.9375rem] font-bold [html.font-large_&]:w-full">
+    <li className="inline-flex min-h-[2.125rem] items-center gap-1.5 rounded-full bg-paper-2 px-3 py-0.5 text-[0.9375rem] font-bold [html.font-large_&]:w-full">
       {icon}
       {children}
     </li>
@@ -49,7 +49,7 @@ function Chip({ icon, children }: { icon: React.ReactNode; children: React.React
 }
 
 const ROW =
-  "pressable flex min-h-16 items-center gap-3 rounded-lg border-[1.5px] border-line bg-card px-4 py-2.5 shadow-sm outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring";
+  "pressable flex min-h-16 items-center gap-3 rounded-lg px-1 py-2.5 outline-none hover:bg-paper-2 focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 export default function HomeScreen() {
   const t = useT();
@@ -170,7 +170,7 @@ export default function HomeScreen() {
                     <button
                       type="button"
                       onClick={listenNewest}
-                      className="pressable mt-1 flex min-h-11 w-full items-center gap-2 rounded-lg bg-paper-2 px-2.5 text-left outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-ring"
+                      className="pressable mt-1 flex min-h-11 w-full items-center gap-2 rounded-lg bg-card px-2.5 text-left outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-ring"
                     >
                       <Volume2 aria-hidden="true" className="size-5 shrink-0" />
                       <span className="min-w-0">
@@ -255,11 +255,11 @@ export default function HomeScreen() {
           <section
             data-rise
             aria-labelledby="recent-heading"
-            className="flex flex-col overflow-hidden rounded-lg border border-line lg:col-start-2 lg:row-start-2"
+            className="flex flex-col lg:col-start-2 lg:row-start-2"
           >
             <div className="pad pb-1 lg:flex-1">
               <div className="pad-line flex items-center justify-between">
-                <h2 id="recent-heading" className="font-heading text-lg font-bold">
+                <h2 id="recent-heading" className="section-title font-heading text-lg font-bold">
                   {t.home.recentTitle}
                 </h2>
                 {recent.length > 0 && (
@@ -275,7 +275,7 @@ export default function HomeScreen() {
               {recent.length > 0 ? (
                 <ul>
                   {recent.map((w, i) => (
-                    <li key={w.key} className={cn("pad-line items-center justify-between gap-3", i >= RECENT_MOBILE ? "hidden lg:flex" : "flex")}>
+                    <li key={w.key} className={cn("pad-line row-line items-center justify-between gap-3", i >= RECENT_MOBILE ? "hidden lg:flex" : "flex")}>
                       <b className="font-heading text-[1.1875rem] font-bold">{w.word}</b>
                       <span className="flex min-w-0 items-center gap-2">
                         <span className="truncate text-ink-2">{w.translation}</span>
@@ -292,7 +292,7 @@ export default function HomeScreen() {
               )}
             </div>
             {words.length >= QUIZ_MIN_WORDS && (
-              <div className="flex flex-wrap items-center justify-between gap-x-3 border-t border-line bg-paper-2 px-4 py-1.5">
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 rounded-2xl bg-paper-2 px-4 py-1.5">
                 <p className="text-[0.9375rem] text-ink-2">{t.home.quizNudge}</p>
                 <Button asChild variant="secondary" size="sm" className="shrink-0">
                   <Link href="/quiz">{t.home.quizCta}</Link>
@@ -303,8 +303,8 @@ export default function HomeScreen() {
         </div>
 
         <section data-rise aria-label={t.home.morePlaces} className="pt-10 lg:pt-12">
-          <ul className={cn("grid gap-3", words.length >= PLAY_MIN_WORDS && "lg:grid-cols-2")}>
-            <li>
+          <ul className={cn("grid", words.length >= PLAY_MIN_WORDS && "lg:grid-cols-2 lg:gap-x-8")}>
+            <li className="row-line">
               <Link href="/stickers" className={ROW}>
                 <span aria-hidden="true" className="flex shrink-0 -space-x-2.5">
                   {stickerPreview.ids.map((id) => (
@@ -319,7 +319,7 @@ export default function HomeScreen() {
               </Link>
             </li>
             {words.length >= PLAY_MIN_WORDS && (
-              <li>
+              <li className="row-line">
                 <Link href="/play" className={ROW}>
                   <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-xl bg-paper-2">
                     <Gamepad2 className="size-6" />
@@ -338,7 +338,7 @@ export default function HomeScreen() {
         {otherBooks.length > 0 && (
           <section data-rise aria-labelledby="other-books-heading" className="pt-10 lg:pt-12">
             <div className="flex items-center justify-between gap-3 pb-3">
-              <h2 id="other-books-heading" className="font-heading text-xl font-bold lg:text-2xl">
+              <h2 id="other-books-heading" className="section-title font-heading text-xl font-bold lg:text-2xl">
                 {t.home.otherBooksTitle}
               </h2>
               <Link

@@ -5,7 +5,7 @@ type Tail = "left" | "right" | "bottom";
 type Tone = "paper" | "label";
 
 const TONE: Record<Tone, string> = {
-  paper: "border-line bg-card text-foreground",
+  paper: "border-transparent bg-paper-2 text-foreground",
   label: "border-black/10 bg-label-paper text-label-ink",
 };
 
@@ -28,7 +28,7 @@ export default function SpeechTag({
   ...rest
 }: { tail?: Tail; tone?: Tone; className?: string; children: ReactNode } & React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("relative rounded-[1.125rem] border-2 shadow-sm", TONE[tone], className)} {...rest}>
+    <div className={cn("relative rounded-[1.125rem] border-2", TONE[tone], className)} {...rest}>
       <span aria-hidden="true" className={cn("absolute size-3.5 rotate-45 rounded-[0.1875rem] border-inherit bg-inherit", TAIL[tail])} />
       {children}
     </div>

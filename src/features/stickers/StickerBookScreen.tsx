@@ -121,7 +121,7 @@ function StickerPage() {
       )}
       <ul
         aria-label={t.stickers.gridLabel}
-        className="pad grid grid-cols-2 gap-3 rounded-xl border-[1.5px] border-line p-3 before:hidden sm:grid-cols-3 sm:gap-4 sm:p-4 lg:grid-cols-4 [&>li]:min-w-0"
+        className="pad grid grid-cols-2 gap-x-3 gap-y-5 py-3 sm:grid-cols-3 sm:gap-x-4 sm:py-4 lg:grid-cols-4 [&>li]:min-w-0"
         data-testid="sticker-grid"
       >
         {order.map((id, i) => {
@@ -155,7 +155,7 @@ function EarnedSticker({ id, index, date, isNew, onSeen }: { id: StickerId; inde
           buzz("tap");
           onSeen();
         }}
-        className="pressable relative flex h-full w-full flex-col items-center gap-2 rounded-2xl border-[1.5px] border-line bg-card px-2 pt-4 pb-3 text-center shadow-tile outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="pressable relative flex h-full w-full flex-col items-center gap-2 rounded-2xl px-2 pt-4 pb-3 text-center outline-none hover:bg-paper-2 focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         {isNew && (
           <span

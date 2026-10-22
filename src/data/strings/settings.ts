@@ -19,7 +19,7 @@ const english = {
 
   readingHeading: "Reading",
   fontSizeLabel: "Text size",
-  fontSizeHelp: "Scales the whole app, including the ruled lines.",
+  fontSizeHelp: "Scales the whole app, including the reading text and spacing.",
   small: "Small",
   medium: "Medium",
   large: "Large",

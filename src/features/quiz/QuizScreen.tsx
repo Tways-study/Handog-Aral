@@ -65,7 +65,7 @@ function QuizSkeleton() {
           <Skeleton className="h-5 w-16" />
           <Skeleton className="h-3 flex-1 rounded-full" />
         </div>
-        <div className="pad mt-[5.5rem] rounded-xl border-[1.5px] border-line py-[calc(var(--pitch)*0.5)]">
+        <div className="pad mt-[5.5rem] py-[calc(var(--pitch)*0.5)]">
           <div className="pad-line flex items-center">
             <Skeleton className="h-8 w-40" />
           </div>
@@ -297,7 +297,7 @@ function QuestionView({
                 {owl}
               </div>
             )}
-            <div className={cn("pad rounded-xl border-[1.5px] border-line", compact ? "py-[calc(var(--pitch)*0.25)]" : "py-[calc(var(--pitch)*0.5)]")}>
+            <div className={cn("pad", compact ? "py-[calc(var(--pitch)*0.25)]" : "py-[calc(var(--pitch)*0.5)]")}>
               <div className="pad-line flex items-center justify-between gap-3">
                 <h2 className={cn("font-heading leading-none font-extrabold break-words [overflow-wrap:anywhere]", compact ? "text-3xl" : "text-4xl")}>{q.word}</h2>
                 <Button variant="ink" size="icon-lg" onClick={() => void speak(q.word, { rate: ttsSpeed })} aria-label={`${t.quiz.speak}: ${q.word}`}>
@@ -339,14 +339,14 @@ function QuestionView({
                     state === "right" && "border-success bg-success/15 disabled:border-success disabled:bg-success/15 disabled:text-ink",
                     state === "wrong" && "border-warning bg-warning/20 disabled:border-warning disabled:bg-warning/20 disabled:text-ink",
                     state === "idle" &&
-                      "border-line bg-card shadow-tile enabled:hover:bg-secondary enabled:active:shadow-pressed disabled:border-line disabled:bg-paper disabled:text-ink-2 disabled:shadow-none",
+                      "border-transparent bg-paper-2 enabled:hover:bg-secondary disabled:bg-transparent disabled:text-ink-2",
                   )}
                 >
                   <span
                     aria-hidden="true"
                     className={cn(
                       "grid size-9 shrink-0 place-items-center rounded-lg font-heading text-lg",
-                      state === "right" ? "bg-success text-success-foreground" : state === "wrong" ? "bg-warning text-warning-foreground" : "bg-secondary group-enabled:group-hover:bg-card",
+                      state === "right" ? "bg-success text-success-foreground" : state === "wrong" ? "bg-warning text-warning-foreground" : "bg-card group-enabled:group-hover:bg-paper",
                     )}
                   >
                     {LETTERS[i]}

@@ -179,7 +179,7 @@ function Round({ words, onAgain }: { words: SavedWord[]; onAgain: () => void }) 
         ref={grid}
         aria-label={t.play.boardLabel}
         onKeyDown={onKeyDown}
-        className="pad grid grid-cols-2 gap-2 rounded-xl border-[1.5px] border-line p-2 before:hidden min-[340px]:grid-cols-3 sm:grid-cols-4 sm:gap-3 sm:p-4 lg:order-1 lg:max-w-2xl [html.font-large_&]:max-sm:grid-cols-2"
+        className="pad grid grid-cols-2 gap-2 p-2 before:hidden min-[340px]:grid-cols-3 sm:grid-cols-4 sm:gap-3 sm:p-4 lg:order-1 lg:max-w-2xl [html.font-large_&]:max-sm:grid-cols-2"
         data-testid="board"
       >
         {game.cards.map((card, i) => (
@@ -272,7 +272,7 @@ function Win({ game, stars, onAgain }: { game: MatchGame; stars: number; onAgain
         <p className="font-bold tabular-nums">{t.play.winBody(game.moves)}</p>
         {stars > 0 && <p className="font-bold" data-testid="win-stars">{t.play.starsEarned(stars)}</p>}
       </section>
-      <ul className="pad rounded-xl border-[1.5px] border-line py-[calc(var(--pitch)*0.5)]" aria-label={t.play.title}>
+      <ul className="pad py-[calc(var(--pitch)*0.5)]" aria-label={t.play.title}>
         {words.map((w) => (
           <li key={w.id} className="pad-line flex flex-wrap items-center gap-x-2">
             <StampCheck size={24} seed={w.text.length} className="shrink-0" />

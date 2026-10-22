@@ -316,7 +316,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
           <h1 className="font-heading text-2xl leading-[1.1] font-bold lg:text-4xl">{s.title}</h1>
           <p className="mt-1 text-[0.9375rem] text-ink-2 lg:text-base">{s.startPrompt}</p>
         </header>
-        <div className={cn("pad mx-5 min-h-[22rem] rounded-xl border-[1.5px] border-line py-6 lg:mx-8", overlayClass)}>
+        <div className={cn("pad mx-5 min-h-[22rem] py-6 lg:mx-8", overlayClass)}>
           <input
             ref={galleryRef}
             type="file"
@@ -446,7 +446,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
 
         {/* The reading surface: a tap near a word (between words, between lines) picks the nearest word. */}
         <div
-          className={cn("pad flex-1 shadow-none pb-[calc(var(--nav-h)+env(safe-area-inset-bottom,0px)+5.5rem)] lg:pb-8", overlayClass)}
+          className={cn("pad flex-1 px-5 pb-[calc(var(--nav-h)+env(safe-area-inset-bottom,0px)+5.5rem)] lg:px-8 lg:pb-8", overlayClass)}
           onClick={onSurfaceClick}
           data-slot="reading-surface"
         >

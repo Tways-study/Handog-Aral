@@ -187,7 +187,7 @@ export default function SuperpowerStep({ name, onDone, onSkip }: { name: string;
             <section
               aria-label={w.superPaperLabel}
               data-super-paper
-              className="pad rounded-xl border-[1.5px] border-line pt-0 pb-2 [--pad-text-size:1.5rem] [--pitch:2.875rem] lg:[--pad-text-size:1.625rem] lg:[--pitch:3.125rem]"
+              className="pad pt-0 pb-2 [--pad-text-size:1.5rem] [--pitch:2.875rem] lg:[--pad-text-size:1.625rem] lg:[--pitch:3.125rem]"
             >
               <div ref={textRef} className="pad-text">
                 <ReaderText tokens={tokens} tappedIndex={tappedIndex} savedWords={savedSet} readingSentence={null} onWordTap={onWordTap} />

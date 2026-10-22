@@ -33,7 +33,7 @@ function Tile({ label, help, onClick, doodle, className }: TileProps) {
       onClick={onClick}
       data-slot="scan-tile"
       className={cn(
-        "pressable group flex min-h-36 min-w-0 flex-col items-start justify-between gap-3 rounded-2xl border-[1.5px] border-line bg-card p-4 text-left text-foreground shadow-tile hover:bg-secondary active:shadow-pressed lg:min-h-48 lg:p-5",
+        "pressable group flex min-h-36 min-w-0 flex-col items-start justify-between gap-3 rounded-2xl bg-paper-2 p-4 text-left text-foreground hover:bg-secondary lg:min-h-48 lg:p-5",
         FOCUS,
         className,
       )}

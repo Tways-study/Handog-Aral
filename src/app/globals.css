@@ -105,7 +105,7 @@
 
   /* reading sheet: one pitch (line height and row height), rem-based so it scales with html.font-* */
   --pitch: 2.25rem;
-  --pad-gutter: 1.25rem;
+  --pad-gutter: 0rem;
   --pad-text-size: 1.25rem;
 
   /* layout */
@@ -317,7 +317,7 @@ a { text-underline-offset: 4px; }
 }
 @media (min-width: 64rem) {
   .pb-nav { padding-bottom: 2rem; }
-  :root { --pitch: 2.5rem; --pad-gutter: 1.75rem; --pad-text-size: 1.375rem; }
+  :root { --pitch: 2.5rem; --pad-gutter: 0rem; --pad-text-size: 1.375rem; }
 }
 
 .safe-bottom { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
@@ -325,12 +325,25 @@ a { text-underline-offset: 4px; }
 @layer components {
 /* ---------- sticker sheet ---------- */
 
-/* The reading sheet: a white sticker card with a keyline and a soft lilac drop, no ruling. The class is still
-   called .pad (and --pitch still sets line height and row height) so every screen keeps one vertical rhythm. */
+/* The reading sheet: no box. Reading text and word lists sit straight on the near-white ground; .pad stays as the
+   class name (and --pitch as the rhythm) so every screen keeps one vertical rhythm. Only a colour overlay tints it. */
 .pad {
   position: relative;
-  background-color: var(--pad-bg, var(--card-surface));
-  box-shadow: var(--sticker);
+  background-color: var(--pad-bg, transparent);
+}
+
+/* Open lists: rows divided by a dotted hairline instead of living in a card. */
+.row-line { border-bottom: 2px dotted var(--line); }
+.row-line:last-child { border-bottom: 0; }
+
+/* Section titles carry a hand-drawn wavy underline in the accent instead of a boxed header. */
+.section-title {
+  display: inline-block;
+  padding-bottom: 0.35rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='6' viewBox='0 0 24 6'%3E%3Cpath d='M0 3q3-3 6 0t6 0 6 0 6 0' fill='none' stroke='%23F08A24' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  background-size: 24px 6px;
 }
 /* The page band: a full-width pale lilac block behind the screen title, curved at the bottom, with a quiet confetti tile.
    It is the one place the confetti lives; the ground stays quiet and the reading sheet stays plain. */
@@ -365,9 +378,8 @@ a { text-underline-offset: 4px; }
   font-size: var(--pad-text-size);
   line-height: var(--pitch);
   padding-left: var(--pad-gutter);
-  padding-right: 1.25rem;
 }
-.pad-line { min-height: var(--pitch); line-height: var(--pitch); padding-left: var(--pad-gutter); padding-right: 1.25rem; }
+.pad-line { min-height: var(--pitch); line-height: var(--pitch); padding-left: var(--pad-gutter); }
 
 /* Tapped / saved word marks in reading text. The marker is a pseudo-element so GSAP can sweep it
    with transform only (it tweens --mark-x from 0 to 1, see src/lib/motion.ts markWord). */
@@ -413,10 +425,10 @@ a { text-underline-offset: 4px; }
   [data-super-paper] .word-mark[data-nudge="true"] { animation: word-nudge 1100ms var(--ease-out) 700ms 1 both; }
 }
 
-/* Colour overlays: the tint is mixed into the white sheet, text keeps full contrast. */
-.overlay-yellow { --pad-bg: color-mix(in srgb, var(--tint-yellow) 16%, var(--card-surface)); background-color: var(--pad-bg); }
-.overlay-blue   { --pad-bg: color-mix(in srgb, var(--tint-blue) 16%, var(--card-surface)); background-color: var(--pad-bg); }
-.overlay-pink   { --pad-bg: color-mix(in srgb, var(--tint-pink) 12%, var(--card-surface)); background-color: var(--pad-bg); }
+/* Colour overlays: the tint is mixed into the ground, text keeps full contrast. */
+.overlay-yellow { --pad-bg: color-mix(in srgb, var(--tint-yellow) 16%, var(--paper)); background-color: var(--pad-bg); }
+.overlay-blue   { --pad-bg: color-mix(in srgb, var(--tint-blue) 16%, var(--paper)); background-color: var(--pad-bg); }
+.overlay-pink   { --pad-bg: color-mix(in srgb, var(--tint-pink) 12%, var(--paper)); background-color: var(--pad-bg); }
 
 }
 

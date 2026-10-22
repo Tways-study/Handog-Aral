@@ -160,7 +160,7 @@ export default function VocabularyScreen() {
                 onValueChange={(v) => v && setFilter(v as Filter)}
                 aria-label={t.vocabulary.filterLabel}
                 data-testid="word-filter"
-                className="grid w-full grid-cols-[repeat(auto-fit,minmax(4.25rem,1fr))] gap-2 rounded-2xl border-[1.5px] border-line bg-secondary p-1.5"
+                className="grid w-full grid-cols-[repeat(auto-fit,minmax(4.25rem,1fr))] gap-2 rounded-2xl bg-paper-2 p-1.5"
               >
                 <FilterItem value="all" label={t.vocabulary.filterAll} count={total} />
                 {LEVELS.map((l) => (
@@ -208,14 +208,14 @@ export default function VocabularyScreen() {
                   </Button>
                 </div>
               ) : (
-                <ul className="pad lg:rounded-xl lg:border-[1.5px] lg:border-line" aria-label={t.vocabulary.listLabel}>
+                <ul className="pad" aria-label={t.vocabulary.listLabel}>
                   {shown.map((w) => (
-                    <li key={w.key} className="flex h-[calc(var(--pitch)*2)] items-center gap-1 pr-3" data-testid="word-row">
+                    <li key={w.key} className="row-line flex h-[calc(var(--pitch)*2)] items-center gap-1" data-testid="word-row">
                       <button
                         type="button"
                         onClick={() => setSelectedKey(w.key)}
                         aria-current={w.key === selectedKey ? "true" : undefined}
-                        className="group flex h-full min-w-0 flex-1 cursor-pointer touch-manipulation items-center gap-3 pl-[var(--pad-gutter)] text-left outline-none transition-colors hover:bg-secondary/60 active:bg-secondary aria-[current=true]:bg-marker/40 focus-visible:outline-solid focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ring"
+                        className="group flex h-full min-w-0 flex-1 cursor-pointer touch-manipulation items-center gap-3 pl-5 text-left lg:pl-1 outline-none transition-colors hover:bg-secondary/60 active:bg-secondary aria-[current=true]:bg-marker/40 focus-visible:outline-solid focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ring"
                       >
                         <WordTile word={w.word} difficulty={w.difficulty} tileRef={w.key === newestKey ? newestTileRef : undefined} />
                         <span className="min-w-0 flex-1">
@@ -224,7 +224,7 @@ export default function VocabularyScreen() {
                         </span>
                       </button>
                       {/* one cell, one paper backing: the rule never shows between or around the icons */}
-                      <span className="flex shrink-0 items-center gap-1 rounded-md bg-paper">
+                      <span className="flex shrink-0 items-center gap-1 pr-3 lg:pr-0">
                         <DifficultyStamp level={w.difficulty} showLabel={false} />
                         <Button variant="ghost" size="icon" onClick={() => void say(w)} aria-label={t.vocabulary.speakWord(w.word)}>
                           <Volume2 aria-hidden="true" />
@@ -239,7 +239,7 @@ export default function VocabularyScreen() {
 
           {desktop && (
             <aside className="mt-4 hidden lg:block" aria-label={t.vocabulary.detailTitle}>
-              <div className="sticky top-6 max-h-[calc(100dvh-3rem)] overflow-y-auto overscroll-contain rounded-xl border-[1.5px] border-line bg-paper p-6 shadow-sm">
+              <div className="sticky top-6 max-h-[calc(100dvh-3rem)] overflow-y-auto overscroll-contain rounded-3xl bg-paper-2 p-6">
                 {detail ?? <EmptyPanelPrompt title={t.vocabulary.detailEmptyTitle} body={t.vocabulary.detailHint} />}
               </div>
             </aside>
