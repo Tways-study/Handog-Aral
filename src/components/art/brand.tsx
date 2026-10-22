@@ -9,6 +9,8 @@ export const owlMarkup = (): string => renderToStaticMarkup(<OwlGroup mood="idle
 
 export const stickerMarkup = (id: StickerId, size: number): string => renderToStaticMarkup(<StickerArt id={id} size={size} />);
 
+export const ICON_PURPLE = "#8A6FF0";
+
 /**
  * 512 canvas. A solid purple tile with the owl's face filling it and bleeding off the bottom edge,
  * like the app-icon style we chose. The maskable (square) variant draws the owl smaller so its face
@@ -26,10 +28,23 @@ export function iconSvg({ rounded }: { rounded: boolean }): string {
         </clipPath>
       </defs>
       <g clipPath="url(#tile)">
-        <rect width="512" height="512" fill="#8A6FF0" />
+        <rect width="512" height="512" fill={ICON_PURPLE} />
         <g transform={`translate(${tx} ${ty}) scale(${scale})`}>
           <OwlGroup mood="idle" />
         </g>
+      </g>
+    </svg>,
+  );
+}
+
+/** Android adaptive-icon foreground: the owl on transparent, inside the 66dp safe circle of the 108dp canvas. */
+export function launcherForegroundSvg(): string {
+  const scale = 0.68;
+  const t = 54 - 60 * scale;
+  return renderToStaticMarkup(
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108" width="108" height="108">
+      <g transform={`translate(${t} ${t}) scale(${scale})`}>
+        <OwlGroup mood="idle" />
       </g>
     </svg>,
   );
