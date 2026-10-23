@@ -9,13 +9,13 @@ test("unknown route lands on the in-world not-found page with a way home", async
   await gotoAs(page, "/definitely-not-a-page");
   const system = page.locator("[data-system-page=notFound]");
   await expect(system).toBeVisible();
-  await expect(system.getByRole("heading", { level: 1 })).toHaveText("Wala makita ang pahina");
+  await expect(system.getByRole("heading", { level: 1 })).toHaveText("Hindi makita ang pahina");
   await expect(page).toHaveTitle(/Page not found/);
   // Never a stack trace or framework text.
   await expect(page.getByText(/404|stack|Error:/)).toHaveCount(0);
-  await expect(system.getByRole("link", { name: "Pabalik sa Balay" })).toBeVisible();
-  await expect(system.getByRole("link", { name: "Buksi ang I-scan" })).toBeVisible();
-  await system.getByRole("link", { name: "Pabalik sa Balay" }).click();
+  await expect(system.getByRole("link", { name: "Bumalik sa Tahanan" })).toBeVisible();
+  await expect(system.getByRole("link", { name: "Buksan ang I-scan" })).toBeVisible();
+  await system.getByRole("link", { name: "Bumalik sa Tahanan" }).click();
   await expect(page).toHaveURL(/\/$/);
 });
 

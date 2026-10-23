@@ -33,7 +33,7 @@ function SelectedStamp() {
   );
 }
 
-const JACKET_FOR: Record<Language, Jacket> = { hiligaynon: "indigo", tagalog: "gumamela" };
+const JACKET_FOR: Record<Language, Jacket> = { tagalog: "gumamela", english: "indigo" };
 
 /** How long the owl waves hello before settling, in ms. */
 const WAVE_MS = 2600;
@@ -100,8 +100,8 @@ function NameStep({ onStart, onSkip }: { onStart: (name: string) => void; onSkip
   }, [fadeRoute, enterPanel]);
 
   const options: { value: Language; label: string }[] = [
-    { value: "hiligaynon", label: t.welcome.optionHiligaynon },
     { value: "tagalog", label: t.welcome.optionTagalog },
+    { value: "english", label: t.welcome.optionEnglish },
   ];
   const owlSize = desktop ? 200 : roomy ? 168 : 132;
 

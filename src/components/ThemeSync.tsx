@@ -36,7 +36,13 @@ export default function ThemeSync() {
   const theme = useSettings((s) => s.theme);
   const fontSize = useSettings((s) => s.fontSize);
   const dyslexiaFont = useSettings((s) => s.dyslexiaFont);
+  const language = useSettings((s) => s.language);
   const resolved = useResolvedTheme();
+
+  // The page language follows the child's language (Filipino by default).
+  useEffect(() => {
+    if (hydrated) document.documentElement.lang = language === "english" ? "en" : "fil";
+  }, [hydrated, language]);
 
   // Reading settings: font scale on <html> (rem-based, drives --pitch) and the dyslexia font on <body>.
   useEffect(() => {

@@ -23,7 +23,7 @@ import { stampLand } from "@/lib/motionReader";
 import { realEnglish, realPhonetic } from "@/lib/phonetic";
 import { buildQuiz, MIN_QUIZ_WORDS, type Quiz } from "@/lib/quiz";
 import { play } from "@/lib/sound";
-import { speak } from "@/lib/tts";
+import { speak, speechLang } from "@/lib/tts";
 import { cn } from "@/lib/utils";
 import { useMoments } from "@/stores/moments";
 import { selectTotalStars, useProgress } from "@/stores/progress";
@@ -38,7 +38,7 @@ const HOP_STREAK = 3;
 
 export default function QuizScreen() {
   const t = useT();
-  const words = useSavedWords();
+  const words = useSavedWords(useSettings((s) => s.language));
   const [round, setRound] = useState(0);
 
   return (
@@ -181,6 +181,7 @@ function QuestionView({
 }) {
   const t = useT();
   const ttsSpeed = useSettings((s) => s.ttsSpeed);
+  const language = useSettings((s) => s.language);
   const desktop = useMediaQuery(DESKTOP);
   const { online } = useOnlineStatus();
   const nextRef = useRef<HTMLButtonElement>(null);
@@ -300,7 +301,7 @@ function QuestionView({
             <div className={cn("pad", compact ? "py-[calc(var(--pitch)*0.25)]" : "py-[calc(var(--pitch)*0.5)]")}>
               <div className="pad-line flex items-center justify-between gap-3">
                 <h2 className={cn("font-heading leading-none font-extrabold break-words [overflow-wrap:anywhere]", compact ? "text-3xl" : "text-4xl")}>{q.word}</h2>
-                <Button variant="ink" size="icon-lg" onClick={() => void speak(q.word, { rate: ttsSpeed })} aria-label={`${t.quiz.speak}: ${q.word}`}>
+                <Button variant="ink" size="icon-lg" onClick={() => void speak(q.word, { rate: ttsSpeed, lang: speechLang(language) })} aria-label={`${t.quiz.speak}: ${q.word}`}>
                   <Volume2 aria-hidden="true" />
                 </Button>
               </div>
@@ -409,6 +410,7 @@ function ResultStamp({ index, earned }: { index: number; earned: boolean }) {
 function QuizResults({ quiz, picks, onRetry }: { quiz: Quiz; picks: number[]; onRetry: () => void }) {
   const t = useT();
   const ttsSpeed = useSettings((s) => s.ttsSpeed);
+  const language = useSettings((s) => s.language);
   const recorded = useRef(false);
   const total = quiz.questions.length;
   const right = quiz.questions.filter((q, i) => picks[i] === q.answerIndex);
@@ -500,7 +502,7 @@ function QuizResults({ quiz, picks, onRetry }: { quiz: Quiz; picks: number[]; on
                     <p className="text-ink-2">
                       {t.quiz.meansLabel}: <span className="font-bold text-ink">{q.options[q.answerIndex]}</span>
                     </p>
-                    <Button type="button" variant="secondary" size="sm" className="mt-1 w-fit" onClick={() => void speak(q.word, { rate: ttsSpeed })}>
+                    <Button type="button" variant="secondary" size="sm" className="mt-1 w-fit" onClick={() => void speak(q.word, { rate: ttsSpeed, lang: speechLang(language) })}>
                       <Volume2 aria-hidden="true" />
                       <span>{t.popup.speakBtn}</span>
                       <span className="sr-only">{q.word}</span>

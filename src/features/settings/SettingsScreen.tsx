@@ -119,7 +119,7 @@ export default function SettingsScreen() {
         title={t.settings.title}
         subtitle={t.settings.subtitle}
         hideSettings
-        className="max-w-2xl"
+        innerClassName="max-w-2xl"
         trailing={<Owl size={64} outfit="glasses" mood="idle" className="-mt-1" />}
       />
       <div className="flex max-w-2xl flex-col gap-6 pt-2">
@@ -141,8 +141,8 @@ export default function SettingsScreen() {
               onChange={s.setLanguage}
               labelledBy="lbl-language"
               options={[
-                { value: "hiligaynon", label: t.settings.hiligaynon },
                 { value: "tagalog", label: t.settings.tagalog },
+                { value: "english", label: t.settings.english },
               ]}
             />
           </Row>

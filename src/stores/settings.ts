@@ -49,7 +49,7 @@ export interface SettingsState extends SettingsData {
 
 export const defaultSettings: SettingsData = {
   childName: "",
-  language: "hiligaynon",
+  language: "tagalog",
   fontSize: "medium",
   dyslexiaFont: false,
   ttsSpeed: 0.8,
@@ -85,14 +85,16 @@ export const useSettings = create<SettingsState>()(
     }),
     {
       name: SETTINGS_STORAGE_NAME,
-      version: 3,
+      version: 4,
       // v1 -> v2: a child who already has a name has been through setup.
       // v2 -> v3: owl/sound/haptics preferences arrive with their defaults.
+      // v3 -> v4: Hiligaynon is retired; the language is Filipino ("tagalog") or English.
       migrate: (persisted) => {
         const old = (persisted ?? {}) as Partial<SettingsData>;
         return {
           ...defaultSettings,
           ...old,
+          language: old.language === "english" ? "english" : "tagalog",
           onboarded: old.onboarded ?? Boolean(old.childName),
         } as SettingsData;
       },

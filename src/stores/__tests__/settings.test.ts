@@ -62,3 +62,16 @@ describe("settings owl, sound and haptics", () => {
     expect(useSettings.getState()).toMatchObject({ childName: "Ana", fontSize: "large", dyslexiaFont: true, theme: "dark", owl3d: true, owlOutfit: "none", sound: false, haptics: true });
   });
 });
+
+describe("settings v3 -> v4", () => {
+  it("moves a retired Hiligaynon child to Filipino and keeps English", async () => {
+    const v3 = { childName: "Ana", language: "hiligaynon", fontSize: "medium", dyslexiaFont: false, ttsSpeed: 0.8, colorOverlay: "none", theme: "system", onboarded: true };
+    await idbSet(SETTINGS_STORAGE_NAME, JSON.stringify({ state: v3, version: 3 }));
+    await useSettings.persist.rehydrate();
+    expect(useSettings.getState().language).toBe("tagalog");
+
+    await idbSet(SETTINGS_STORAGE_NAME, JSON.stringify({ state: { ...v3, language: "english" }, version: 3 }));
+    await useSettings.persist.rehydrate();
+    expect(useSettings.getState().language).toBe("english");
+  });
+});

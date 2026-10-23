@@ -14,7 +14,7 @@ describe("catalog", () => {
   it("covers every id in both languages", () => {
     expect(STICKER_CATALOG.map((c) => c.id)).toEqual([...STICKER_IDS]);
     for (const id of STICKER_IDS) {
-      for (const lang of ["hiligaynon", "tagalog"] as const) {
+      for (const lang of ["tagalog", "english"] as const) {
         expect(stickerTitle(id, lang).length).toBeGreaterThan(1);
         expect(stickerHint(id, lang).length).toBeGreaterThan(1);
       }

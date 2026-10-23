@@ -25,7 +25,7 @@ const dictResponse = () =>
 
 beforeEach(async () => {
   const db = getDb()!;
-  await Promise.all([db.wordCache.clear(), db.words.clear(), db.lookupQueue.clear(), db.dictionary.clear(), db.meta.clear()]);
+  await Promise.all([db.wordCache.clear(), db.words.clear(), db.lookupQueue.clear(), db.dictionary.clear(), db.filipino.clear(), db.meta.clear()]);
   remote.mockReset();
 });
 afterEach(() => vi.unstubAllGlobals());
@@ -50,10 +50,10 @@ describe("explain pipeline", () => {
 
   it("uses AI, caches it, and then serves from cache", async () => {
     remote.mockResolvedValue({ ok: true, data: ai });
-    const r = await explain({ word: "zebra", sentence: "A zebra.", language: "hiligaynon" });
+    const r = await explain({ word: "zebra", sentence: "A zebra.", language: "tagalog" });
     expect(r.source).toBe("ai");
     remote.mockClear();
-    const again = await explain({ word: "ZEBRA", sentence: "", language: "hiligaynon" });
+    const again = await explain({ word: "ZEBRA", sentence: "", language: "tagalog" });
     expect(again.source).toBe("ai");
     expect(remote).not.toHaveBeenCalled();
   });
@@ -71,13 +71,13 @@ describe("explain pipeline", () => {
   it("returns an offline placeholder and enqueues when everything fails", async () => {
     remote.mockResolvedValue({ ok: false, reason: "offline" });
     mockFetch(() => Promise.reject(new TypeError("offline")));
-    const r = await explain({ word: "zebra", sentence: "A zebra.", language: "hiligaynon" });
+    const r = await explain({ word: "zebra", sentence: "A zebra.", language: "tagalog" });
     expect(r.source).toBe("offline");
-    expect(r.translation).toBe(OFFLINE_TEXT.hiligaynon);
-    expect((await dequeueBatch(5)).map((q) => q.key)).toEqual(["zebra_hiligaynon"]);
+    expect(r.translation).toBe(OFFLINE_TEXT.tagalog);
+    expect((await dequeueBatch(5)).map((q) => q.key)).toEqual(["zebra_tagalog"]);
     // placeholder does not short-circuit a later lookup
     remote.mockResolvedValue({ ok: true, data: ai });
-    expect((await explain({ word: "zebra", sentence: "", language: "hiligaynon" })).source).toBe("ai");
+    expect((await explain({ word: "zebra", sentence: "", language: "tagalog" })).source).toBe("ai");
   });
 
   it("rejects with AbortError when aborted", async () => {
@@ -94,7 +94,7 @@ describe("lookup queue", () => {
   it("upgrades cache and saved word, then reports the count", async () => {
     remote.mockResolvedValue({ ok: false, reason: "offline" });
     mockFetch(() => Promise.reject(new TypeError("offline")));
-    const offline = await explain({ word: "zebra", sentence: "A zebra.", language: "hiligaynon" });
+    const offline = await explain({ word: "zebra", sentence: "A zebra.", language: "tagalog" });
     await saveWord(offline, "fox");
 
     remote.mockResolvedValue({ ok: true, data: ai });
@@ -103,7 +103,7 @@ describe("lookup queue", () => {
     await vi.waitFor(() => expect(onUpgraded).toHaveBeenCalledWith(1));
     stop();
 
-    expect((await getCached("zebra", "hiligaynon"))?.source).toBe("ai");
+    expect((await getCached("zebra", "tagalog"))?.source).toBe("ai");
     const saved = await getDb()!.words.get("zebra");
     expect(saved?.source).toBe("ai");
     expect(saved?.translation).toBe("Sebra");
@@ -121,5 +121,37 @@ describe("lookup queue", () => {
     await vi.waitFor(async () => expect(await db.lookupQueue.count()).toBe(0));
     stop();
     expect(onUpgraded).not.toHaveBeenCalled();
+  });
+});
+
+describe("explain pipeline, English mode (Filipino words)", () => {
+  it("serves a curated Filipino word with the English meaning and never touches the network", async () => {
+    await ensureDictionary();
+    const f = mockFetch(() => new Response("{}"));
+    const r = await explain({ word: "Bata.", sentence: "", language: "english" });
+    expect(r.source).toBe("curated");
+    expect(r.language).toBe("english");
+    expect(r.translation).toMatch(/child/i);
+    expect(r.english).toBe("Taong maliit pa ang edad.");
+    expect(remote).not.toHaveBeenCalled();
+    expect(f).not.toHaveBeenCalled();
+  });
+
+  it("skips dictionaryapi.dev for Filipino words and falls back to a queued offline entry", async () => {
+    remote.mockResolvedValue({ ok: false, reason: "offline" });
+    const f = mockFetch(() => dictResponse());
+    const r = await explain({ word: "kalabaw", sentence: "Ang kalabaw.", language: "english" });
+    expect(f).not.toHaveBeenCalled();
+    expect(r.source).toBe("offline");
+    expect(r.translation).toBe(OFFLINE_TEXT.english);
+    expect((await dequeueBatch(5)).map((q) => q.key)).toEqual(["kalabaw_english"]);
+  });
+
+  it("asks the proxy in the English direction", async () => {
+    remote.mockResolvedValue({ ok: true, data: { ...ai, word: "kalabaw", translation: "Water buffalo" } });
+    const r = await explain({ word: "kalabaw", sentence: "", language: "english" });
+    expect(remote).toHaveBeenCalledWith(expect.objectContaining({ language: "english" }), expect.anything());
+    expect(r.source).toBe("ai");
+    expect((await getCached("kalabaw", "english"))?.source).toBe("ai");
   });
 });

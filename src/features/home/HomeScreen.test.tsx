@@ -6,7 +6,7 @@ const replace = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace, push: vi.fn() }), usePathname: () => "/" }));
 let words: unknown[] | null = [];
 const speak = vi.fn(async () => {});
-vi.mock("@/lib/tts", () => ({ speak: (...a: unknown[]) => speak(...(a as [])), stop: vi.fn(async () => {}) }));
+vi.mock("@/lib/tts", () => ({ speechLang: () => "en-US", speak: (...a: unknown[]) => speak(...(a as [])), stop: vi.fn(async () => {}) }));
 vi.mock("@/hooks/useSavedWords", () => ({ useSavedWords: () => words }));
 vi.mock("@/stores/settings", async (orig) => ({ ...(await orig<typeof import("@/stores/settings")>()), useSettingsHydrated: () => true }));
 vi.mock("@/stores/rewards", async (orig) => ({ ...(await orig<typeof import("@/stores/rewards")>()), useRewardsHydrated: () => true }));
@@ -18,7 +18,7 @@ import { defaultProgress, useProgress } from "@/stores/progress";
 import { defaultRewards, useRewards } from "@/stores/rewards";
 
 const word = (w: string, translation: string, difficulty: string, i: number) => ({
-  key: w, word: w, phonetic: "", english: "", translation, emoji: "", difficulty, example: null, source: "dictionary", language: "hiligaynon", bookId: null, savedAt: 100 - i,
+  key: w, word: w, phonetic: "", english: "", translation, emoji: "", difficulty, example: null, source: "dictionary", language: "tagalog", bookId: null, savedAt: 100 - i,
 });
 
 beforeEach(() => {
@@ -39,47 +39,47 @@ describe("HomeScreen", () => {
     expect(screen.getByText("Pedro and the Rice Field")).toBeTruthy();
     expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("30");
     expect(screen.getByRole("link", { name: "I-scan ang pahina" }).getAttribute("href")).toBe("/scan");
-    expect(screen.getByRole("link", { name: "Padayon sa pagbasa" }).getAttribute("href")).toBe("/read/pedro");
-    expect(screen.getByText("1 ka bituon")).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Ituloy ang pagbabasa" }).getAttribute("href")).toBe("/read/pedro");
+    expect(screen.getByText("1 bituin")).toBeTruthy();
   });
 
   it("keeps the tally to two chips, shows the percentage once, and the collected count on the label", () => {
     words = [word("a1", "t1", "easy", 0), word("a2", "t2", "easy", 1)];
     useProgress.setState({ savedWordCount: 2, bookProgress: { fox: 67 } });
     render(<HomeScreen />);
-    expect(screen.getByRole("list", { name: "Imo nga natipon" }).querySelectorAll("li")).toHaveLength(2);
+    expect(screen.getByRole("list", { name: "Ang natipon mo" }).querySelectorAll("li")).toHaveLength(2);
     expect(screen.getAllByText(/67%/)).toHaveLength(1);
-    expect(screen.getByText("Natipon:")).toBeTruthy();
-    expect(screen.getByText("2 ka pulong")).toBeTruthy();
+    expect(screen.getByText("Naipon:")).toBeTruthy();
+    expect(screen.getByText("2 salita")).toBeTruthy();
     expect(document.querySelector("[data-slot=stamp-star]")).toBeTruthy();
   });
 
-  it("falls back to the first bundled book, and says Umpisahan ta until a word is saved", () => {
+  it("falls back to the first bundled book, and says Umpisahan natin until a word is saved", () => {
     render(<HomeScreen />);
     expect(screen.getByText("The Brave Little Fox")).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Umpisahan ta" }).getAttribute("href")).toBe("/read/fox");
-    expect(screen.queryByRole("link", { name: "Padayon sa pagbasa" })).toBeNull();
+    expect(screen.getByRole("link", { name: "Umpisahan natin" }).getAttribute("href")).toBe("/read/fox");
+    expect(screen.queryByRole("link", { name: "Ituloy ang pagbabasa" })).toBeNull();
   });
 
   it("the in-page primary follows progress: continue at 1-99%, read again at 100%; scan is a paper secondary", () => {
     useProgress.setState({ currentBookId: "fox", bookProgress: { fox: 100 } });
     render(<HomeScreen />);
-    expect(screen.getByRole("link", { name: "Basaha liwat" }).getAttribute("href")).toBe("/read/fox");
-    const read = screen.getByRole("link", { name: "Basaha liwat" });
+    expect(screen.getByRole("link", { name: "Basahin ulit" }).getAttribute("href")).toBe("/read/fox");
+    const read = screen.getByRole("link", { name: "Basahin ulit" });
     const scan = screen.getByRole("link", { name: "I-scan ang pahina" });
     expect(read.getAttribute("data-variant")).toBe("default");
     expect(scan.getAttribute("data-variant")).toBe("secondary");
     cleanup();
     useProgress.setState({ bookProgress: { fox: 1 } });
     render(<HomeScreen />);
-    expect(screen.getByRole("link", { name: "Padayon sa pagbasa" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Ituloy ang pagbabasa" })).toBeTruthy();
   });
 
   it("the owl's tag is a real button with the newest word and its meaning; tapping it listens and records the event", () => {
     words = [word("enormous", "Dako gid", "medium", 0), word("quiet", "Mahipos", "easy", 1)];
     useProgress.setState({ savedWordCount: 2 });
     render(<HomeScreen />);
-    expect(screen.getByText("Mabasa mo na ang 2 ka bag-ong pulong!")).toBeTruthy();
+    expect(screen.getByText("Nababasa mo na ang 2 bagong salita!")).toBeTruthy();
     const tag = screen.getByRole("button", { name: /enormous\s*Dako gid/ });
     fireEvent.click(tag);
     expect(speak).toHaveBeenCalledWith("enormous", expect.objectContaining({ rate: 0.8 }));
@@ -88,8 +88,8 @@ describe("HomeScreen", () => {
 
   it("with no words the owl invites the child to pick a book instead", () => {
     render(<HomeScreen />);
-    expect(screen.getByText("Pili-a ang libro, kag basahon ta!")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: /Dako|Pamati/ })).toBeNull();
+    expect(screen.getByText("Pumili ng aklat, at babasahin natin!")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Dako|Pakinggan/ })).toBeNull();
   });
 
   it("the stars chip counts word, quiz and bonus stars", () => {
@@ -97,7 +97,7 @@ describe("HomeScreen", () => {
     useRewards.setState({ bonusStars: 2 });
     words = [word("a1", "t", "easy", 0)];
     render(<HomeScreen />);
-    expect(screen.getByText("5 ka bituon")).toBeTruthy();
+    expect(screen.getByText("5 bituin")).toBeTruthy();
   });
 
   it("links to the sticker book with N of 14, and to the memory game only from 3 saved words", () => {
@@ -105,12 +105,12 @@ describe("HomeScreen", () => {
     render(<HomeScreen />);
     const stickers = screen.getByRole("link", { name: /Mga sticker/ });
     expect(stickers.getAttribute("href")).toBe("/stickers");
-    expect(within(stickers).getByText("2 sang 14")).toBeTruthy();
-    expect(screen.queryByRole("link", { name: /Maglaro ta/ })).toBeNull();
+    expect(within(stickers).getByText("2 sa 14")).toBeTruthy();
+    expect(screen.queryByRole("link", { name: /Tara, laro tayo/ })).toBeNull();
     cleanup();
     words = [word("a1", "t1", "easy", 0), word("a2", "t2", "easy", 1), word("a3", "t3", "easy", 2)];
     render(<HomeScreen />);
-    expect(screen.getByRole("link", { name: /Maglaro ta/ }).getAttribute("href")).toBe("/play");
+    expect(screen.getByRole("link", { name: /Tara, laro tayo/ }).getAttribute("href")).toBe("/play");
   });
 
   it("lists the last saved words newest first, with a link to /words and a quiz nudge", () => {
@@ -124,14 +124,14 @@ describe("HomeScreen", () => {
     // rows beyond the fourth are for lg+ only
     expect(strip.getByText("a5").closest("li")!.className).toContain("hidden lg:flex");
     expect(strip.getByText("a4").closest("li")!.className).not.toContain("hidden");
-    expect(screen.getByRole("link", { name: /natipon nga pulong/ }).getAttribute("href")).toBe("/words");
-    expect(screen.getByRole("link", { name: "Mag-pasulit" }).getAttribute("href")).toBe("/quiz");
+    expect(screen.getByRole("link", { name: /natipong salita/ }).getAttribute("href")).toBe("/words");
+    expect(screen.getByRole("link", { name: "Magpasulit" }).getAttribute("href")).toBe("/quiz");
   });
 
   it("shows a calm empty state with no quiz nudge when there are no words", () => {
     render(<HomeScreen />);
-    expect(screen.getByText("Wala pa sang natipon nga pulong")).toBeTruthy();
-    expect(screen.queryByRole("link", { name: "Mag-pasulit" })).toBeNull();
+    expect(screen.getByText("Wala pang natipong salita")).toBeTruthy();
+    expect(screen.queryByRole("link", { name: "Magpasulit" })).toBeNull();
   });
 
   it("lists the other bundled books below the cover, each linking to its reader", () => {
@@ -139,8 +139,8 @@ describe("HomeScreen", () => {
     render(<HomeScreen />);
     const links = screen.getAllByRole("link").filter((a) => a.getAttribute("href")?.startsWith("/read/") && a.closest("section[aria-labelledby='other-books-heading']"));
     expect(links.map((a) => a.getAttribute("href"))).toEqual(["/read/star", "/read/pedro", "/read/rainbow", "/read/turtle", "/read/market"]);
-    expect(links[0].textContent).toContain("40% natapos na");
-    expect(screen.getByRole("heading", { name: "Iba pang libro" })).toBeTruthy();
+    expect(links[0].textContent).toContain("40% tapos na");
+    expect(screen.getByRole("heading", { name: "Iba pang aklat" })).toBeTruthy();
   });
 
   it("records the day's streak once on mount and tells the rewards", () => {

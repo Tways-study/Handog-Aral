@@ -19,7 +19,7 @@ web
 
 ## Product Purpose
 
-A child points the camera at a printed English page (or opens a built-in story). The app turns the page into text, and the child taps any word they don't know. It explains the word in English and in the child's home language (Hiligaynon or Filipino/Tagalog), with pronunciation and an example. The child can save words to a personal vocabulary and practice them in a short quiz.
+A child points the camera at a printed page (or opens a built-in story). The app turns the page into text, and the child taps any word they don't know. In Filipino mode they read English and get the meaning in Filipino; in English mode they read Filipino and get the meaning in English, with pronunciation and an example. The child can save words to a personal vocabulary and practice them in a short quiz.
 
 Success means a child reads a real page they couldn't read before, without an adult translating every word.
 
@@ -38,16 +38,16 @@ The app explains words in context and in the child's mother tongue, from their o
 
 - Camera or gallery capture of a page; OCR by Gemini Vision online and Tesseract offline.
 - A tap-a-word explanation showing the word, phonetic spelling, English meaning, home-language explanation, an example and a difficulty level, plus text-to-speech.
-- Saved vocabulary, a quiz unlocked after enough saved words, stars, a daily streak, and a small built-in story library (6 English stories).
+- Saved vocabulary, a quiz unlocked after enough saved words, stars, a daily streak, and a small built-in story library (6 English and 4 Filipino stories).
 - Accessibility settings: font size, a dyslexia font mode, TTS speed, reading color overlays.
-- Child-facing text is in Hiligaynon or Filipino/Tagalog; settings labels are in English for adults.
+- Child-facing text is in Filipino or English (the two reading directions: English→Filipino and Filipino→English); settings labels are in English for adults. Hiligaynon was removed because the translations were not accurate enough.
 - No accounts or login for children. Progress stays on the device.
-- Machine-generated Hiligaynon/Tagalog dictionary entries are not yet reviewed by a native speaker.
+- Machine-generated Filipino and the bundled Filipino stories and word list are not yet reviewed by a native speaker.
 
 ## Brand Commitments
 
 - Name: **Handog Aral**.
-- Tagline: **"Ang Imo Gabay sa Pagbasa"** ("Your guide to reading", Hiligaynon).
+- Tagline: **"Ang Iyong Gabay sa Pagbasa"** ("Your guide to reading", Filipino).
 - An **owl** is the companion mascot. It will be redrawn; the species is binding, not the current emoji form.
 - The current teal color is **not** binding.
 

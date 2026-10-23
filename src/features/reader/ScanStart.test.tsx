@@ -11,8 +11,8 @@ describe("ScanTiles", () => {
     const onGallery = vi.fn();
     const onType = vi.fn();
     render(<ScanTiles onCamera={onCamera} onGallery={onGallery} onType={onType} />);
-    const camera = screen.getByRole("button", { name: /^Buksa ang camera/ });
-    const gallery = screen.getByRole("button", { name: /^Pilia sa gallery/ });
+    const camera = screen.getByRole("button", { name: /^Buksan ang camera/ });
+    const gallery = screen.getByRole("button", { name: /^Pumili sa gallery/ });
     const type = screen.getByRole("button", { name: /^I-type o i-paste/ });
     expect(camera.getAttribute("data-primary")).toBe("true");
     expect(camera.className).toContain("bg-indigo");
@@ -38,8 +38,8 @@ describe("ScanProgress", () => {
   it("shows progress and a cancel button", () => {
     const onCancel = vi.fn();
     render(<ScanProgress progress={40} onCancel={onCancel} />);
-    expect(screen.getByRole("status").textContent).toContain("Ginabasa ang pahina");
-    fireEvent.click(screen.getByRole("button", { name: "Kanselahon" }));
+    expect(screen.getByRole("status").textContent).toContain("Binabasa ang pahina");
+    fireEvent.click(screen.getByRole("button", { name: "Kanselahin" }));
     expect(onCancel).toHaveBeenCalled();
   });
 });

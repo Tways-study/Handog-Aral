@@ -11,7 +11,7 @@ import Owl, { type OwlReaction } from "@/components/owl/Owl";
 import StampStar from "@/components/StampStar";
 import StickerArt from "@/components/stickers/StickerArt";
 import { Button } from "@/components/ui/button";
-import { sampleBooks } from "@/data/books";
+import { booksFor } from "@/data/books";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useT } from "@/hooks/useT";
 import { HomeSkeleton } from "@/components/PageSkeleton";
@@ -21,7 +21,7 @@ import { pageIn } from "@/lib/motionPages";
 import { play } from "@/lib/sound";
 import { orderStickers } from "@/lib/stickers/catalog";
 import { STICKER_IDS, type StickerId } from "@/lib/stickers/ids";
-import { speak } from "@/lib/tts";
+import { speak, speechLang } from "@/lib/tts";
 import { cn } from "@/lib/utils";
 import { useProgress, useProgressHydrated } from "@/stores/progress";
 import { selectAllStars, useRewards, useRewardsHydrated } from "@/stores/rewards";
@@ -64,6 +64,7 @@ export default function HomeScreen() {
   const childName = useSettings((s) => s.childName);
   const onboarded = useSettings((s) => s.onboarded);
   const ttsSpeed = useSettings((s) => s.ttsSpeed);
+  const language = useSettings((s) => s.language);
   const progress = useProgress();
   const { currentBookId, bookProgress, streak, savedWordCount, updateStreak } = progress;
   const bonusStars = useRewards((s) => s.bonusStars);
@@ -105,7 +106,8 @@ export default function HomeScreen() {
 
   if (!ready) return <div ref={rootRef}><HomeSkeleton label={t.shell.loading} /></div>;
 
-  const book = sampleBooks.find((b) => b.id === currentBookId) ?? sampleBooks[0];
+  const books = booksFor(language);
+  const book = books.find((b) => b.id === currentBookId) ?? books[0];
   const pct = Math.max(0, Math.min(100, bookProgress[book.id] ?? 0));
   const hour = new Date().getHours();
   const [greeting, sub] =
@@ -117,7 +119,7 @@ export default function HomeScreen() {
   const wordCount = Math.max(savedWordCount, words.length);
   const recent = words.slice(0, RECENT_COUNT);
   const newest = words[0];
-  const otherBooks = sampleBooks.filter((b) => b.id !== book.id);
+  const otherBooks = books.filter((b) => b.id !== book.id);
 
   // Continue where you stopped; "Umpisahan ta" until the first word is saved; "Basaha liwat" once finished.
   const [readLabel, ReadIcon] =
@@ -127,7 +129,7 @@ export default function HomeScreen() {
   const listenNewest = () => {
     if (!newest) return;
     cheer();
-    void speak(newest.word, { rate: ttsSpeed });
+    void speak(newest.word, { rate: ttsSpeed, lang: speechLang(newest.language) });
     useRewards.getState().recordEvent({ type: "listen" });
   };
 

@@ -69,12 +69,12 @@ test.describe("prefers-reduced-motion: reduce", () => {
     await expect(page.getByRole("heading", { name: /Maayong/ })).toBeVisible();
     await seedWords(page, WORDS);
     await page.goto("/quiz");
-    const options = page.getByRole("radiogroup", { name: /Hiligaynon/ }).getByRole("radio");
+    const options = page.getByRole("radiogroup", { name: /Filipino/ }).getByRole("radio");
     await expect(options).toHaveCount(4);
     await watchTweens(page);
     for (let i = 1; i <= 4; i++) {
       await options.first().click();
-      await page.getByRole("button", { name: i === 4 ? "Tan-awa ang resulta" : "Sunod" }).click();
+      await page.getByRole("button", { name: i === 4 ? "Tingnan ang resulta" : "Susunod" }).click();
       await expect(page.getByText(`${i + 1} sang 4`).or(page.getByTestId("quiz-score")).first()).toBeVisible();
     }
     await expect(page.getByTestId("quiz-score")).toBeVisible();

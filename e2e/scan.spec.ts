@@ -28,7 +28,7 @@ const readerWord = (page: Page, word: string) => page.locator("[data-slot=reader
 test("an online scan goes through the proxy and shows the AI scan badge", async ({ page, context }) => {
   const stub = await stubApi(context, { ocr: (route) => route.fulfill({ json: { text: "The small fox ran home.\nIt was happy." } }) });
   await gotoAs(page, "/scan");
-  await expect(page.getByRole("button", { name: "Buksa ang camera" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Buksan ang camera" })).toBeVisible();
   await upload(page, await textImage(page));
 
   await expect(readerWord(page, "fox")).toBeVisible();
@@ -68,14 +68,14 @@ test("cancel mid-scan returns to the start screen and the late result is ignored
   });
   await gotoAs(page, "/scan");
   await upload(page, await textImage(page));
-  await expect(page.getByRole("status").filter({ hasText: "Ginabasa ang pahina" })).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Binabasa ang pahina" })).toBeVisible();
   await expect(page.getByRole("progressbar")).toBeVisible();
 
-  await page.getByRole("button", { name: "Kanselahon" }).click();
-  await expect(page.getByRole("button", { name: "Buksa ang camera" })).toBeVisible();
+  await page.getByRole("button", { name: "Kanselahin" }).click();
+  await expect(page.getByRole("button", { name: "Buksan ang camera" })).toBeVisible();
   await expect(page.getByRole("progressbar")).toHaveCount(0);
   await page.waitForTimeout(3500);
-  await expect(page.getByRole("button", { name: "Buksa ang camera" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Buksan ang camera" })).toBeVisible();
   await expect(page.getByText("LATE RESULT")).toHaveCount(0);
   await expect(page.locator("[data-slot=reader-text]")).toHaveCount(0);
 });
@@ -94,8 +94,8 @@ test("a stale scan never overwrites a newer one", async ({ page, context }) => {
   });
   await gotoAs(page, "/scan");
   await upload(page, await textImage(page));
-  await expect(page.getByRole("button", { name: "Kanselahon" })).toBeVisible();
-  await page.getByRole("button", { name: "Kanselahon" }).click();
+  await expect(page.getByRole("button", { name: "Kanselahin" })).toBeVisible();
+  await page.getByRole("button", { name: "Kanselahin" }).click();
   await upload(page, await textImage(page, ["Second page"]));
 
   await expect(readerWord(page, "Fresh")).toBeVisible();
@@ -123,15 +123,15 @@ test("a proxy that returns blank text falls back to the local engine, which repo
   await upload(page, { name: "blank.png", mimeType: "image/png", buffer: Buffer.from(blank.split(",")[1], "base64") });
   await expect(page.getByText("Wala kami sang makita nga teksto")).toBeVisible({ timeout: 90_000 });
   await expect(page.getByRole("progressbar")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Buksa ang camera" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Buksan ang camera" })).toBeVisible();
 });
 
 test("start screen: the camera is the hero tile, the other two are real buttons with visible names, nothing scrolls sideways", async ({ page }) => {
   await gotoAs(page, "/scan");
-  const camera = page.getByRole("button", { name: "Buksa ang camera Kuhaa sang retrato ang pahina." });
+  const camera = page.getByRole("button", { name: "Buksan ang camera Kunan ng larawan ang pahina." });
   await expect(camera).toBeVisible();
   await expect(camera).toHaveAttribute("data-primary", "true");
-  await expect(page.getByRole("button", { name: /^Pilia sa gallery/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Pumili sa gallery/ })).toBeVisible();
   await expect(page.getByRole("button", { name: /^I-type o i-paste/ })).toBeVisible();
   // the hero owl and the decorative doodles are not in the accessibility tree
   await expect(page.locator("[data-slot=scan-tiles] [data-owl-renderer]")).toHaveCount(1);
@@ -157,9 +157,9 @@ test("a finished scan: the owl says it once, then the prompt; whoosh-time sticke
   await upload(page, await textImage(page));
   await expect(readerWord(page, "fox")).toBeVisible();
   const intro = isDesktop(page) ? page.locator("[data-slot=pane-owl]") : page.locator("[data-slot=scan-moment]");
-  await expect(intro).toContainText("Nabasa mo na ang imo libro!");
+  await expect(intro).toContainText("Nabasa mo na ang aklat mo!");
   // then the prompt
-  await expect(intro).toContainText("Pindota ang pulong nga indi mo kilala", { timeout: 6000 });
+  await expect(intro).toContainText("I-tap ang salitang hindi mo alam", { timeout: 6000 });
   // the first scan earns its sticker after the reveal
   await expect(page.getByTestId("celebration")).toBeVisible({ timeout: 4000 });
   await expect(page.getByTestId("celebration")).toContainText("Una nga Scan");
@@ -172,5 +172,5 @@ test("a finished scan: the owl says it once, then the prompt; whoosh-time sticke
   await upload(page, await textImage(page));
   await expect(readerWord(page, "fox")).toBeVisible();
   await page.waitForTimeout(800);
-  await expect(page.getByText("Nabasa mo na ang imo libro!")).toHaveCount(0);
+  await expect(page.getByText("Nabasa mo na ang aklat mo!")).toHaveCount(0);
 });

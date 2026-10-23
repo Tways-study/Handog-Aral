@@ -1,14 +1,4 @@
-/** System pages (not found, something went wrong). Hiligaynon is the shape; Tagalog must match it key for key. */
-const hiligaynon = {
-  notFoundTitle: "Wala makita ang pahina",
-  notFoundBody: "Wala sang pahina sa sini nga lugar. Magbalik kita sa Balay kag magpadayon sa pagbasa.",
-  errorTitle: "May nagkaproblema",
-  errorBody: "Indi namon maabri ang sini nga pahina. Wala nawala ang imo mga libro kag pulong. Probahi liwat.",
-  tryAgain: "Probahi liwat",
-  goHome: "Pabalik sa Balay",
-  openScan: "Buksi ang I-scan",
-};
-
+/** System pages (not found, something went wrong). Filipino is the shape; English must match it key for key. */
 const tagalog = {
   notFoundTitle: "Hindi makita ang pahina",
   notFoundBody: "Walang pahina sa lugar na ito. Bumalik tayo sa Tahanan at magpatuloy sa pagbasa.",
@@ -17,6 +7,16 @@ const tagalog = {
   tryAgain: "Subukan ulit",
   goHome: "Bumalik sa Tahanan",
   openScan: "Buksan ang I-scan",
-} satisfies typeof hiligaynon;
+};
 
-export const systemStrings = { hiligaynon, tagalog };
+const english = {
+  notFoundTitle: "Page not found",
+  notFoundBody: "There is no page here. Let's go back Home and keep reading.",
+  errorTitle: "Something went wrong",
+  errorBody: "We could not open this page. Your books and words are safe. Please try again.",
+  tryAgain: "Try again",
+  goHome: "Back to Home",
+  openScan: "Open Scan",
+} satisfies typeof tagalog;
+
+export const systemStrings = { tagalog, english };

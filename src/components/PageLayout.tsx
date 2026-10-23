@@ -20,7 +20,14 @@ export function PageContainer({
   nav?: boolean;
 }) {
   return (
-    <div className={cn("mx-auto w-full max-w-[var(--content-max)]", !flush && "px-5 lg:px-8", nav && "pb-nav", className)}>
+    <div
+      className={cn(
+        "mx-auto w-full max-w-[var(--content-max)]",
+        !flush && "px-5 lg:px-8",
+        nav && "pb-nav",
+        className,
+      )}
+    >
       {children}
     </div>
   );
@@ -36,27 +43,40 @@ export function PageHeader({
   trailing,
   hideSettings = false,
   className,
+  innerClassName,
 }: {
   title: ReactNode;
   subtitle?: ReactNode;
   trailing?: ReactNode;
   hideSettings?: boolean;
   className?: string;
+  /** Narrows the title row (e.g. `max-w-2xl`) without narrowing the band, which must stay centred on the full column. */
+  innerClassName?: string;
 }) {
   return (
     <header
       className={cn(
-        "page-band flex items-start justify-between gap-3 pt-[max(1rem,env(safe-area-inset-top))] pb-6 lg:pt-8 lg:pb-8",
+        "page-band pt-[max(1rem,env(safe-area-inset-top))] pb-6 lg:pt-8 lg:pb-8",
         className,
       )}
     >
-      <div className="min-w-0">
-        <h1 className="font-heading text-2xl leading-[1.1] font-bold text-balance lg:text-4xl">{title}</h1>
-        {subtitle && <p className="mt-1 text-[0.9375rem] text-[var(--band-ink-2)] lg:text-base">{subtitle}</p>}
-      </div>
-      <div className="flex shrink-0 items-center gap-2">
-        {trailing}
-        {!hideSettings && <SettingsLink className="lg:hidden" />}
+      <div
+        className={cn("flex items-start justify-between gap-3", innerClassName)}
+      >
+        <div className="min-w-0">
+          <h1 className="font-heading text-2xl leading-[1.1] font-bold text-balance lg:text-4xl">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="mt-1 text-[0.9375rem] text-[var(--band-ink-2)] lg:text-base">
+              {subtitle}
+            </p>
+          )}
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          {trailing}
+          {!hideSettings && <SettingsLink className="lg:hidden" />}
+        </div>
       </div>
     </header>
   );

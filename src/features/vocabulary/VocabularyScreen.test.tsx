@@ -4,7 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/words" }));
 vi.mock("next/link", () => ({ default: ({ href, children, ...r }: { href: string; children: React.ReactNode }) => <a href={href} {...r}>{children}</a> }));
-vi.mock("@/lib/tts", () => ({ speak: vi.fn(async () => {}), stop: vi.fn(async () => {}) }));
+vi.mock("@/lib/tts", () => ({ speechLang: () => "en-US", speak: vi.fn(async () => {}), stop: vi.fn(async () => {}) }));
 vi.mock("sonner", () => ({ toast: Object.assign(vi.fn(), { success: vi.fn(), error: vi.fn() }) }));
 vi.mock("@/components/ui/drawer", () => ({
   Drawer: ({ open, children }: { open: boolean; children: React.ReactNode }) => (open ? <div data-testid="drawer">{children}</div> : null),
@@ -32,7 +32,7 @@ import { useProgress } from "@/stores/progress";
 import type { ResolvedExplanation } from "@/shared/schemas";
 
 const entry = (word: string, translation: string, difficulty: "easy" | "medium" | "hard"): ResolvedExplanation => ({
-  word, translation, difficulty, phonetic: `/${word}/`, english: `about ${word}`, emoji: "", example: null, source: "ai", language: "hiligaynon",
+  word, translation, difficulty, phonetic: `/${word}/`, english: `about ${word}`, emoji: "", example: null, source: "ai", language: "tagalog",
 });
 
 beforeEach(async () => {
@@ -59,7 +59,7 @@ describe("VocabularyScreen", () => {
     render(<VocabularyScreen />);
     const empty = await screen.findByTestId("words-empty");
     expect(within(empty).getByRole("link", { name: "Mag-scan" }).getAttribute("href")).toBe("/scan");
-    expect(within(empty).getByRole("link", { name: "Mga Libro" }).getAttribute("href")).toBe("/books");
+    expect(within(empty).getByRole("link", { name: "Mga Aklat" }).getAttribute("href")).toBe("/books");
   });
 
   it("lists words, searches, filters, and shows a no-matches state", async () => {
@@ -67,16 +67,16 @@ describe("VocabularyScreen", () => {
     await learnWord(entry("umbrella", "payong", "hard"), null);
     render(<VocabularyScreen />);
     await waitFor(() => expect(screen.getAllByTestId("word-row")).toHaveLength(2));
-    expect(screen.getByText(/2 pa ka pulong para ma-abri/)).toBeTruthy();
+    expect(screen.getByText(/2 pang salita para mabuksan/)).toBeTruthy();
 
-    fireEvent.change(screen.getByLabelText("Pangita-a ang pulong"), { target: { value: "pay" } });
+    fireEvent.change(screen.getByLabelText("Hanapin ang salita"), { target: { value: "pay" } });
     expect(screen.getAllByTestId("word-row")).toHaveLength(1);
-    fireEvent.change(screen.getByLabelText("Pangita-a ang pulong"), { target: { value: "zzz" } });
+    fireEvent.change(screen.getByLabelText("Hanapin ang salita"), { target: { value: "zzz" } });
     expect(screen.getByTestId("no-matches")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Ipakita tanan" }));
+    fireEvent.click(screen.getByRole("button", { name: "Ipakita lahat" }));
     expect(screen.getAllByTestId("word-row")).toHaveLength(2);
 
-    fireEvent.click(screen.getByRole("radio", { name: /Mabudlay/ }));
+    fireEvent.click(screen.getByRole("radio", { name: /Mahirap/ }));
     expect(screen.getAllByTestId("word-row")).toHaveLength(1);
     expect(screen.getByText("umbrella")).toBeTruthy();
   });
@@ -105,7 +105,7 @@ describe("VocabularyScreen", () => {
     await learnWord({ ...entry("dog", "ido", "easy"), emoji: "" }, null);
     render(<VocabularyScreen />);
     await waitFor(() => expect(screen.getAllByTestId("word-row")).toHaveLength(2));
-    expect(screen.getByText("2 ka pulong na ang natipon mo!")).toBeTruthy();
+    expect(screen.getByText("2 salita na ang naipon mo!")).toBeTruthy();
     const tiles = Array.from(document.querySelectorAll("[data-slot=word-tile]"), (n) => [n.getAttribute("data-kind"), n.textContent]);
     expect(tiles).toEqual(expect.arrayContaining([["letter", "C"], ["letter", "D"]]));
     // decorative: the word is read from its own text, never from the tile
@@ -117,12 +117,12 @@ describe("VocabularyScreen", () => {
     await learnWord(entry("dog", "ido", "easy"), null);
     render(<VocabularyScreen />);
     await waitFor(() => expect(screen.getAllByTestId("word-row")).toHaveLength(2));
-    expect(screen.queryByRole("link", { name: "Maglaro ta sang Pares" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Maglaro tayo ng Pares" })).toBeNull();
     cleanup();
     await learnWord(entry("sun", "adlaw", "easy"), null);
     render(<VocabularyScreen />);
     await waitFor(() => expect(screen.getAllByTestId("word-row")).toHaveLength(3));
-    expect(screen.getByRole("link", { name: "Maglaro ta sang Pares" }).getAttribute("href")).toBe("/play");
+    expect(screen.getByRole("link", { name: "Maglaro tayo ng Pares" }).getAttribute("href")).toBe("/play");
   });
 
   it("the empty state keeps Scan as a paper button, not the orange one", async () => {

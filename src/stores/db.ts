@@ -20,8 +20,23 @@ export interface DictionaryEntry {
   emoji: string;
   difficulty: Difficulty;
   example: string | null;
-  hiligaynon: string;
+  /** The Filipino explanation of this English word. */
   tagalog: string;
+  reviewed: boolean;
+}
+
+/** A curated Filipino word with its English explanation (the Filipino -> English direction). */
+export interface FilipinoEntry {
+  /** lowercase Filipino word */
+  word: string;
+  phonetic: string;
+  /** A simple Filipino definition. */
+  filipino: string;
+  /** The English explanation shown to the child. */
+  english: string;
+  emoji: string;
+  difficulty: Difficulty;
+  example: string | null;
   reviewed: boolean;
 }
 
@@ -49,6 +64,7 @@ export interface SavedWord extends ResolvedExplanation {
 export class HandogDB extends Dexie {
   wordCache!: Table<CachedExplanation, string>;
   dictionary!: Table<DictionaryEntry, string>;
+  filipino!: Table<FilipinoEntry, string>;
   meta!: Table<MetaRow, string>;
   lookupQueue!: Table<QueueItem, string>;
   words!: Table<SavedWord, string>;
@@ -62,6 +78,31 @@ export class HandogDB extends Dexie {
       lookupQueue: "key, enqueuedAt",
       words: "key, savedAt, bookId",
     });
+    // v2: Hiligaynon is gone and the Filipino -> English dictionary arrives.
+    this.version(2)
+      .stores({ filipino: "word" })
+      .upgrade(async (tx) => {
+        const isRetired = (language: unknown) => language === "hiligaynon";
+        await tx.table("wordCache").filter((r) => isRetired(r.language)).delete();
+        await tx.table("lookupQueue").filter((r) => isRetired(r.language)).delete();
+        // A saved word keeps its place (and its star); its Hiligaynon text is swapped for the curated Filipino
+        // one when the dictionary already has it, otherwise it is a provisional entry the lookup queue upgrades.
+        const retired = await tx.table("words").filter((r) => isRetired(r.language)).toArray();
+        for (const w of retired) {
+          const curated = await tx.table("dictionary").get(String(w.word).toLowerCase());
+          const tagalog = typeof curated?.tagalog === "string" && curated.tagalog ? curated.tagalog : null;
+          await tx.table("words").put({
+            ...w,
+            language: "tagalog",
+            translation: tagalog ?? "Wala pang paliwanag. Ipapakita namin kapag may internet na.",
+            source: tagalog ? "curated" : "offline",
+          });
+          if (!tagalog) {
+            const key = `${String(w.word).toLowerCase()}_tagalog`;
+            await tx.table("lookupQueue").put({ key, word: w.word, sentence: "", language: "tagalog", enqueuedAt: Date.now(), attempts: 0 });
+          }
+        }
+      });
   }
 }
 
@@ -146,6 +187,10 @@ export function evictOverflow(max: number = WORD_CACHE_MAX): Promise<number> {
 
 export function getDictionaryEntry(word: string): Promise<DictionaryEntry | undefined> {
   return safe(undefined, (db) => db.dictionary.get(word.toLowerCase()));
+}
+
+export function getFilipinoEntry(word: string): Promise<FilipinoEntry | undefined> {
+  return safe(undefined, (db) => db.filipino.get(word.toLowerCase()));
 }
 
 export function getMeta(key: string): Promise<string | number | undefined> {

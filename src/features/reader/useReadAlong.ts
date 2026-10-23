@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
-import { speak, stop } from "@/lib/tts";
+import { speak, speechLang, stop } from "@/lib/tts";
+import { useSettings } from "@/stores/settings";
 import type { Token } from "@/lib/tokenize";
 import { useRewards } from "@/stores/rewards";
 
@@ -32,6 +33,7 @@ export function useReadAlong({ text, tokens, rate, textRef }: { text: string; to
     useRewards.getState().recordEvent({ type: "listen" });
     void speak(text, {
       rate,
+      lang: speechLang(useSettings.getState().language),
       onSentence: (i) => {
         if (run !== runRef.current) return;
         setReadingSentence(i);

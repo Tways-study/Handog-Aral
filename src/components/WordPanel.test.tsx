@@ -13,7 +13,7 @@ const entry = (over: Partial<ResolvedExplanation> = {}): ResolvedExplanation =>
     difficulty: "medium",
     example: "The enormous fox ran.",
     source: "curated",
-    language: "hiligaynon",
+    language: "tagalog",
     ...over,
   }) as ResolvedExplanation;
 
@@ -76,17 +76,17 @@ describe("WordPanel", () => {
     expect(screen.getByText("/eh-NOR-mus/")).toBeTruthy();
   });
 
-  it("unsaved Tipigi is the primary; saved settles to a neutral secondary with a stamped check and a star", () => {
+  it("unsaved I-save is the primary; saved settles to a neutral secondary with a stamped check and a star", () => {
     panel(entry());
-    expect(screen.getByRole("button", { name: "Tipigi" }).getAttribute("data-variant")).toBe("default");
+    expect(screen.getByRole("button", { name: "I-save" }).getAttribute("data-variant")).toBe("default");
     expect(document.querySelector("[data-slot=stamp-star]")).toBeNull();
     cleanup();
     panel(entry(), { saved: true });
-    const saved = screen.getByRole("button", { name: "Natipigan na" });
+    const saved = screen.getByRole("button", { name: "Naka-save na" });
     expect(saved.getAttribute("data-variant")).toBe("secondary");
     expect(saved.getAttribute("aria-pressed")).toBe("true");
     expect(saved.querySelector("[data-slot=stamp-check]")).toBeTruthy();
-    expect(screen.getByRole("img", { name: "Nakakuha ka sang bituon" })).toBeTruthy();
+    expect(screen.getByRole("img", { name: "Nakakuha ka ng bituin" })).toBeTruthy();
   });
 });
 

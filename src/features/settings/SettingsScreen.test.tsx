@@ -8,7 +8,7 @@ vi.stubGlobal("matchMedia", (q: string) => ({ matches: false, media: q, addEvent
 let online = true;
 vi.mock("next/navigation", () => ({ usePathname: () => "/settings" }));
 vi.mock("@/hooks/useOnlineStatus", () => ({ useOnlineStatus: () => ({ online }) }));
-vi.mock("@/lib/tts", () => ({ speak: vi.fn(async () => {}), stop: vi.fn(async () => {}) }));
+vi.mock("@/lib/tts", () => ({ speechLang: () => "en-US", speak: vi.fn(async () => {}), stop: vi.fn(async () => {}) }));
 const playSound = vi.fn();
 vi.mock("@/lib/sound", () => ({ play: (...a: unknown[]) => playSound(...a) }));
 const buzzMock = vi.fn();
@@ -139,7 +139,7 @@ describe("Offline pack", () => {
   });
 
   it("shows the pending lookup count", async () => {
-    await enqueue({ word: "owl", sentence: "", language: "hiligaynon" });
+    await enqueue({ word: "owl", sentence: "", language: "tagalog" });
     render(<SettingsScreen />);
     await waitFor(() => expect(screen.getByTestId("pending").textContent).toBe("1 word waiting"));
   });
@@ -147,8 +147,8 @@ describe("Offline pack", () => {
 
 describe("Reset all progress", () => {
   it("asks first, then clears words, progress and the queue but keeps settings", async () => {
-    await learnWord({ word: "cat", translation: "iring", difficulty: "easy", phonetic: "", english: "pet", emoji: "", example: null, source: "ai", language: "hiligaynon" }, null);
-    await enqueue({ word: "owl", sentence: "", language: "hiligaynon" });
+    await learnWord({ word: "cat", translation: "iring", difficulty: "easy", phonetic: "", english: "pet", emoji: "", example: null, source: "ai", language: "tagalog" }, null);
+    await enqueue({ word: "owl", sentence: "", language: "tagalog" });
     useProgress.getState().recordQuizResult(3, 5);
     useSettings.getState().setChildName("Ana");
     render(<SettingsScreen />);

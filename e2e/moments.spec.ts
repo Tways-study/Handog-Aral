@@ -49,9 +49,9 @@ test.describe("reader moments (motion allowed)", () => {
     await recordTabPops(page);
     await wordButton(page, "searched").click();
     const p = panel(page);
-    await expect(p.getByText("Hiligaynon: searched")).toBeVisible();
+    await expect(p.getByText("Filipino: searched")).toBeVisible();
     const wordBox = (await pageWord(page, "searched").boundingBox())!;
-    await p.getByRole("button", { name: "Tipigi" }).click();
+    await p.getByRole("button", { name: "I-save" }).click();
 
     // The stamp: ~96 px, over the saved word, ignoring pointers, hidden from assistive tech.
     const stamp = page.locator("[data-slot=save-stamp]");
@@ -90,27 +90,27 @@ test.describe("reader moments (motion allowed)", () => {
   test("a second save stamps again but the owl does not repeat the first-save line", async ({ page }) => {
     await gotoAs(page, "/read/fox");
     await wordButton(page, "searched").click();
-    await panel(page).getByRole("button", { name: "Tipigi" }).click();
+    await panel(page).getByRole("button", { name: "I-save" }).click();
     await settleCelebrations(page, 4000);
     if (!isDesktop(page)) {
       await page.keyboard.press("Escape");
       await expect(page.getByRole("dialog")).toHaveCount(0);
     }
     await wordButton(page, "ran").click();
-    await panel(page).getByRole("button", { name: "Tipigi" }).click();
+    await panel(page).getByRole("button", { name: "I-save" }).click();
     await expect(page.locator("[data-slot=save-stamp]")).toBeVisible();
     await page.waitForTimeout(1200);
-    await expect(page.getByText("Una mo ini nga pulong! Ayos!")).toHaveCount(0);
+    await expect(page.getByText("Una mo itong salita! Ang galing!")).toHaveCount(0);
   });
 
   test("the owl on the page: mobile peeks over the nav and fades its tag; desktop pane owl counts the saved words", async ({ page }) => {
     await gotoAs(page, "/read/fox");
     if (isDesktop(page)) {
-      await expect(page.locator("[data-slot=pane-owl]")).toContainText("Pindota ang pulong, tabangan ta ikaw!");
+      await expect(page.locator("[data-slot=pane-owl]")).toContainText("I-tap ang salita, tutulungan kita!");
       await wordButton(page, "searched").click();
-      await page.getByRole("complementary").getByRole("button", { name: "Tipigi" }).click();
+      await page.getByRole("complementary").getByRole("button", { name: "I-save" }).click();
       await settleCelebrations(page, 4000);
-      await expect(page.locator("[data-slot=pane-owl]")).toContainText("1 ka pulong sa pahina nga ini ang natipigan mo na", { timeout: 6000 });
+      await expect(page.locator("[data-slot=pane-owl]")).toContainText("1 salita sa pahina nga ini ang natipigan mo na", { timeout: 6000 });
       return;
     }
     const owl = page.locator("[data-slot=peek-owl]");
@@ -161,7 +161,7 @@ test.describe("read-along", () => {
   test("Web Speech boundary events highlight the word being spoken, in order, and the first listen earns its sticker", async ({ page }) => {
     await mockSpeechBoundary(page, { wordMs: 160 });
     await gotoAs(page, "/read/fox");
-    await page.getByRole("button", { name: isDesktop(page) ? "Basaha sa akon" : "Basahon" }).click();
+    await page.getByRole("button", { name: isDesktop(page) ? "Basahin para sa akin" : "Basahin" }).click();
     // Sample the marker for a couple of seconds: "data-speaking" walks the words of the first sentence.
     const seen: string[] = [];
     for (let i = 0; i < 40; i++) {
@@ -178,14 +178,14 @@ test.describe("read-along", () => {
     await expect(page.locator("[data-reading=true]")).toHaveCount(1);
     // listening for the first time earns a sticker
     await expect(celebration(page)).toBeVisible({ timeout: 3000 });
-    await expect(celebration(page)).toContainText("Una nga Pamati");
+    await expect(celebration(page)).toContainText("Una nga Pakinggan");
     expect(await page.evaluate(() => (window as unknown as { __spoken: string[] }).__spoken[0])).toContain("The small fox ran");
   });
 
   test("without boundary events (native TTS) the sentence highlight alone follows along", async ({ page }) => {
     await mockSpeechBoundary(page, { wordMs: 120, boundaries: false });
     await gotoAs(page, "/read/fox");
-    await page.getByRole("button", { name: isDesktop(page) ? "Basaha sa akon" : "Basahon" }).click();
+    await page.getByRole("button", { name: isDesktop(page) ? "Basahin para sa akin" : "Basahin" }).click();
     await expect(page.locator("[data-reading=true]")).toHaveCount(1);
     await page.waitForTimeout(500);
     await expect(page.locator("[data-speaking=true]")).toHaveCount(0);
@@ -200,8 +200,8 @@ test.describe("reduced motion", () => {
     await gotoAs(page, "/read/fox");
     await recordTabPops(page);
     await wordButton(page, "searched").click();
-    await expect(panel(page).getByText("Hiligaynon: searched")).toBeVisible();
-    await panel(page).getByRole("button", { name: "Tipigi" }).click();
+    await expect(panel(page).getByText("Filipino: searched")).toBeVisible();
+    await panel(page).getByRole("button", { name: "I-save" }).click();
     const stamp = page.locator("[data-slot=save-stamp]");
     await expect(stamp).toBeVisible();
     const style = await stamp.evaluate((el) => ({ opacity: getComputedStyle(el).opacity, transform: getComputedStyle(el).transform }));
@@ -228,7 +228,7 @@ test.describe("quiz moments", () => {
   test.use({ reducedMotion: "no-preference" });
 
   const WORDS = ["brave", "forest", "quiet", "stone", "happy", "snow", "path", "food"].map((w, i) =>
-    savedWordRow(w, `Hiligaynon-${w} - puti nga ice halin sa langit kag mabaskog`, {}, i),
+    savedWordRow(w, `Filipino-${w} - puti nga ice halin sa langit kag mabaskog`, {}, i),
   );
   const owlMood = (page: Page) => page.locator("[data-owl-mood]").first().getAttribute("data-owl-mood");
 
@@ -247,22 +247,22 @@ test.describe("quiz moments", () => {
     const n = await radios.count();
     for (let i = 0; i < n; i++) {
       const text = (await radios.nth(i).textContent()) ?? "";
-      if (text.includes(`Hiligaynon-${word} `) === right) {
+      if (text.includes(`Filipino-${word} `) === right) {
         await radios.nth(i).click();
         return;
       }
     }
     throw new Error(`no ${right ? "right" : "wrong"} option for ${word}`);
   }
-  const next = (page: Page) => page.getByRole("button", { name: /^(Sunod|Tan-awa ang resulta)$/ });
+  const next = (page: Page) => page.getByRole("button", { name: /^(Susunod|Tingnan ang resulta)$/ });
 
   test("the first quiz ever greets the child once; the owl cheers on right and tilts on wrong", async ({ page }) => {
     await openQuiz(page);
-    await expect(page.getByText("Pasulit na! 5 ka pulong, kaya mo ini!")).toBeVisible();
+    await expect(page.getByText("Pagsusulit na! 5 salita, kaya mo ini!")).toBeVisible();
     await expect.poll(async () => (await readPersisted(page, "handog-moments"))?.state.firstQuiz).toBe(true);
     await answer(page, false);
     await expect.poll(() => owlMood(page)).toBe("think");
-    await expect(page.getByTestId("quiz-feedback")).toContainText("Indi pa tama");
+    await expect(page.getByTestId("quiz-feedback")).toContainText("Hindi pa tama");
     // never a buzzer / red wall
     await expect(page.locator("[data-answer=wrong]")).toHaveCount(1);
     expect(await page.locator("[data-answer=wrong]").evaluate((el) => getComputedStyle(el).borderColor)).not.toBe("rgb(200, 50, 58)");
@@ -277,17 +277,17 @@ test.describe("quiz moments", () => {
     for (let i = 0; i < 3; i++) {
       await answer(page, true);
       if (i < 2) {
-        await expect(page.getByText("Tatlo ka sunod nga husto! Galing!")).toHaveCount(0);
+        await expect(page.getByText("Tatlong sunod na tama! Ang galing!")).toHaveCount(0);
         await next(page).click();
       }
     }
-    await expect(page.getByText("Tatlo ka sunod nga husto! Galing!").first()).toBeVisible();
+    await expect(page.getByText("Tatlong sunod na tama! Ang galing!").first()).toBeVisible();
     await next(page).click();
     await answer(page, true);
-    await expect(page.getByText("Tatlo ka sunod nga husto! Galing!")).toHaveCount(0); // only once
+    await expect(page.getByText("Tatlong sunod na tama! Ang galing!")).toHaveCount(0); // only once
   });
 
-  test("answering moves focus to Sunod, and the feedback + Sunod sit in a bar that never falls behind the nav (even offline with long options)", async ({ page, context }) => {
+  test("answering moves focus to Susunod, and the feedback + Susunod sit in a bar that never falls behind the nav (even offline with long options)", async ({ page, context }) => {
     await context.unroute("**/api/health");
     await context.route("**/api/health", (route) => route.abort("internetdisconnected"));
     await openQuiz(page);
@@ -296,13 +296,13 @@ test.describe("quiz moments", () => {
     const nextBtn = next(page);
     await expect(nextBtn).toBeFocused();
     await expect(page.getByTestId("quiz-feedback")).toContainText("Ang husto:");
-    await expectInViewport(page, await nextBtn.boundingBox(), "Sunod");
+    await expectInViewport(page, await nextBtn.boundingBox(), "Susunod");
     await expectInViewport(page, await page.getByTestId("quiz-feedback").boundingBox(), "feedback");
     const nav = page.locator("[data-slot=bottom-nav]");
     if (await nav.isVisible()) {
       const n = (await nav.boundingBox())!;
       const s = (await nextBtn.boundingBox())!;
-      expect(s.y + s.height, "Sunod ends above the nav").toBeLessThanOrEqual(n.y);
+      expect(s.y + s.height, "Susunod ends above the nav").toBeLessThanOrEqual(n.y);
       const f = (await page.getByTestId("quiz-feedback").boundingBox())!;
       expect(f.y + f.height, "feedback ends above the nav").toBeLessThanOrEqual(n.y);
     }
@@ -316,22 +316,22 @@ test.describe("quiz moments", () => {
       await answer(page, i < 2); // 2 right, 3 wrong
       await next(page).click();
     }
-    await expect(page.getByTestId("quiz-score")).toContainText("2 sang 5");
+    await expect(page.getByTestId("quiz-score")).toContainText("2 sa 5");
     const stamps = await page.locator("[data-testid=quiz-stamps] [data-stamp]").evaluateAll((els) => els.map((e) => e.getAttribute("data-stamp")));
     expect(stamps).toEqual(["earned", "earned", "missed", "missed", "missed"]);
     const right = page.getByTestId("quiz-right");
     const retry = page.getByTestId("quiz-retry");
     await expect(right).toBeVisible();
-    await expect(retry.getByRole("heading", { name: "Liwat naton ini" })).toBeVisible();
+    await expect(retry.getByRole("heading", { name: "Ulitin natin ito" })).toBeVisible();
     expect(((await right.boundingBox())!.y)).toBeLessThan((await retry.boundingBox())!.y);
     const cards = page.getByTestId("quiz-retry-card");
     await expect(cards).toHaveCount(3);
-    await expect(cards.first().getByRole("button", { name: /^Pamatii/ })).toBeVisible();
+    await expect(cards.first().getByRole("button", { name: /^Pakinggan/ })).toBeVisible();
     // no stacked red crosses on the screen
     await expect(page.locator("main .bg-destructive")).toHaveCount(0);
     // quiz-finished once: the sticker dialog arrives after the stamps
     await expect(celebration(page)).toBeVisible({ timeout: 4000 });
-    await expect(celebration(page)).toContainText("Una nga Pasulit");
+    await expect(celebration(page)).toContainText("Una nga Pagsusulit");
     await settleCelebrations(page, 500);
     const flags = (await readPersisted(page, "handog-rewards"))!.state.flags as { quizzed: boolean };
     expect(flags.quizzed).toBe(true);
@@ -344,7 +344,7 @@ test.describe("quiz moments", () => {
       await answer(page, i !== 4);
       await next(page).click();
     }
-    await expect(page.getByTestId("quiz-score")).toContainText("4 sang 5");
+    await expect(page.getByTestId("quiz-score")).toContainText("4 sa 5");
     expect(await owlMood(page)).toBe("cheer");
   });
 });

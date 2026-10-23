@@ -10,14 +10,25 @@ test.beforeEach(async ({ context }) => {
 
 test("language switches the UI and persists across reload", async ({ page }) => {
   await gotoAs(page, "/settings", { childName: "Ana" });
-  await expect(page.getByRole("radio", { name: "Hiligaynon" })).toBeChecked();
-  await page.getByRole("radio", { name: "Filipino" }).click();
-  await expect.poll(async () => (await persisted(page)).language).toBe("tagalog");
+  await expect(page.getByRole("radio", { name: "Filipino" })).toBeChecked();
+  await page.getByRole("radio", { name: "English" }).click();
+  await expect.poll(async () => (await persisted(page)).language).toBe("english");
+  await expect(html(page)).toHaveAttribute("lang", "en");
 
   await page.reload();
-  await expect(page.getByRole("radio", { name: "Filipino" })).toBeChecked();
+  await expect(page.getByRole("radio", { name: "English" })).toBeChecked();
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /Magandang (umaga|hapon|gabi), Ana!/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Good (morning|afternoon|evening), Ana!/ })).toBeVisible();
+});
+
+test("English mode swaps the shelf to the four Filipino stories", async ({ page }) => {
+  await gotoAs(page, "/books");
+  await expect(page.getByRole("link", { name: /The Brave Little Fox/ })).toBeVisible();
+  await expect(page.locator('a[href^="/read/fil-"]')).toHaveCount(0);
+
+  await gotoAs(page, "/books", { language: "english" });
+  await expect(page.locator('a[href^="/read/fil-"]')).toHaveCount(4);
+  await expect(page.locator('a[href^="/read/"]:not([href^="/read/fil-"])')).toHaveCount(0);
 });
 
 test("font size changes the html class and scales the reading line pitch", async ({ page }) => {

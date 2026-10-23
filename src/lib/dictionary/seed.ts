@@ -1,8 +1,9 @@
 import fallbackWords from "@/data/fallbackWords";
-import { getDb, getMeta, setMeta, type DictionaryEntry } from "@/stores/db";
+import filipinoWords from "@/data/filipinoWords";
+import { getDb, getMeta, setMeta, type DictionaryEntry, type FilipinoEntry } from "@/stores/db";
 
 /** Bump when the curated list changes so existing installs reload it. */
-export const CURATED_VERSION = 1;
+export const CURATED_VERSION = 2;
 /** Bump when src/data/dictionary.v1.json (generated) changes. */
 export const GENERATED_VERSION = 1;
 export const DICTIONARY_VERSION_KEY = "dictionaryVersion";
@@ -18,8 +19,20 @@ export function curatedEntries(): DictionaryEntry[] {
     emoji: w.emoji,
     difficulty: w.difficulty,
     example: w.example ?? null,
-    hiligaynon: w.hiligaynon,
     tagalog: w.tagalog,
+    reviewed: true,
+  }));
+}
+
+export function filipinoEntries(): FilipinoEntry[] {
+  return Object.values(filipinoWords).map((w) => ({
+    word: w.word.toLowerCase(),
+    phonetic: w.phonetic,
+    filipino: w.filipino,
+    english: w.english,
+    emoji: w.emoji,
+    difficulty: w.difficulty,
+    example: w.example ?? null,
     reviewed: true,
   }));
 }
@@ -48,14 +61,13 @@ function normalizeGenerated(raw: unknown): DictionaryEntry[] {
       emoji: e.emoji ?? "📖",
       difficulty: e.difficulty ?? "easy",
       example: e.example ?? null,
-      hiligaynon: e.hiligaynon ?? "",
       tagalog: e.tagalog ?? "",
       reviewed: e.reviewed === true,
     }))
-    .filter((e) => e.english && (e.hiligaynon || e.tagalog));
+    .filter((e) => e.english && e.tagalog);
 }
 
-/** Loads curated (and, when present, generated) entries into db.dictionary if the stored version is behind. */
+/** Loads curated (and, when present, generated) entries into db.dictionary and db.filipino if the stored version is behind. */
 export async function ensureDictionary(loadGenerated: () => Promise<unknown> = defaultGeneratedLoader): Promise<void> {
   const db = getDb();
   if (!db) return;
@@ -67,5 +79,6 @@ export async function ensureDictionary(loadGenerated: () => Promise<unknown> = d
   for (const e of generated) merged.set(e.word, e);
   for (const e of curatedEntries()) merged.set(e.word, e); // curated wins
   await db.dictionary.bulkPut([...merged.values()]);
+  await db.filipino.bulkPut(filipinoEntries());
   await setMeta(DICTIONARY_VERSION_KEY, DICTIONARY_VERSION);
 }

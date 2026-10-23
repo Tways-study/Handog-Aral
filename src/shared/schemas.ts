@@ -3,7 +3,8 @@ import { z } from "zod";
 // Shared contract between the client and the /api route handlers.
 // Keep this file free of browser- or server-only imports.
 
-export const LanguageSchema = z.enum(["hiligaynon", "tagalog"]);
+/** The child's language, which is also the lookup direction: "tagalog" = English word -> Filipino meaning, "english" = Filipino word -> English meaning. */
+export const LanguageSchema = z.enum(["tagalog", "english"]);
 export const DifficultySchema = z.enum(["easy", "medium", "hard"]);
 
 /** Where an explanation came from. `offline` entries are provisional and get upgraded by the lookup queue. */
@@ -12,7 +13,9 @@ export const ExplanationSourceSchema = z.enum(["ai", "curated", "dictionary", "o
 export const WordExplanationSchema = z.object({
   word: z.string().min(1).max(64),
   phonetic: z.string().max(64),
+  /** A simple definition in the tapped word's own language (English for an English word, Filipino for a Filipino word). */
   english: z.string().min(1).max(400),
+  /** The explanation in the child's language (Filipino for an English word, English for a Filipino word). */
   translation: z.string().min(1).max(400),
   emoji: z.string().max(16),
   difficulty: DifficultySchema,

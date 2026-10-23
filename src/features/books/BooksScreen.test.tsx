@@ -28,21 +28,21 @@ describe("bookStatus", () => {
 describe("BooksScreen", () => {
   it("renders six books as links to /read/[id] with a plain-text status each", () => {
     render(<BooksScreen />);
-    const links = within(screen.getByRole("list", { name: "Mga libro" })).getAllByRole("link");
+    const links = within(screen.getByRole("list", { name: "Mga aklat" })).getAllByRole("link");
     expect(links.map((a) => a.getAttribute("href"))).toEqual(["/read/fox", "/read/star", "/read/pedro", "/read/rainbow", "/read/turtle", "/read/market"]);
     expect(within(links[0]).getByText("Tapos")).toBeTruthy();
-    expect(within(links[1]).getByText("Padayon")).toBeTruthy();
-    expect(within(links[2]).getByText("Bag-o")).toBeTruthy();
-    expect(links[1].textContent).toContain("Padayon");
+    expect(within(links[1]).getByText("Tuloy")).toBeTruthy();
+    expect(within(links[2]).getByText("Bago")).toBeTruthy();
+    expect(links[1].textContent).toContain("Tuloy");
   });
 
   it("shows the real saved-word count per book", () => {
     saved = [{ bookId: "fox" }, { bookId: "fox" }, { bookId: "star" }, { bookId: null }];
     render(<BooksScreen />);
-    const links = within(screen.getByRole("list", { name: "Mga libro" })).getAllByRole("link");
-    expect(within(links[0]).getByText("2 ka pulong")).toBeTruthy();
-    expect(within(links[1]).getByText("1 ka pulong")).toBeTruthy();
-    expect(within(links[2]).getByText("0 ka pulong")).toBeTruthy();
+    const links = within(screen.getByRole("list", { name: "Mga aklat" })).getAllByRole("link");
+    expect(within(links[0]).getByText("2 salita")).toBeTruthy();
+    expect(within(links[1]).getByText("1 salita")).toBeTruthy();
+    expect(within(links[2]).getByText("0 salita")).toBeTruthy();
     saved = [];
   });
 
@@ -57,7 +57,7 @@ describe("BooksScreen", () => {
 describe("BooksScreen cover labels and opening", () => {
   it("shows every title in the cover label (no blank plate), two columns on a phone", () => {
     render(<BooksScreen />);
-    const list = screen.getByRole("list", { name: "Mga libro" });
+    const list = screen.getByRole("list", { name: "Mga aklat" });
     expect(list.className).toContain("grid-cols-2");
     for (const a of within(list).getAllByRole("link")) {
       const label = a.querySelector("[data-jacket] span.font-heading");
@@ -69,7 +69,7 @@ describe("BooksScreen cover labels and opening", () => {
   it("opens the book with the reduced-motion path at once (no matchMedia means no motion)", () => {
     push.mockClear();
     render(<BooksScreen />);
-    const first = within(screen.getByRole("list", { name: "Mga libro" })).getAllByRole("link")[0];
+    const first = within(screen.getByRole("list", { name: "Mga aklat" })).getAllByRole("link")[0];
     fireEvent.click(first);
     expect(push).toHaveBeenCalledWith("/read/fox");
   });
@@ -77,7 +77,7 @@ describe("BooksScreen cover labels and opening", () => {
   it("leaves modified clicks to the browser", () => {
     push.mockClear();
     render(<BooksScreen />);
-    const first = within(screen.getByRole("list", { name: "Mga libro" })).getAllByRole("link")[0];
+    const first = within(screen.getByRole("list", { name: "Mga aklat" })).getAllByRole("link")[0];
     fireEvent.click(first, { metaKey: true });
     expect(push).not.toHaveBeenCalled();
   });

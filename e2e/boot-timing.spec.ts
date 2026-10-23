@@ -34,7 +34,7 @@ test("a word tapped immediately after load, before the dictionary is seeded, sti
   const panel = page.getByRole("dialog").or(page.getByRole("complementary"));
   await expect(panel.getByRole("heading", { name: "brave", exact: true })).toBeVisible();
   // Some explanation text must appear (not an empty or error panel).
-  await expect(panel.getByText(/Hiligaynon|Nagpangita|AI-fallback|[A-Za-z]{4,}/).first()).toBeVisible();
+  await expect(panel.getByText(/Filipino|Nagpangita|AI-fallback|[A-Za-z]{4,}/).first()).toBeVisible();
 
   await waitForDictionary(page); // the deferred seed still completes
   const usedAi = stub.explainCalls.length > 0;

@@ -20,7 +20,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 const SW_ENABLED =
   process.env.NEXT_PUBLIC_BUILD_TARGET !== "capacitor" && process.env.NODE_ENV === "production";
 
-const currentStrings = () => translations[useSettings.getState().language] ?? translations.hiligaynon;
+const currentStrings = () => translations[useSettings.getState().language] ?? translations.tagalog;
 
 const whenIdle = (cb: () => void, timeout: number): (() => void) => {
   if (typeof requestIdleCallback === "function") {

@@ -47,8 +47,18 @@ function loadVoices(): Promise<SpeechSynthesisVoice[]> {
   });
 }
 
+/** The speech language for text in the child's language setting: an English reader hears Filipino words and stories. */
+export function speechLang(language: "tagalog" | "english"): string {
+  return language === "english" ? "fil-PH" : "en-US";
+}
+
 export function pickVoice(voices: SpeechSynthesisVoice[], lang = "en-US"): SpeechSynthesisVoice | null {
   const norm = (l: string) => l.replace("_", "-").toLowerCase();
+  const primary = norm(lang).split("-")[0];
+  if (primary === "fil" || primary === "tl") {
+    // Filipino: a fil/tl voice if the device has one, otherwise none (the utterance's lang lets the engine choose).
+    return voices.find((x) => /^(fil|tl)(-|$)/.test(norm(x.lang))) ?? null;
+  }
   for (const want of ["en-ph", norm(lang), "en-us", "en-gb"]) {
     const v = voices.find((x) => norm(x.lang) === want);
     if (v) return v;

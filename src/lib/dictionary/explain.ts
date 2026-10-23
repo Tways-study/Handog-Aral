@@ -1,6 +1,6 @@
 import { explainRemote } from "@/lib/api";
 import type { Language, ResolvedExplanation } from "@/shared/schemas";
-import { enqueue, getCached, getDictionaryEntry, putCached, touch } from "@/stores/db";
+import { enqueue, getCached, getDictionaryEntry, getFilipinoEntry, putCached, touch } from "@/stores/db";
 import { normalizeWord } from "./normalize";
 
 export { normalizeWord } from "./normalize";
@@ -26,30 +26,27 @@ const PART_OF_SPEECH_EMOJI: Record<string, string> = {
 };
 
 export const OFFLINE_TEXT: Record<Language, string> = {
-  hiligaynon: "Wala pa sang paathag. Ipakita namon kon may internet na.",
   tagalog: "Wala pang paliwanag. Ipapakita namin kapag may internet na.",
+  english: "No explanation yet. We will show it when you are online.",
 };
 
-// Ported from src/lib/geminiService.ts (same behavior).
-export function generateLocalTranslation(word: string, english: string, pos: string, targetLanguage: Language): string {
-  const isHiligaynon = targetLanguage !== "tagalog";
+/** What the offline placeholder says in the word's own language (the "definition" line). */
+const OFFLINE_DEFINITION: Record<Language, string> = {
+  tagalog: "No explanation saved yet.",
+  english: "Wala pang paliwanag na naka-save.",
+};
+
+/** A templated Filipino framing around an English definition (only used for English words, i.e. the "tagalog" language). */
+export function generateLocalTranslation(word: string, english: string, pos: string): string {
   const shortDef = english.length > 60 ? english.slice(0, 57) + "…" : english;
 
-  const templates: Record<string, string> = isHiligaynon
-    ? {
-        verb: `Buhat — "${word}" nagakahulugan: ${shortDef}`,
-        noun: `"${word}" — isa ka butang ukon tawo: ${shortDef}`,
-        adjective: `Nagahulagway — "${word}" nagpakita sang: ${shortDef}`,
-        adverb: `Paagi — "${word}" nagahulagway kung paano: ${shortDef}`,
-        default: `"${word}" sa English nagakahulugan: ${shortDef}`,
-      }
-    : {
-        verb: `Gawa — "${word}" nangangahulugang: ${shortDef}`,
-        noun: `"${word}" — isang bagay o tao: ${shortDef}`,
-        adjective: `Naglalarawan — "${word}" nagpapakita ng: ${shortDef}`,
-        adverb: `Paraan — "${word}" naglalarawan kung paano: ${shortDef}`,
-        default: `"${word}" sa English nangangahulugang: ${shortDef}`,
-      };
+  const templates: Record<string, string> = {
+    verb: `Gawa — "${word}" nangangahulugang: ${shortDef}`,
+    noun: `"${word}" — isang bagay o tao: ${shortDef}`,
+    adjective: `Naglalarawan — "${word}" nagpapakita ng: ${shortDef}`,
+    adverb: `Paraan — "${word}" naglalarawan kung paano: ${shortDef}`,
+    default: `"${word}" sa English nangangahulugang: ${shortDef}`,
+  };
 
   return templates[pos] || templates.default;
 }
@@ -90,7 +87,7 @@ export async function lookupDictionaryAPI(
     const emoji = PART_OF_SPEECH_EMOJI[pos] || "📖";
     const wordLen = word.length;
     const difficulty = wordLen <= 4 ? "easy" : wordLen <= 7 ? "medium" : "hard";
-    const translation = generateLocalTranslation(word, english, pos, language);
+    const translation = generateLocalTranslation(word, english, pos);
 
     return { word, phonetic, english, translation, emoji, difficulty, example, source: "dictionary", language };
   } catch {
@@ -105,7 +102,7 @@ export function offlinePlaceholder(word: string, language: Language): ResolvedEx
   return {
     word,
     phonetic: `/${word}/`,
-    english: "No explanation saved yet.",
+    english: OFFLINE_DEFINITION[language],
     translation: OFFLINE_TEXT[language],
     emoji: "📖",
     difficulty: "easy",
@@ -144,17 +141,32 @@ export async function explain(input: ExplainInput, opts: { signal?: AbortSignal 
     };
   }
 
-  // 2. Curated dictionary.
-  const curated = await getDictionaryEntry(word);
-  throwIfAborted(signal);
-  if (curated) {
-    const translation = curated[language];
-    if (translation) {
+  // 2. Curated dictionary: English words for Filipino readers, Filipino words for English readers.
+  if (language === "english") {
+    const curated = await getFilipinoEntry(word);
+    throwIfAborted(signal);
+    if (curated) {
+      return {
+        word,
+        phonetic: curated.phonetic,
+        english: curated.filipino,
+        translation: curated.english,
+        emoji: curated.emoji,
+        difficulty: curated.difficulty,
+        example: curated.example,
+        source: "curated",
+        language,
+      };
+    }
+  } else {
+    const curated = await getDictionaryEntry(word);
+    throwIfAborted(signal);
+    if (curated?.tagalog) {
       return {
         word,
         phonetic: curated.phonetic,
         english: curated.english,
-        translation,
+        translation: curated.tagalog,
         emoji: curated.emoji,
         difficulty: curated.difficulty,
         example: curated.example,
@@ -173,12 +185,14 @@ export async function explain(input: ExplainInput, opts: { signal?: AbortSignal 
     return result;
   }
 
-  // 4. dictionaryapi.dev with a local template translation.
-  const dict = await lookupDictionaryAPI(word, language, signal);
-  throwIfAborted(signal);
-  if (dict) {
-    await putCached(dict);
-    return dict;
+  // 4. dictionaryapi.dev with a local template translation (English words only).
+  if (language === "tagalog") {
+    const dict = await lookupDictionaryAPI(word, language, signal);
+    throwIfAborted(signal);
+    if (dict) {
+      await putCached(dict);
+      return dict;
+    }
   }
 
   // 5. Offline placeholder, upgraded later by the lookup queue.

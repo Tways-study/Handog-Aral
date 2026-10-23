@@ -11,7 +11,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 vi.mock("@capacitor/core", () => ({ Capacitor: { isNativePlatform: () => false } }));
-vi.mock("@/lib/tts", () => ({ speak: vi.fn(() => Promise.resolve()), stop: vi.fn(() => Promise.resolve()), isSpeaking: () => false }));
+vi.mock("@/lib/tts", () => ({ speechLang: () => "en-US", speak: vi.fn(() => Promise.resolve()), stop: vi.fn(() => Promise.resolve()), isSpeaking: () => false }));
 vi.mock("@/lib/dictionary/explain", async () => {
   const actual = await vi.importActual<typeof import("@/lib/dictionary/explain")>("@/lib/dictionary/explain");
   const e: ResolvedExplanation = {
@@ -23,7 +23,7 @@ vi.mock("@/lib/dictionary/explain", async () => {
     difficulty: "hard",
     example: "The enormous tree gave shade.",
     source: "curated",
-    language: "hiligaynon",
+    language: "tagalog",
   };
   return { ...actual, explain: vi.fn(() => Promise.resolve(e)) };
 });
@@ -64,7 +64,7 @@ describe("ReaderScreen layouts", () => {
     setDesktop(true);
     render(<ReaderScreen bookId="fox" />);
     expect(screen.getByRole("complementary")).toBeTruthy();
-    expect(screen.getByText("Pindota ang pulong")).toBeTruthy();
+    expect(screen.getByText("I-tap ang salita")).toBeTruthy();
     await act(async () => fireEvent.click(screen.getAllByRole("button", { name: "enormous" })[0] ?? screen.getAllByRole("button", { name: "forest" })[0]));
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(await screen.findByText("Daku gid-gid.")).toBeTruthy();
@@ -146,7 +146,7 @@ describe("ReaderScreen moments", () => {
     try {
       render(<ReaderScreen bookId="fox" />);
       await act(async () => fireEvent.click(screen.getAllByRole("button", { name: "forest" })[0]));
-      const save = await screen.findByRole("button", { name: "Tipigi" });
+      const save = await screen.findByRole("button", { name: "I-save" });
       await act(async () => fireEvent.click(save));
       await waitFor(() => expect(document.querySelector("[data-slot=save-stamp]")).toBeTruthy());
       // the stamp is up, but no sticker yet (it would land on top of the stamp)

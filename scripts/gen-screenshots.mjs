@@ -1,6 +1,6 @@
 // Captures the install-dialog screenshots (public/screenshots/{wide,narrow}.png) from a running production build.
 // Usage: BASE_URL=http://localhost:3213 node scripts/gen-screenshots.mjs  (PW_CHROMIUM_PATH optional)
-// Seeds a child named Ana (Hiligaynon), some progress and saved words; the API is stubbed, nothing hits the network.
+// Seeds a child named Ana (Filipino), some progress and saved words; the API is stubbed, nothing hits the network.
 import { chromium } from "@playwright/test";
 import sharp from "sharp";
 import { writeFile, mkdir } from "node:fs/promises";
@@ -11,11 +11,11 @@ const BASE = process.env.BASE_URL ?? "http://localhost:3213";
 const out = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "screenshots");
 await mkdir(out, { recursive: true });
 
-const settings = { childName: "Ana", language: "hiligaynon", fontSize: "medium", dyslexiaFont: false, ttsSpeed: 0.8, colorOverlay: "none", theme: "light", onboarded: true };
+const settings = { childName: "Ana", language: "tagalog", fontSize: "medium", dyslexiaFont: false, ttsSpeed: 0.8, colorOverlay: "none", theme: "light", onboarded: true };
 const progress = { currentBookId: "fox", bookProgress: { fox: 40, star: 100 }, streak: 4, lastActiveDate: null, quizHighScore: 4, quizStars: 1, savedWordCount: 6 };
 const words = ["brave", "forest", "quiet", "stone", "happy", "snow"].map((w, i) => ({
-  key: w, word: w, phonetic: `/${w}/`, english: `Meaning of ${w}`, translation: `Hiligaynon ${w}`, emoji: "📖", difficulty: "easy",
-  example: null, source: "curated", language: "hiligaynon", bookId: null, savedAt: Date.now() - i * 1000,
+  key: w, word: w, phonetic: `/${w}/`, english: `Meaning of ${w}`, translation: `Filipino ${w}`, emoji: "📖", difficulty: "easy",
+  example: null, source: "curated", language: "tagalog", bookId: null, savedAt: Date.now() - i * 1000,
 }));
 
 const idbPut = (page, key, value) =>

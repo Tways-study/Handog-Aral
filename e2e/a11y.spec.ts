@@ -5,7 +5,7 @@ import { gotoAs, savedWordRow, seedWords, stubApi, waitForDictionary, wordButton
 // WCAG 2.1 A/AA scan of every route, light and dark, at both viewports (the two Playwright projects).
 // Fails on serious or critical violations; moderate/minor ones are logged but do not fail.
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
-const WORDS = ["brave", "forest", "quiet", "stone", "happy", "snow"].map((w, i) => savedWordRow(w, `Hiligaynon-${w}`, {}, i));
+const WORDS = ["brave", "forest", "quiet", "stone", "happy", "snow"].map((w, i) => savedWordRow(w, `Filipino-${w}`, {}, i));
 
 async function scan(page: Page, label: string) {
   // Let route fades and sheet animations finish so contrast is measured on the settled page.
@@ -76,7 +76,7 @@ for (const theme of ["light", "dark"] as const) {
 
     test("quiz question", async ({ page }) => {
       await seeded(page, theme, "/quiz");
-      await expect(page.getByText("1 sang 5").first()).toBeVisible();
+      await expect(page.getByText("1 sa 5").first()).toBeVisible();
       await scan(page, `/quiz ${theme}`);
     });
 

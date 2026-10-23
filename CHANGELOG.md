@@ -4,6 +4,11 @@ Version history for Handog Aral, reconstructed from the git log. v2 was the Vite
 
 ## v3 (3.0.0-beta.1)
 
+### 2026-10-23 · Hiligaynon removed, English and Filipino both ways
+- Hiligaynon is gone (translations were not accurate enough). The language setting is now Filipino or English and doubles as the lookup direction: English words explained in Filipino, or Filipino words explained in English.
+- Four short Filipino stories and a ~200-word curated Filipino dictionary (marked for native-speaker review), a Filipino TTS voice, and an AI prompt that switches direction.
+- Existing installs: stored language becomes Filipino; saved Hiligaynon words are kept and upgraded in the background; Hiligaynon cache and queue rows are dropped (Dexie v2, settings v4).
+
 ### 2026-10-22 · Fun and cute round
 - Procedural three.js toon owl (lazy, with a flat SVG fallback and safe refusals on slow, low-end or reduced-motion devices), moods and a wardrobe (glasses, cap, bow).
 - Rewards: 14 stickers, celebration dialog, "Pares" memory game, optional synthesized sounds and haptics, first-time moments.

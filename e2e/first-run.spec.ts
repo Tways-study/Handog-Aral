@@ -46,7 +46,7 @@ test("Laktawan skips setup without a name and never shows /welcome again", async
   await page.getByRole("button", { name: "Laktawan" }).click();
 
   await expect(page).toHaveURL(/\/$/);
-  // Default language is Hiligaynon and the greeting has no name.
+  // Default language is Filipino and the greeting has no name.
   await expect(page.getByRole("heading", { name: GREETING_HIL })).toBeVisible();
   await expect(page.getByRole("heading", { name: /,/ })).toHaveCount(0);
 
@@ -76,7 +76,7 @@ test("a v1 settings blob with a name (pre-onboarding user) is treated as returni
         open.onupgradeneeded = () => open.result.createObjectStore("keyval");
         open.onsuccess = () => {
           const tx = open.result.transaction("keyval", "readwrite");
-          tx.objectStore("keyval").put(JSON.stringify({ state: { childName: "Lola", language: "hiligaynon" }, version: 1 }), "handog-settings");
+          tx.objectStore("keyval").put(JSON.stringify({ state: { childName: "Lola", language: "tagalog" }, version: 1 }), "handog-settings");
           tx.oncomplete = () => resolve();
         };
       }),

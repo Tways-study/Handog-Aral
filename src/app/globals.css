@@ -365,13 +365,16 @@ a { text-underline-offset: 4px; }
 .page-band::after {
   background-image: var(--band-confetti);
   background-size: 360px 360px;
-  -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 62%, #000 92%);
-  mask-image: linear-gradient(to right, transparent 0, transparent 62%, #000 92%);
+  /* The second layer fades the bottom edge so the next tile row never shows as half-cut slivers under the band. */
+  --band-fade-x: linear-gradient(to right, transparent 0, transparent 62%, #000 92%);
+  -webkit-mask-image: var(--band-fade-x), linear-gradient(to bottom, #000 0, #000 55%, transparent 88%);
+  mask-image: var(--band-fade-x), linear-gradient(to bottom, #000 0, #000 55%, transparent 88%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
 }
 @media (min-width: 1024px) {
   .page-band::after {
-    -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 46%, #000 78%);
-    mask-image: linear-gradient(to right, transparent 0, transparent 46%, #000 78%);
+    --band-fade-x: linear-gradient(to right, transparent 0, transparent 46%, #000 78%);
   }
 }
 .pad-text {

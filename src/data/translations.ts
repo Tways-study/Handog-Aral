@@ -14,54 +14,8 @@ import { rewardsStrings } from "./strings/rewards";
 
 /**
  * Core strings (nav, difficulty, shell) live here; each feature owns its own file under
- * ./strings/. Hiligaynon is the shape: Tagalog must match it key for key (see `satisfies`).
+ * ./strings/. Filipino is the shape: English must match it key for key (see `satisfies`).
  */
-const hiligaynon = {
-    nav: {
-      home: "Balay",
-      books: "Mga Libro",
-      scan: "I-Scan",
-      vocabulary: "Bituon",
-      settings: "Opsyon",
-    },
-    difficulty: { easy: "Dali", medium: "Medyo budlay", hard: "Mabudlay" },
-    shell: {
-      navHome: "Balay",
-      navBooks: "Libro",
-      navScan: "I-scan",
-      navWords: "Pulong",
-      navQuiz: "Pasulit",
-      navSettings: "Settings",
-      appName: "Handog Aral",
-      mainNavLabel: "Pangunhon nga menu",
-      skipToContent: "Laktawan sa sulod",
-      loading: "Ginahanda ang imo pad...",
-      offlineBanner: "Wala sang internet. Nagapadayon pa ang app, pero mas simple ang kahulugan tubtob makonek liwat.",
-      offlinePageTitle: "Wala ka sang internet",
-      offlinePageBody: "Indi ma-abri ang pahina nga ini kon wala sang konekson. Ang mga libro kag pulong nga natipon na sa telepono ara pa.",
-      offlineRetry: "Probahi liwat",
-      offlineHome: "Pauli sa Balay",
-      updateAvailable: "May bag-o nga bersyon sang app.",
-      updateAction: "I-update",
-      upgradedWords: (n: number) => `Mas klaro na ang ${n} ka pulong.`,
-    },
-    home: homeStrings.hiligaynon,
-    books: booksStrings.hiligaynon,
-    vocabulary: vocabularyStrings.hiligaynon,
-    scan: scanStrings.hiligaynon,
-    quiz: quizStrings.hiligaynon,
-    settings: settingsStrings.hiligaynon,
-    popup: popupStrings.hiligaynon,
-    bookCard: bookCardStrings.hiligaynon,
-    welcome: welcomeStrings.hiligaynon,
-    system: systemStrings.hiligaynon,
-    stickers: stickersStrings.hiligaynon,
-    play: playStrings.hiligaynon,
-    rewards: rewardsStrings.hiligaynon,
-};
-
-type Translation = typeof hiligaynon;
-
 const tagalog = {
     nav: {
       home: "Tahanan",
@@ -104,8 +58,52 @@ const tagalog = {
     stickers: stickersStrings.tagalog,
     play: playStrings.tagalog,
     rewards: rewardsStrings.tagalog,
-} satisfies Translation;
+};
 
-export const translations = { hiligaynon, tagalog };
+const english = {
+    nav: {
+      home: "Home",
+      books: "Books",
+      scan: "Scan",
+      vocabulary: "Stars",
+      settings: "Settings",
+    },
+    difficulty: { easy: "Easy", medium: "Medium", hard: "Hard" },
+    shell: {
+      navHome: "Home",
+      navBooks: "Books",
+      navScan: "Scan",
+      navWords: "Words",
+      navQuiz: "Quiz",
+      navSettings: "Settings",
+      appName: "Handog Aral",
+      mainNavLabel: "Main menu",
+      skipToContent: "Skip to content",
+      loading: "Getting your pad ready...",
+      offlineBanner: "No internet. The app still works, but meanings are simpler until you are back online.",
+      offlinePageTitle: "You are offline",
+      offlinePageBody: "This page cannot open without a connection. The books and words already saved on your phone are still here.",
+      offlineRetry: "Try again",
+      offlineHome: "Back to Home",
+      updateAvailable: "A new version of the app is ready.",
+      updateAction: "Update",
+      upgradedWords: (n: number) => (n === 1 ? "1 word is clearer now." : `${n} words are clearer now.`),
+    },
+    home: homeStrings.english,
+    books: booksStrings.english,
+    vocabulary: vocabularyStrings.english,
+    scan: scanStrings.english,
+    quiz: quizStrings.english,
+    settings: settingsStrings.english,
+    popup: popupStrings.english,
+    bookCard: bookCardStrings.english,
+    welcome: welcomeStrings.english,
+    system: systemStrings.english,
+    stickers: stickersStrings.english,
+    play: playStrings.english,
+    rewards: rewardsStrings.english,
+} satisfies typeof tagalog;
 
-export type Translations = Translation;
+export const translations = { tagalog, english };
+
+export type Translations = typeof tagalog;

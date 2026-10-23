@@ -25,14 +25,14 @@ export function writeMirror(name: string, value: string | null): void {
   }
 }
 
-/** The child's language from the mirror, defaulting to Hiligaynon. Safe anywhere, never throws. */
+/** The child's language from the mirror, defaulting to Filipino. Safe anywhere, never throws. */
 export function readMirroredLanguage(): Language {
   try {
     const raw = readMirror("handog-settings");
     const lang = raw ? (JSON.parse(raw) as { state?: { language?: unknown } }).state?.language : undefined;
-    return lang === "tagalog" ? "tagalog" : "hiligaynon";
+    return lang === "english" ? "english" : "tagalog";
   } catch {
-    return "hiligaynon";
+    return "tagalog";
   }
 }
 

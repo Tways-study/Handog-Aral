@@ -1,39 +1,15 @@
-/** welcome (first-run) strings. Hiligaynon is the shape; Tagalog must match it key for key. */
-const hiligaynon = {
-  appName: "Handog Aral",
-  tagline: "Ang Imo Gabay sa Pagbasa",
-  // The owl's voice on the cover. REVIEW: native speaker (Hiligaynon).
-  owlHello: "Kamusta! Ako si Kuwago. Basahon ta ang imo libro.",
-  // After "Magsugod kita" the owl says the child's name. REVIEW: native speaker (Hiligaynon).
-  owlHelloName: (name: string) => (name ? `Kamusta, ${name}!` : "Kamusta!"),
-  nameLabel: "Ano ang imo ngalan?",
-  namePlaceholder: "Isulat ang imo ngalan",
-  languageLabel: "Ano nga pinulongan ang gusto mo?",
-  optionHiligaynon: "Hiligaynon",
-  optionTagalog: "Filipino",
-  start: "Magsugod kita",
-  skip: "Laktawan",
-  // Step 2, "Una nga Superpower". REVIEW: native speaker (Hiligaynon) for every line below.
-  superTitle: "Imo Una nga Superpower",
-  superPrompt: "Pindota ang pulong nga indi mo kilala!",
-  superHint: "Pindota ang pulong nga may tuldok",
-  superCheer: "Nabasa mo na!",
-  superSaved: "Natipigan na! Imo ini nga una nga pulong.",
-  superPaperLabel: "Sample nga pahina",
-  superContinue: "Sige, kadi ta na!",
-};
-
+/** welcome (first-run) strings. Filipino is the shape; English must match it key for key. */
 const tagalog = {
   appName: "Handog Aral",
-  tagline: "Ang Imo Gabay sa Pagbasa",
+  tagline: "Ang Iyong Gabay sa Pagbasa",
   // REVIEW: native speaker (Filipino).
   owlHello: "Kumusta! Ako si Kuwago. Babasahin natin ang libro mo.",
   // REVIEW: native speaker (Filipino).
   owlHelloName: (name: string) => (name ? `Kumusta, ${name}!` : "Kumusta!"),
   nameLabel: "Ano ang pangalan mo?",
   namePlaceholder: "Isulat ang pangalan mo",
-  languageLabel: "Anong wika ang gusto mo?",
-  optionHiligaynon: "Hiligaynon",
+  languageLabel: "Sa anong wika ipapaliwanag ang mga salita?",
+  optionEnglish: "English",
   optionTagalog: "Filipino",
   start: "Magsimula tayo",
   skip: "Laktawan",
@@ -45,6 +21,27 @@ const tagalog = {
   superSaved: "Naitabi na! Ito ang una mong salita.",
   superPaperLabel: "Sample na pahina",
   superContinue: "Sige, tara na!",
-} satisfies typeof hiligaynon;
+};
 
-export const welcomeStrings = { hiligaynon, tagalog };
+const english = {
+  appName: "Handog Aral",
+  tagline: "Your Reading Guide",
+  owlHello: "Hello! I am Owl. Let's read your book.",
+  owlHelloName: (name: string) => (name ? `Hello, ${name}!` : "Hello!"),
+  nameLabel: "What is your name?",
+  namePlaceholder: "Type your name",
+  languageLabel: "Which language should explain the words?",
+  optionEnglish: "English",
+  optionTagalog: "Filipino",
+  start: "Let's start",
+  skip: "Skip",
+  superTitle: "Your First Superpower",
+  superPrompt: "Tap a word you do not know!",
+  superHint: "Tap the word with the dot",
+  superCheer: "You read it!",
+  superSaved: "Saved! This is your first word.",
+  superPaperLabel: "Sample page",
+  superContinue: "Okay, let's go!",
+} satisfies typeof tagalog;
+
+export const welcomeStrings = { tagalog, english };

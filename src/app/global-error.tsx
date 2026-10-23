@@ -11,13 +11,13 @@ import "./globals.css";
 
 /**
  * Last-resort boundary: replaces the root layout, so it brings its own <html>/<body> and cannot use
- * the providers. The language is read defensively from the settings mirror; Hiligaynon otherwise.
+ * the providers. The language is read defensively from the settings mirror; Filipino otherwise.
  */
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   const lang = useSyncExternalStore(
     () => () => {},
     readMirroredLanguage,
-    () => "hiligaynon" as const,
+    () => "tagalog" as const,
   );
   useEffect(() => {
     console.error("[handog-aral] fatal error:", error);

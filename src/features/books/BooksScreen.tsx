@@ -7,11 +7,13 @@ import { CircleCheck, BookOpen, Sparkles } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/PageLayout";
 import BookCover from "@/components/BookCover";
 import { EmptyShelf } from "@/components/art";
-import { sampleBooks } from "@/data/books";
+import { booksFor } from "@/data/books";
 import { useT } from "@/hooks/useT";
 import { useSavedWords } from "@/hooks/useSavedWords";
+import { cn } from "@/lib/utils";
 import { bookOpenThen, pageIn } from "@/lib/motionPages";
 import { useProgress } from "@/stores/progress";
+import { useSettings } from "@/stores/settings";
 import ShelfBar from "./ShelfBar";
 import { bookStatus, type BookStatus } from "./status";
 
@@ -23,6 +25,7 @@ export default function BooksScreen() {
   const rootRef = useRef<HTMLDivElement>(null);
   const cancelOpen = useRef<(() => void) | null>(null);
   const bookProgress = useProgress((s) => s.bookProgress);
+  const books = booksFor(useSettings((s) => s.language));
   const words = useSavedWords();
   const wordsByBook = new Map<string, number>();
   for (const w of words ?? []) if (w.bookId) wordsByBook.set(w.bookId, (wordsByBook.get(w.bookId) ?? 0) + 1);
@@ -31,7 +34,7 @@ export default function BooksScreen() {
     progress: t.bookCard.statusInProgress,
     done: t.bookCard.statusDone,
   };
-  const doneCount = sampleBooks.filter((b) => (bookProgress[b.id] ?? 0) >= 100).length;
+  const doneCount = books.filter((b) => (bookProgress[b.id] ?? 0) >= 100).length;
 
   useEffect(() => pageIn(rootRef.current), []);
   useEffect(() => () => cancelOpen.current?.(), []);
@@ -50,15 +53,15 @@ export default function BooksScreen() {
         <div data-rise>
           <PageHeader title={t.books.title} subtitle={doneCount > 0 ? t.books.subtitleDone(doneCount) : t.books.subtitleNew} />
         </div>
-        {sampleBooks.length === 0 ? (
+        {books.length === 0 ? (
           <div data-rise className="flex flex-col items-center gap-3 py-12 text-center">
             <EmptyShelf size={200} />
             <p className="font-heading text-xl font-bold">{t.books.emptyTitle}</p>
             <p className="max-w-[28ch] text-ink-2">{t.books.emptyBody}</p>
           </div>
         ) : (
-          <ul aria-label={t.books.shelfLabel} className="grid grid-cols-2 gap-x-4 gap-y-8 pt-2 sm:gap-x-8 lg:grid-cols-3">
-            {sampleBooks.map((book) => {
+          <ul aria-label={t.books.shelfLabel} className={cn("grid grid-cols-2 gap-x-4 gap-y-8 pt-2 sm:gap-x-8", books.length === 4 ? "lg:grid-cols-4 lg:gap-x-6" : "lg:grid-cols-3")}>
+            {books.map((book) => {
               const pct = Math.max(0, Math.min(100, bookProgress[book.id] ?? 0));
               const status = bookStatus(pct);
               const Icon = STATUS_ICON[status];

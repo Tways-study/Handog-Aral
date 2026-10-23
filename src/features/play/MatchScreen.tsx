@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useSavedWords } from "@/hooks/useSavedWords";
+import { useSettings } from "@/stores/settings";
 import { useT } from "@/hooks/useT";
 import { buzz } from "@/lib/haptics";
 import {
@@ -38,7 +39,7 @@ export const MISMATCH_MS = 900;
 
 export default function MatchScreen() {
   const t = useT();
-  const words = useSavedWords();
+  const words = useSavedWords(useSettings((s) => s.language));
   const [round, setRound] = useState(0);
 
   return (

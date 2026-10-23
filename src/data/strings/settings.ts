@@ -1,8 +1,8 @@
 /**
  * Settings is the adults' screen (parents and teachers), so every label is plain English in both
- * languages. The table is shared; Tagalog is the same object so the shape check holds.
+ * languages. The table is shared; `english` is the same object so the shape check holds.
  */
-const english = {
+const tagalog = {
   title: "Settings",
   subtitle: "For parents, teachers and guardians. Changes apply right away.",
 
@@ -12,9 +12,10 @@ const english = {
   namePlaceholder: "Type a name",
 
   languageHeading: "Language",
-  languageLabel: "Home language",
-  languageHelp: "Word meanings and the app's child-facing text use this language.",
-  hiligaynon: "Hiligaynon",
+  languageLabel: "Reading language",
+  languageHelp:
+    "Filipino: the app is in Filipino and the child taps English words to get Filipino meanings. English: the app is in English and the child taps Filipino words to get English meanings.",
+  english: "English",
   tagalog: "Filipino",
 
   readingHeading: "Reading",
@@ -101,12 +102,11 @@ const english = {
 
   aboutHeading: "About",
   appName: "Handog Aral",
-  tagline: "Ang Imo Gabay sa Pagbasa",
+  tagline: "Ang Iyong Gabay sa Pagbasa",
   version: (v: string) => `Version ${v}`,
   owlCredit: "The owl is the reading companion. It keeps watch over every page.",
 };
 
-const hiligaynon = english;
-const tagalog = english satisfies typeof hiligaynon;
+const english = tagalog satisfies typeof tagalog;
 
-export const settingsStrings = { hiligaynon, tagalog };
+export const settingsStrings = { tagalog, english };

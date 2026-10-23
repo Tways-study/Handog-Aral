@@ -3,7 +3,7 @@ import { expect, type BrowserContext, type Page, type Route } from "@playwright/
 /** Settings shape persisted by the app (src/stores/settings.ts). */
 export interface SettingsPatch {
   childName?: string;
-  language?: "hiligaynon" | "tagalog";
+  language?: "tagalog" | "english";
   fontSize?: "small" | "medium" | "large";
   dyslexiaFont?: boolean;
   ttsSpeed?: number;
@@ -18,7 +18,7 @@ export interface SettingsPatch {
 
 const DEFAULT_SETTINGS = {
   childName: "",
-  language: "hiligaynon",
+  language: "tagalog",
   fontSize: "medium",
   dyslexiaFont: false,
   ttsSpeed: 0.8,
@@ -35,14 +35,14 @@ const DEFAULT_SETTINGS = {
 export interface ExplainBody {
   word: string;
   sentence: string;
-  language: "hiligaynon" | "tagalog";
+  language: "tagalog" | "english";
 }
 
 export const wordExplanation = (word: string, over: Record<string, unknown> = {}) => ({
   word,
   phonetic: `/${word}/`,
   english: `English meaning of ${word}.`,
-  translation: `Hiligaynon: ${word} nga kahulugan`,
+  translation: `Filipino: ${word} nga kahulugan`,
   emoji: "📖",
   difficulty: "medium",
   example: `She ${word} for it.`,
@@ -110,11 +110,11 @@ async function writeIdbKeyval(page: Page, key: string, value: string) {
   );
 }
 
-/** Seeds settings and lands on `path`. Defaults to an onboarded Hiligaynon child so /welcome is skipped. */
+/** Seeds settings and lands on `path`. Defaults to an onboarded Filipino child so /welcome is skipped. */
 export async function gotoAs(page: Page, path: string, settings: SettingsPatch = {}, progress?: Record<string, unknown>) {
   await page.goto("/offline"); // static page: no first-run redirect, boots the stores
   const state = { ...DEFAULT_SETTINGS, onboarded: true, ...settings };
-  await writeIdbKeyval(page, "handog-settings", JSON.stringify({ state, version: 3 }));
+  await writeIdbKeyval(page, "handog-settings", JSON.stringify({ state, version: 4 }));
   if (progress) await writeIdbKeyval(page, "handog-progress", JSON.stringify({ state: progress, version: 1 }));
   await page.goto(path);
 }
@@ -131,7 +131,7 @@ export function savedWordRow(word: string, translation: string, over: Record<str
     difficulty: "easy",
     example: null,
     source: "curated",
-    language: "hiligaynon",
+    language: "tagalog",
     bookId: null,
     savedAt: Date.now() - i * 1000,
     ...over,

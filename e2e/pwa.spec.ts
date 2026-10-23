@@ -59,8 +59,8 @@ test("/offline renders its own page", async ({ page }) => {
   const res = await page.goto("/offline");
   expect(res?.status()).toBe(200);
   await expect(page.getByRole("heading", { name: "Wala ka sang internet" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Probahi liwat" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Pauli sa Balay" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Subukan ulit" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Pauli sa Tahanan" })).toBeVisible();
 });
 
 test("the service worker registers and the app shell loads offline after the first visit", async ({ page, context }) => {
@@ -94,7 +94,7 @@ test("the service worker registers and the app shell loads offline after the fir
 
   // Visited routes load offline, including a hard navigation.
   await page.goto("/books");
-  await expect(page.getByRole("heading", { name: "Mga Libro" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Mga Aklat" })).toBeVisible();
 
   // A never-visited route falls back to the offline page or the cached shell; it must not be Chrome's dinosaur.
   const res = await page.goto("/settings").catch((e) => e as Error);

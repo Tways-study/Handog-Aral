@@ -9,28 +9,28 @@ test.beforeEach(async ({ context }) => {
   await stubApi(context);
 });
 
-test("first run says Umpisahan ta", async ({ page }) => {
+test("first run says Umpisahan natin", async ({ page }) => {
   await gotoAs(page, "/", { childName: "Ana" });
-  await expect(page.getByRole("link", { name: "Umpisahan ta" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Umpisahan natin" })).toBeVisible();
 });
 
-test("with progress it says Padayon and scan is the paper secondary", async ({ page }) => {
+test("with progress it says Tuloy and scan is the paper secondary", async ({ page }) => {
   await gotoAs(page, "/", { childName: "Ana" }, PROGRESS);
-  await expect(page.getByRole("link", { name: "Padayon sa pagbasa" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Ituloy ang pagbabasa" })).toBeVisible();
   await expect(page.getByRole("link", { name: "I-scan ang pahina" })).toHaveAttribute("data-variant", "secondary");
 });
 
-test("the owl's tag shows the newest word, the sticker row counts, and Maglaro ta waits for 3 words", async ({ page }) => {
+test("the owl's tag shows the newest word, the sticker row counts, and Tara, laro tayo waits for 3 words", async ({ page }) => {
   await gotoAs(page, "/", { childName: "Ana" }, PROGRESS);
   await waitForDictionary(page);
   await seedWords(page, ["brave", "forest"].map((w, i) => savedWordRow(w, `T-${w}`, {}, i)));
   await page.goto("/");
   await expect(page.getByRole("button", { name: /brave/ })).toBeVisible();
   await expect(page.getByRole("link", { name: /Mga sticker/ })).toContainText("sang 14");
-  await expect(page.getByRole("link", { name: /Maglaro ta/ })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /Tara, laro tayo/ })).toHaveCount(0);
   await seedWords(page, [savedWordRow("quiet", "T-quiet", {}, 2)]);
   await page.reload();
-  await page.getByRole("link", { name: /Maglaro ta/ }).click();
+  await page.getByRole("link", { name: /Tara, laro tayo/ }).click();
   await expect(page).toHaveURL(/\/play$/);
 });
 
@@ -38,7 +38,7 @@ test("nothing scrolls sideways and the primary action is reachable at 320 and wi
   for (const [w, h, fontSize] of [[320, 640, "medium"], [320, 640, "large"], [375, 812, "large"]] as const) {
     await page.setViewportSize({ width: w, height: h });
     await gotoAs(page, "/", { childName: "A very long child name indeed", fontSize }, PROGRESS);
-    const cta = page.getByRole("link", { name: "Padayon sa pagbasa" });
+    const cta = page.getByRole("link", { name: "Ituloy ang pagbabasa" });
     await cta.evaluate((el) => el.scrollIntoView({ block: "center" }));
     await expect(cta).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
@@ -60,11 +60,11 @@ test("tab pop event and /play, /stickers keep Pulong lit", async ({ page }) => {
 test("phone: the cover shows its illustration and stays compact; Large text drops it", async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) >= 1024, "phone layout");
   await gotoAs(page, "/", { childName: "Ana" }, PROGRESS);
-  const cover = page.getByRole("region", { name: /./ }).filter({ has: page.getByRole("link", { name: "Padayon sa pagbasa" }) });
+  const cover = page.getByRole("region", { name: /./ }).filter({ has: page.getByRole("link", { name: "Ituloy ang pagbabasa" }) });
   await expect(cover.locator("[data-cover]:visible")).toHaveCount(1);
   const box = (await cover.boundingBox())!;
   expect(box.height).toBeLessThanOrEqual(812 * 0.46);
-  const cta = (await page.getByRole("link", { name: "Padayon sa pagbasa" }).boundingBox())!;
+  const cta = (await page.getByRole("link", { name: "Ituloy ang pagbabasa" }).boundingBox())!;
   expect(cta.y + cta.height).toBeLessThan(812);
   await gotoAs(page, "/", { childName: "Ana", fontSize: "large" }, PROGRESS);
   await expect(cover.locator("[data-cover]:visible")).toHaveCount(0);

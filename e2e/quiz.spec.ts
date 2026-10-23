@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { gotoAs, readPersisted, savedWordRow, seedWords, stubApi } from "./helpers";
 
 const WORDS = ["brave", "forest", "quiet", "stone", "happy", "snow", "path", "food"].map((w, i) =>
-  savedWordRow(w, `Hiligaynon-${w}`, {}, i),
+  savedWordRow(w, `Filipino-${w}`, {}, i),
 );
 
 async function seed(page: Page, rows = WORDS) {
@@ -12,7 +12,7 @@ async function seed(page: Page, rows = WORDS) {
   await page.goto("/quiz");
 }
 
-const options = (page: Page) => page.getByRole("radiogroup", { name: "Ano ang buot silingon sini sa Hiligaynon?" }).getByRole("radio");
+const options = (page: Page) => page.getByRole("radiogroup", { name: "Ano ang kahulugan nito sa Filipino?" }).getByRole("radio");
 
 /** Plays a whole quiz picking the first option every time. Returns what each question showed. */
 async function playQuiz(page: Page) {
@@ -24,7 +24,7 @@ async function playQuiz(page: Page) {
     const word = (await page.locator("main h2, h2").first().textContent()) ?? "";
     seen.push({ word, options: opts });
     await options(page).first().click();
-    await page.getByRole("button", { name: i === 5 ? "Tan-awa ang resulta" : "Sunod" }).click();
+    await page.getByRole("button", { name: i === 5 ? "Tingnan ang resulta" : "Susunod" }).click();
   }
   await expect(page.getByTestId("quiz-score")).toBeVisible();
   return seen;
@@ -45,7 +45,7 @@ test("5 questions, 4 distinct options each, results record stars exactly once", 
   for (const q of seen) {
     expect(q.options).toHaveLength(4);
     expect(new Set(q.options).size, `options of "${q.word}" are distinct`).toBe(4);
-    expect(q.options.every((o) => o.startsWith("Hiligaynon-"))).toBe(true);
+    expect(q.options.every((o) => o.startsWith("Filipino-"))).toBe(true);
   }
 
   const score = await page.getByTestId("quiz-score").textContent();
@@ -66,7 +66,7 @@ test("5 questions, 4 distinct options each, results record stars exactly once", 
   await page.waitForTimeout(500);
   expect(await quizStars(page)).toBe(1);
   await page.goto("/");
-  await expect(page.getByText("1 ka bituon")).toBeVisible();
+  await expect(page.getByText("1 bituin")).toBeVisible();
 });
 
 test("Retry builds a new quiz and a second finish adds exactly one more star", async ({ page }) => {
@@ -74,7 +74,7 @@ test("Retry builds a new quiz and a second finish adds exactly one more star", a
   const first = await playQuiz(page);
   await expect.poll(() => quizStars(page)).toBe(1);
 
-  await page.getByRole("button", { name: "Liwat" }).click();
+  await page.getByRole("button", { name: "Ulit" }).click();
   const second = await playQuiz(page);
   expect(JSON.stringify(second), "a retry reshuffles questions/options").not.toBe(JSON.stringify(first));
   await expect.poll(() => quizStars(page)).toBe(2);
@@ -86,7 +86,7 @@ test("with fewer than 4 saved words the quiz shows the not-enough state", async 
   await seed(page, WORDS.slice(0, 3));
   const state = page.getByTestId("quiz-not-enough");
   await expect(state).toBeVisible();
-  await expect(state).toContainText("May 3 ka pulong");
+  await expect(state).toContainText("May 3 salita");
   await expect(options(page)).toHaveCount(0);
   expect(await quizStars(page)).toBe(0);
 });

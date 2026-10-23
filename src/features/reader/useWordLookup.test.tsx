@@ -19,7 +19,7 @@ vi.mock("@/lib/dictionary/explain", async () => {
 import { closeDb, putCached } from "@/stores/db";
 import { useWordLookup } from "./useWordLookup";
 
-const entry = (word: string, source: ResolvedExplanation["source"] = "ai", translation = `${word} sa Hiligaynon`): ResolvedExplanation => ({
+const entry = (word: string, source: ResolvedExplanation["source"] = "ai", translation = `${word} sa Filipino`): ResolvedExplanation => ({
   word,
   phonetic: `/${word}/`,
   english: `${word} in English`,
@@ -28,7 +28,7 @@ const entry = (word: string, source: ResolvedExplanation["source"] = "ai", trans
   difficulty: "easy",
   example: null,
   source,
-  language: "hiligaynon",
+  language: "tagalog",
 });
 
 beforeEach(async () => {
@@ -42,7 +42,7 @@ afterEach(() => {
 
 describe("useWordLookup", () => {
   it("tap A then B shows only B, even when A resolves last", async () => {
-    const { result } = renderHook(() => useWordLookup("hiligaynon"));
+    const { result } = renderHook(() => useWordLookup("tagalog"));
     act(() => void result.current.lookup("alpha", "alpha.", 0));
     act(() => void result.current.lookup("beta", "beta.", 2));
     expect(pending.get("alpha")!.signal?.aborted).toBe(true);
@@ -54,14 +54,14 @@ describe("useWordLookup", () => {
   });
 
   it("is pending with no entry until the lookup resolves", () => {
-    const { result } = renderHook(() => useWordLookup("hiligaynon"));
+    const { result } = renderHook(() => useWordLookup("tagalog"));
     act(() => void result.current.lookup("alpha", "", 0));
     expect(result.current.state).toMatchObject({ pending: true, entry: null, word: "alpha" });
   });
 
   it("swaps an offline entry in place when its cache row is upgraded", async () => {
     await putCached(entry("gamma", "offline", "Wala pa sang paathag."));
-    const { result } = renderHook(() => useWordLookup("hiligaynon"));
+    const { result } = renderHook(() => useWordLookup("tagalog"));
     act(() => void result.current.lookup("gamma", "", 4));
     await act(async () => pending.get("gamma")!.resolve(entry("gamma", "offline", "Wala pa sang paathag.")));
     expect(result.current.state?.entry?.source).toBe("offline");

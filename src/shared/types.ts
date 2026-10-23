@@ -1,4 +1,9 @@
-export type Language = "hiligaynon" | "tagalog";
+/**
+ * The child's language, which is also the direction of every lookup.
+ * "tagalog" (shown as Filipino): the app is in Filipino and the child taps English words.
+ * "english": the app is in English and the child taps Filipino words.
+ */
+export type Language = "tagalog" | "english";
 export type FontSize = "small" | "medium" | "large";
 export type ColorOverlay = "none" | "yellow" | "blue" | "pink";
 export type Difficulty = "easy" | "medium" | "hard";
@@ -14,10 +19,25 @@ export interface WordEntry {
   bookId?: string | null;
 }
 
-/** Curated fallback entries carry both languages so either can be served. */
+/** Curated English -> Filipino entry: the tapped word is English, `tagalog` is the Filipino explanation. */
 export interface FallbackWord extends Omit<WordEntry, "translation"> {
-  hiligaynon: string;
   tagalog: string;
+}
+
+/** Curated Filipino -> English entry: the tapped word is Filipino, `english` is the English explanation. */
+export interface FilipinoWord {
+  /** The Filipino word, lowercase. */
+  word: string;
+  /** Pronunciation in simple syllables, e.g. "/ma-GAN-dah/". */
+  phonetic: string;
+  /** A simple Filipino definition (the word's own language). */
+  filipino: string;
+  /** The English meaning shown to the child, fun and child-friendly (max ~20 words). */
+  english: string;
+  emoji: string;
+  difficulty: Difficulty;
+  /** A short Filipino example sentence. */
+  example?: string | null;
 }
 
 /** Notebook-cover motif and jacket colour token (v3). */

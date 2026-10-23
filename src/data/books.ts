@@ -1,4 +1,5 @@
-import type { Book } from "@/shared/types";
+import type { Book, Language } from "@/shared/types";
+import { filipinoBooks } from "./filipinoBooks";
 
 export const sampleBooks: Book[] = [
   {
@@ -44,3 +45,17 @@ export const sampleBooks: Book[] = [
     text: `Ana went to the market early in the morning with her mother. The place was loud and full of colors. She saw fish, sweet fruit, and food everywhere she looked. Her mother told her how to pick the best food. Ana helped carry the heavy bags without a word. On the way home, her mother said: "You are so helpful and kind today." Ana smiled and felt happy. She learned something important that day.`,
   },
 ];
+
+export { filipinoBooks };
+
+/** Every bundled book, English first. */
+export const allBooks: Book[] = [...sampleBooks, ...filipinoBooks];
+
+/** The books a child can read: English stories to tap English words, Filipino stories to tap Filipino words. */
+export function booksFor(language: Language): Book[] {
+  return language === "english" ? filipinoBooks : sampleBooks;
+}
+
+export function findBook(id: string): Book | undefined {
+  return allBooks.find((b) => b.id === id);
+}

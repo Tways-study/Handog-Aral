@@ -6,7 +6,7 @@ afterEach(cleanup);
 
 describe("Button disabled", () => {
   it("is a neutral paper treatment, not an opacity-faded sunrise", () => {
-    render(<Button disabled>Sunod</Button>);
+    render(<Button disabled>Susunod</Button>);
     const cls = screen.getByRole("button").className;
     expect(cls).toContain("disabled:bg-muted");
     expect(cls).toContain("disabled:text-muted-foreground");

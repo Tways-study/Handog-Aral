@@ -1,4 +1,4 @@
-import { sampleBooks } from "@/data/books";
+import { allBooks } from "@/data/books";
 import type { ResolvedExplanation } from "@/shared/schemas";
 import { countWords, listWords, removeWord, saveWord } from "@/stores/db";
 import { useProgress } from "@/stores/progress";
@@ -12,7 +12,7 @@ export async function syncVocabularyProgress(): Promise<void> {
   const words = await listWords();
   const progress = useProgress.getState();
   progress.setSavedWordCount(words.length);
-  for (const book of sampleBooks) {
+  for (const book of allBooks) {
     const n = words.filter((w) => w.bookId === book.id).length;
     progress.setBookProgress(book.id, Math.min(100, Math.round((n / WORDS_PER_BOOK) * 100)));
   }

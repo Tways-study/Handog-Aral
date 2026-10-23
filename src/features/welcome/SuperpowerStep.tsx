@@ -16,7 +16,7 @@ import { useMotion } from "@/lib/motion";
 import { superpowerIn } from "@/lib/motionPages";
 import { play } from "@/lib/sound";
 import { findSentence, tokenize, type Token } from "@/lib/tokenize";
-import { speak } from "@/lib/tts";
+import { speak, speechLang } from "@/lib/tts";
 import { cn } from "@/lib/utils";
 import { forgetWord, learnWord } from "@/lib/vocabulary";
 import type { ResolvedExplanation } from "@/shared/schemas";
@@ -122,7 +122,7 @@ export default function SuperpowerStep({ name, onDone, onSkip }: { name: string;
   const speakWord = () => {
     if (!entry) return;
     setSpeaking(true);
-    void speak(entry.word, { rate: ttsSpeed }).finally(() => setSpeaking(false));
+    void speak(entry.word, { rate: ttsSpeed, lang: speechLang(entry.language) }).finally(() => setSpeaking(false));
     useRewards.getState().recordEvent({ type: "listen" });
   };
 

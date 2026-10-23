@@ -22,7 +22,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useSavedWords } from "@/hooks/useSavedWords";
 import { useT } from "@/hooks/useT";
 import { MIN_QUIZ_WORDS } from "@/lib/quiz";
-import { speak, stop } from "@/lib/tts";
+import { speak, stop, speechLang } from "@/lib/tts";
 import { forgetWord } from "@/lib/vocabulary";
 import { useSettings } from "@/stores/settings";
 import type { SavedWord } from "@/stores/db";
@@ -73,7 +73,7 @@ export default function VocabularyScreen() {
   async function say(w: SavedWord) {
     setSpeakingKey(w.key);
     try {
-      await speak(w.word, { rate: ttsSpeed });
+      await speak(w.word, { rate: ttsSpeed, lang: speechLang(w.language) });
     } finally {
       setSpeakingKey((k) => (k === w.key ? null : k));
     }

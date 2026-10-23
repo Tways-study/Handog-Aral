@@ -66,10 +66,10 @@ test("save underlines the word, lists it in /words, raises book progress; remove
   const panel = panelRoot(page);
   await expect(panel.getByText(SEARCHED.translation)).toBeVisible();
 
-  const save = panel.getByRole("button", { name: "Tipigi" });
+  const save = panel.getByRole("button", { name: "I-save" });
   await expect(save).toHaveAttribute("aria-pressed", "false");
   await save.click();
-  await expect(panel.getByRole("button", { name: "Natipigan na" })).toHaveAttribute("aria-pressed", "true");
+  await expect(panel.getByRole("button", { name: "Naka-save na" })).toHaveAttribute("aria-pressed", "true");
   // The first saved word earns a sticker; its dialog arrives after the stamp. Close it so the page is reachable again.
   expect(await settleCelebrations(page)).toBeGreaterThan(0);
 
@@ -93,8 +93,8 @@ test("save underlines the word, lists it in /words, raises book progress; remove
   await page.goto("/read/fox");
   await wordButton(page, "searched").click();
   const p2 = panelRoot(page);
-  await p2.getByRole("button", { name: "Natipigan na" }).click();
-  await expect(p2.getByRole("button", { name: "Tipigi" })).toHaveAttribute("aria-pressed", "false");
+  await p2.getByRole("button", { name: "Naka-save na" }).click();
+  await expect(p2.getByRole("button", { name: "I-save" })).toHaveAttribute("aria-pressed", "false");
   await page.goto("/books");
   await expect(page.getByRole("link", { name: /The Brave Little Fox/ }).getByText("0%")).toBeVisible();
   await page.goto("/words");

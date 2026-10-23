@@ -50,7 +50,7 @@ test("keyboard only: Home to Books to Reader, tap a word with Enter", async ({ p
 
   // The first stop is the skip link; its target is <main>.
   await page.keyboard.press("Tab");
-  expect((await active(page)).name).toBe("Laktawan sa sulod");
+  expect((await active(page)).name).toBe("Lumaktaw sa nilalaman");
 
   // Home: tab to the Books navigation link (rail on desktop, bottom nav on mobile).
   const homeTrail = await tabTo(page, (s) => s.role === "link" && s.name === "Libro");

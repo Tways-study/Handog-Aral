@@ -1,34 +1,4 @@
-/** Memory match strings. Hiligaynon is the shape; Tagalog must match it key for key. */
-const hiligaynon = {
-  title: "Pares", // REVIEW: native speaker
-  subtitle: "Pangitaa ang pulong kag ang kahulugan.",
-  loading: "Ginahanda ang ulin...",
-  notEnoughTitle: "Kulang pa ang mga pulong",
-  notEnoughBody: (have: number, need: number) => `Kinahanglan ang ${need} ka pulong sa ulin. May ${have} ka pulong ka na. Mag-scan kag mag-save pa!`,
-  scanBtn: "Mag-scan",
-  moves: "Mga tikang",
-  pairs: (found: number, total: number) => `${found} sang ${total} ka pares`,
-  boardLabel: "Mga kard sang ulin",
-  wordCard: (word: string) => `Pulong: ${word}`,
-  meaningCard: (meaning: string) => `Kahulugan: ${meaning}`,
-  faceDown: "Natabunan nga kard",
-  faceDownIndex: (n: number) => `Kard ${n}, natabunan`,
-  matched: "Pares",
-  matchMsg: (word: string) => `Tama! Pares: ${word}`,
-  missMsg: "Indi pa pares. Probahi liwat.",
-  flipMsg: (text: string) => `Naabrihan: ${text}`,
-  winTitle: "Daog ka!",
-  winBody: (moves: number) => `Natapos mo sa ${moves} ka tikang.`,
-  starsEarned: (n: number) => (n === 1 ? "Nakakuha ka sang 1 ka bituon" : `Nakakuha ka sang ${n} ka bituon`),
-  playAgain: "Liwat",
-  backToWords: "Balik sa mga pulong",
-  reshuffle: "Bag-o nga ulin",
-  // REVIEW: native speaker (owl voice)
-  owlStart: "Pangitaa ang pulong kag ang kahulugan!",
-  owlMatch: "Pares! Maayo gid!",
-  owlMiss: "Hmm, indi pa. Probahi liwat!",
-};
-
+/** Memory match strings. Filipino is the shape; English must match it key for key. */
 const tagalog = {
   title: "Pares", // REVIEW: native speaker
   subtitle: "Hanapin ang salita at ang kahulugan nito.",
@@ -57,6 +27,35 @@ const tagalog = {
   owlStart: "Hanapin ang salita at ang kahulugan!",
   owlMatch: "Pares! Galing!",
   owlMiss: "Hmm, hindi pa. Subukan ulit!",
-} satisfies typeof hiligaynon;
+};
 
-export const playStrings = { hiligaynon, tagalog };
+const english = {
+  title: "Match",
+  subtitle: "Find each word and its meaning.",
+  loading: "Getting the game ready...",
+  notEnoughTitle: "Not enough words yet",
+  notEnoughBody: (have: number, need: number) => `The game needs ${need} words. You have ${have}. Scan and save some more!`,
+  scanBtn: "Scan",
+  moves: "Moves",
+  pairs: (found: number, total: number) => `${found} of ${total} pairs`,
+  boardLabel: "Game cards",
+  wordCard: (word: string) => `Word: ${word}`,
+  meaningCard: (meaning: string) => `Meaning: ${meaning}`,
+  faceDown: "Face-down card",
+  faceDownIndex: (n: number) => `Card ${n}, face down`,
+  matched: "Match",
+  matchMsg: (word: string) => `Yes! A pair: ${word}`,
+  missMsg: "Not a pair yet. Try again.",
+  flipMsg: (text: string) => `Opened: ${text}`,
+  winTitle: "You won!",
+  winBody: (moves: number) => `You finished in ${moves} moves.`,
+  starsEarned: (n: number) => (n === 1 ? "You earned 1 star" : `You earned ${n} stars`),
+  playAgain: "Again",
+  backToWords: "Back to words",
+  reshuffle: "New game",
+  owlStart: "Find each word and its meaning!",
+  owlMatch: "A pair! Great job!",
+  owlMiss: "Hmm, not yet. Try again!",
+} satisfies typeof tagalog;
+
+export const playStrings = { tagalog, english };

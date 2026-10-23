@@ -1,33 +1,4 @@
-/** vocabulary strings. Hiligaynon is the shape; Tagalog must match it key for key. */
-const hiligaynon = {
-  title: "Mga Pulong",
-  subtitleWords: (n: number) => (n === 1 ? "1 ka pulong ang natipon mo" : `${n} ka pulong ang natipon mo`),
-  subtitleEmpty: "Wala pa sang natipon nga pulong.",
-  searchLabel: "Pangita-a ang pulong",
-  searchPlaceholder: "Pangita-a ang pulong...",
-  filterLabel: "Pilion pagid sa kabudlayan",
-  filterAll: "Tanan",
-  listLabel: "Imo mga natipon nga pulong",
-  countsLabel: (easy: number, medium: number, hard: number) => `Dali ${easy}, Medyo budlay ${medium}, Mabudlay ${hard}`,
-  speakWord: (w: string) => `Pamatii ang ${w}`,
-  emptyTitle: "Wala pa sang natipon nga pulong.",
-  emptyBody: "Mag-scan sang pahina o magbasa sang libro, kag tap-a ang pulong nga indi mo kabalo.",
-  emptyScan: "Mag-scan",
-  emptyBooks: "Mga Libro",
-  noResultsTitle: "Wala sang nakit-an.",
-  noResultsBody: "Subukan ang isa pa ka pulong, o ilisan ang pilion.",
-  clearFilters: "Ipakita tanan",
-  unlockQuiz: (n: number) => `${n} pa ka pulong para ma-abri ang pasulit`,
-  quizReady: "Handa na ang pasulit!",
-  takeQuiz: "Mag-pasulit",
-  detailTitle: "Detalye sang pulong",
-  detailEmptyTitle: "Pili-a ang pulong",
-  detailHint: "Pili-a ang pulong sa wala para makita diri ang kahulugan.",
-  removed: (w: string) => `Gin-wala na ang "${w}"`,
-  owlTag: (n: number) => (n === 1 ? "1 ka pulong na ang natipon mo!" : `${n} ka pulong na ang natipon mo!`),
-  playLink: "Maglaro ta sang Pares",
-};
-
+/** vocabulary strings. Filipino is the shape; English must match it key for key. */
 const tagalog = {
   title: "Mga Salita",
   subtitleWords: (n: number) => `${n} salita ang naipon mo`,
@@ -55,6 +26,35 @@ const tagalog = {
   removed: (w: string) => `Inalis na ang "${w}"`,
   owlTag: (n: number) => `${n} salita na ang naipon mo!`,
   playLink: "Maglaro tayo ng Pares",
-} satisfies typeof hiligaynon;
+};
 
-export const vocabularyStrings = { hiligaynon, tagalog };
+const english = {
+  title: "Words",
+  subtitleWords: (n: number) => (n === 1 ? "You have collected 1 word" : `You have collected ${n} words`),
+  subtitleEmpty: "No words collected yet.",
+  searchLabel: "Search for a word",
+  searchPlaceholder: "Search for a word...",
+  filterLabel: "Filter by difficulty",
+  filterAll: "All",
+  listLabel: "Your collected words",
+  countsLabel: (easy: number, medium: number, hard: number) => `Easy ${easy}, Medium ${medium}, Hard ${hard}`,
+  speakWord: (w: string) => `Listen to ${w}`,
+  emptyTitle: "No words collected yet.",
+  emptyBody: "Scan a page or read a book, and tap a word you do not know.",
+  emptyScan: "Scan",
+  emptyBooks: "Books",
+  noResultsTitle: "Nothing found.",
+  noResultsBody: "Try another word, or change the filter.",
+  clearFilters: "Show all",
+  unlockQuiz: (n: number) => (n === 1 ? "1 more word to unlock the quiz" : `${n} more words to unlock the quiz`),
+  quizReady: "The quiz is ready!",
+  takeQuiz: "Take the quiz",
+  detailTitle: "Word details",
+  detailEmptyTitle: "Pick a word",
+  detailHint: "Pick a word on the left to see its meaning here.",
+  removed: (w: string) => `Removed "${w}"`,
+  owlTag: (n: number) => (n === 1 ? "You have collected 1 word!" : `You have collected ${n} words!`),
+  playLink: "Let's play Match",
+} satisfies typeof tagalog;
+
+export const vocabularyStrings = { tagalog, english };

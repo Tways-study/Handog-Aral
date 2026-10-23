@@ -10,7 +10,7 @@ import Owl, { type OwlMood, type OwlReaction } from "@/components/owl/Owl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { sampleBooks } from "@/data/books";
+import { findBook } from "@/data/books";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useSavedWords } from "@/hooks/useSavedWords";
 import { useT } from "@/hooks/useT";
@@ -20,7 +20,7 @@ import { motionAllowed, useMotion } from "@/lib/motion";
 import { flyToTab, lineDevelop, type LineGroup } from "@/lib/motionReader";
 import { play } from "@/lib/sound";
 import { findSentence, tokenize, type Token } from "@/lib/tokenize";
-import { speak } from "@/lib/tts";
+import { speak, speechLang } from "@/lib/tts";
 import { cn } from "@/lib/utils";
 import { forgetWord, learnWord, recordSaveRewards } from "@/lib/vocabulary";
 import type { ResolvedExplanation } from "@/shared/schemas";
@@ -77,7 +77,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
   const saved = useSavedWords();
   const { markWord, enterPanel } = useMotion();
 
-  const book = useMemo(() => (bookId ? (sampleBooks.find((b) => b.id === bookId) ?? null) : null), [bookId]);
+  const book = useMemo(() => (bookId ? (findBook(bookId) ?? null) : null), [bookId]);
   const scan = useScanJob({ onDone: (r) => onScanDone(r) });
   const { state: lookupState, lookup, clear: clearLookup } = useWordLookup(language);
 
@@ -246,7 +246,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
     const run = ++wordRunRef.current;
     setWordSpeaking(true);
     useRewards.getState().recordEvent({ type: "listen" });
-    void speak(entry.word, { rate: ttsSpeed }).finally(() => {
+    void speak(entry.word, { rate: ttsSpeed, lang: speechLang(entry.language) }).finally(() => {
       if (run === wordRunRef.current) setWordSpeaking(false);
     });
   };
@@ -470,7 +470,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
             )}
             <div
               ref={textRef}
-              className={cn("pad-text pt-[calc(var(--pitch)*0.22)] lg:max-w-[calc(64ch+var(--pad-gutter)+1.25rem)]", dyslexia && "max-sm:[word-spacing:0.2em]")}
+              className={cn("pad-text pt-[calc(var(--pitch)*0.22)] lg:max-w-[calc(64ch+var(--pad-gutter)+1.25rem)] xl:mx-auto", dyslexia && "max-sm:[word-spacing:0.2em]")}
             >
               <ReaderText
                 tokens={tokens}

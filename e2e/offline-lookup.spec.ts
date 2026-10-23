@@ -51,7 +51,7 @@ test("offline lookup is honest and provisional; coming back online upgrades it i
   const curated = panel(page);
   await expect(curated).toHaveAttribute("data-source", "curated");
   await expect(curated.getByText("Maisog gid, pareho sang soldado!")).toBeVisible();
-  await expect(curated.getByText("Halin sa diksyunaryo sang app")).toBeVisible();
+  await expect(curated.getByText("Mula sa diksyunaryo ng app")).toBeVisible();
   await expect(curated.getByText(/Simple lang ini nga kahulugan/)).toHaveCount(0);
   await expect(page.locator("[data-slot=offline-banner]")).toBeVisible();
   await closeDrawer(page);
@@ -70,10 +70,10 @@ test("offline lookup is honest and provisional; coming back online upgrades it i
 
   // 3. Back online: the queue upgrades the word, a toast tells the child, the open panel updates in place.
   await context.setOffline(false);
-  await expect(page.getByText("Mas klaro na ang 1 ka pulong.")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("Mas klaro na ang 1 salita.")).toBeVisible({ timeout: 15_000 });
   await expect(panel(page)).toHaveAttribute("data-source", "ai");
   await expect(panel(page).getByText(UPGRADED.translation)).toBeVisible();
-  await expect(panel(page).getByText(/Gin-explain sang AI/)).toBeVisible();
+  await expect(panel(page).getByText(/Ipinaliwanag ng AI/)).toBeVisible();
   await expect(panel(page).getByText(/Simple lang ini nga kahulugan/)).toHaveCount(0);
   await expect(page.locator("[data-slot=offline-banner]").getByText(/Wala sang internet/)).toHaveCount(0);
   expect(stub.explainCalls.map((c) => c.word)).toEqual(["searched"]);

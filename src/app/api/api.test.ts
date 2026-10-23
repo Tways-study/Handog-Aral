@@ -31,7 +31,7 @@ function req(body: unknown, headers: Record<string, string> = {}, url = "http://
     body: typeof body === "string" ? body : JSON.stringify(body),
   });
 }
-const valid = { word: "carabao", sentence: "The carabao is big.", language: "hiligaynon" };
+const valid = { word: "carabao", sentence: "The carabao is big.", language: "tagalog" };
 
 beforeEach(() => {
   generateContent.mockReset();

@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { gotoAs, readPersisted, savedWordRow, seedWords, stubApi } from "./helpers";
 
-const WORDS = ["brave", "forest", "quiet", "stone", "happy", "snow"].map((w, i) => savedWordRow(w, `Hiligaynon-${w}`, {}, i));
+const WORDS = ["brave", "forest", "quiet", "stone", "happy", "snow"].map((w, i) => savedWordRow(w, `Filipino-${w}`, {}, i));
 
 async function open(page: Page, rows: ReturnType<typeof savedWordRow>[]) {
   await gotoAs(page, "/");
@@ -19,7 +19,7 @@ async function pairsOf(page: Page): Promise<number[][]> {
   const texts = await cards(page).evaluateAll((els) => els.map((e) => (e.querySelector("[class*='rotateY']") ?? e).textContent ?? ""));
   const byKey = new Map<string, number[]>();
   texts.forEach((t, i) => {
-    const key = t.replace(/^(Pulong|Kahulugan):\s*/, "").replace("Hiligaynon-", "");
+    const key = t.replace(/^(Pulong|Kahulugan):\s*/, "").replace("Filipino-", "");
     byKey.set(key, [...(byKey.get(key) ?? []), i]);
   });
   return [...byKey.values()];
@@ -85,7 +85,7 @@ test("a perfect game: matches stay up, the win gives 2 stars and the sticker, th
     await press(page, b);
   }
   await expect(page.getByTestId("play-win")).toBeVisible();
-  await expect(page.getByTestId("win-stars")).toContainText("2 ka bituon");
+  await expect(page.getByTestId("win-stars")).toContainText("2 bituin");
   const dialog = page.getByRole("dialog", { name: "Una nga Daog sa Pares" });
   await expect(dialog).toBeVisible();
   await dialog.getByRole("button", { name: "Sige!" }).click();
@@ -95,14 +95,14 @@ test("a perfect game: matches stay up, the win gives 2 stars and the sticker, th
   const saved = (await readPersisted(page, "handog-rewards"))!.state as { earned: Record<string, number>; flags: { matchWins: number } };
   expect(saved.earned["match-first"]).toBeGreaterThan(0);
 
-  await page.getByRole("button", { name: "Liwat" }).click();
+  await page.getByRole("button", { name: "Ulit" }).click();
   await expect(page.getByTestId("board")).toBeVisible();
   await expect(moves(page)).toHaveText("0");
   await playToWin(page);
   await expect(page.getByTestId("play-win")).toBeVisible();
   await expect(page.getByRole("dialog")).toHaveCount(0); // the sticker is only celebrated once
   await expect.poll(async () => (await readPersisted(page, "handog-rewards"))?.state.bonusStars).toBe(4);
-  await expect(page.getByRole("link", { name: "Balik sa mga pulong" })).toHaveAttribute("href", "/words");
+  await expect(page.getByRole("link", { name: "Bumalik sa mga salita" })).toHaveAttribute("href", "/words");
 });
 
 test("reduced motion: instant flips and no confetti nodes on the win", async ({ page }) => {

@@ -12,6 +12,6 @@ describe("ocrErrorKey", () => {
     expect(ocrErrorKey(null)).toBeNull();
   });
   it("points the offline-pack message at Settings in both languages", () => {
-    for (const lang of ["hiligaynon", "tagalog"] as const) expect(scanStrings[lang].errorOfflinePack).toMatch(/Settings/);
+    for (const lang of ["tagalog", "english"] as const) expect(scanStrings[lang].errorOfflinePack).toMatch(/Settings/);
   });
 });

@@ -69,3 +69,20 @@ describe("speak word progress", () => {
     expect(spoken.every((u) => u.onboundary === null)).toBe(true);
   });
 });
+
+describe("Filipino speech", () => {
+  it("speechLang follows the language setting", async () => {
+    const { speechLang } = await import("./index");
+    expect(speechLang("tagalog")).toBe("en-US");
+    expect(speechLang("english")).toBe("fil-PH");
+  });
+
+  it("pickVoice picks a fil/tl voice for fil-PH, and none when the device has none", async () => {
+    const { pickVoice } = await import("./index");
+    const v = (lang: string) => ({ lang }) as SpeechSynthesisVoice;
+    expect(pickVoice([v("en-US"), v("fil_PH")], "fil-PH")?.lang).toBe("fil_PH");
+    expect(pickVoice([v("en-US"), v("tl-PH")], "fil-PH")?.lang).toBe("tl-PH");
+    expect(pickVoice([v("en-US")], "fil-PH")).toBeNull();
+    expect(pickVoice([v("en-GB"), v("en-US")], "en-US")?.lang).toBe("en-US");
+  });
+});

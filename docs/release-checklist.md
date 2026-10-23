@@ -25,7 +25,7 @@ curl -s $URL/manifest.webmanifest | head -c 300           # id, shortcuts, scree
 curl -sI $URL/opengraph-image.png | head -1               # 200
 ```
 
-- [ ] Explain with a real key: `curl -s -X POST $URL/api/explain -H 'content-type: application/json' -d '{"word":"brave","sentence":"The brave fox ran.","language":"hiligaynon"}'` returns a word explanation (not 503/502).
+- [ ] Explain with a real key: `curl -s -X POST $URL/api/explain -H 'content-type: application/json' -d '{"word":"brave","sentence":"The brave fox ran.","language":"tagalog"}'` returns a word explanation (not 503/502).
 - [ ] OCR with a real key: scan a page in the app online and confirm text comes back (the proxy path, not the local Tesseract fallback).
 - [ ] Rate limit: send 31 explain requests inside a minute from one IP; the 31st returns 429. (`explain` allows 30/min, `ocr` 6/min.)
 - [ ] CORS from the Android origin: `curl -s -i -X OPTIONS $URL/api/explain -H 'Origin: https://localhost' -H 'Access-Control-Request-Method: POST'` returns 204 with `Access-Control-Allow-Origin: https://localhost`; an unknown origin gets 403.
@@ -70,4 +70,4 @@ Targets: Accessibility, Best Practices and SEO 100; Performance 90+ with LCP at 
 - The 2,000-word offline dictionary is not built; the app ships ~280 curated words plus the online dictionary. Generated entries need a native-speaker review.
 - Real Gemini calls have not been exercised in CI; the proxy is covered by mocked tests and guard-rail smoke tests. Do the step 2 checks with a real key.
 - On-device checks (camera, native TTS, back button, the service-worker update prompt on a real browser) have not been run.
-- Hiligaynon and Tagalog AI explanations are not human-reviewed; the UI labels their source.
+- Filipino and English AI explanations, the Filipino stories and the Filipino word list are not human-reviewed; the UI labels their source.

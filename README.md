@@ -4,7 +4,7 @@
 
 # Handog Aral
 
-**"Ang Imo Gabay sa Pagbasa"**
+**"Ang Iyong Gabay sa Pagbasa"**
 
 An offline-capable reading companion for Filipino children aged 6–12, including children with dyslexia.
 
@@ -12,7 +12,7 @@ An offline-capable reading companion for Filipino children aged 6–12, includin
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-1D2340?style=flat-square)
 ![PWA](https://img.shields.io/badge/PWA-offline--first-F08A24?style=flat-square)
 ![Android](https://img.shields.io/badge/Android-Capacitor-3DDC84?style=flat-square)
-![Hiligaynon · Filipino](https://img.shields.io/badge/Hiligaynon-Filipino-2E7D55?style=flat-square)
+![English · Filipino](https://img.shields.io/badge/English-Filipino-2E7D55?style=flat-square)
 
 <img src="public/screenshots/narrow.png" alt="Handog Aral home screen on a phone" height="420"> &nbsp; <img src="public/screenshots/wide.png" alt="Handog Aral reader with a word explanation on desktop" height="420">
 
@@ -20,7 +20,7 @@ An offline-capable reading companion for Filipino children aged 6–12, includin
 
 ---
 
-A child points the camera at a printed English page (or opens a built-in story), taps any word they don't know, and gets an explanation in their own language — Hiligaynon or Filipino/Tagalog — with pronunciation, an example, and a difficulty marker. Saved words feed a short quiz, a daily streak and a sticker book.
+A child points the camera at a printed page (or opens a built-in story), taps any word they don't know, and gets an explanation — English words explained in Filipino, or Filipino words explained in English — with pronunciation, an example, and a difficulty marker. Saved words feed a short quiz, a daily streak and a sticker book.
 
 It is a mobile-first PWA with a real desktop layout (side rail and a two-pane reader), wrapped for Android with Capacitor.
 
@@ -100,7 +100,7 @@ src/lib/         ocr/, tts/, dictionary/, queue/, motion, api client, quiz and v
 src/stores/      IndexedDB (Dexie) and persisted zustand stores
 src/server/      Gemini, rate limiting and CORS for the proxy (server only)
 src/shared/      zod schemas shared by client and server
-src/data/        bundled books, curated words, per-feature strings (Hiligaynon / Tagalog)
+src/data/        bundled books, curated words, English and Filipino stories, curated words in both directions, per-feature strings (Filipino / English)
 e2e/             Playwright specs
 public/mascot/   the owl reference sheet the mascot is drawn from
 docs/v3-plan.md  the v3 overhaul plan and status
@@ -114,7 +114,7 @@ More detail for contributors (and AI assistants) is in [`CLAUDE.md`](CLAUDE.md);
 ## Status and known gaps
 
 - The offline dictionary currently holds the ~280 curated entries; a ~2,000-word generated dictionary is planned and needs a native-speaker review before its translations are treated as verified.
-- Hiligaynon and Tagalog explanations produced by AI are not human-reviewed, and the owl's lines, sticker names and "Pares" copy are waiting on a native-speaker review (marked `// REVIEW: native speaker` in `src/data/strings/`).
+- Filipino and English explanations produced by AI are not human-reviewed, and the owl's lines, sticker names and "Pares" copy are waiting on a native-speaker review (marked `// REVIEW: native speaker` in `src/data/strings/`).
 - The AI proxy has not been exercised with a real Gemini key yet, and the Android build has not been tested on a physical device.
 - Performance on very low-end phones is the main open item; the 3D owl turns itself off on slow connections, save-data, low-end devices and reduced motion.
 

@@ -20,7 +20,7 @@ function renderAt(path: string) {
 afterEach(cleanup);
 
 describe("AppShell navigation", () => {
-  it("renders both navs with the five destinations as links (hiligaynon labels)", () => {
+  it("renders both navs with the five destinations as links (tagalog labels)", () => {
     renderAt("/");
     const navs = screen.getAllByRole("navigation", { hidden: true });
     expect(navs).toHaveLength(2); // bottom nav (< lg) and rail (>= lg)
@@ -31,10 +31,10 @@ describe("AppShell navigation", () => {
       }
     }
     const bottom = navs.find((n) => n.getAttribute("data-slot") === "bottom-nav")!;
-    expect(within(bottom).getByText("Balay")).toBeTruthy();
-    expect(within(bottom).getByText("Libro")).toBeTruthy();
-    expect(within(bottom).getByText("Pulong")).toBeTruthy();
-    expect(within(bottom).getByText("Pasulit")).toBeTruthy();
+    expect(within(bottom).getByText("Tahanan")).toBeTruthy();
+    expect(within(bottom).getByText("Aklat")).toBeTruthy();
+    expect(within(bottom).getByText("Salita")).toBeTruthy();
+    expect(within(bottom).getByText("Pagsusulit")).toBeTruthy();
   });
 
   it("marks the current destination with aria-current and only that one", () => {
@@ -65,12 +65,12 @@ describe("AppShell navigation", () => {
     renderAt("/welcome");
     expect(screen.queryAllByRole("navigation", { hidden: true })).toHaveLength(0);
     expect(screen.getByRole("main")).toBeTruthy();
-    expect(screen.getByText("Laktawan sa sulod").getAttribute("href")).toBe("#main");
+    expect(screen.getByText("Lumaktaw sa nilalaman").getAttribute("href")).toBe("#main");
   });
 });
 
 describe("AppShell extra routes and tab pop", () => {
-  it("lights Pulong (and only Pulong) for /play and /stickers, so no tab looks wrong", () => {
+  it("lights Salita (and only Salita) for /play and /stickers, so no tab looks wrong", () => {
     const words = NAV_ITEMS.find((i) => i.id === "words")!;
     expect(isActive("/play", words)).toBe(true);
     expect(isActive("/stickers", words)).toBe(true);

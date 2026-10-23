@@ -392,7 +392,7 @@ Friendly, rounded, never pill-everything: 8/12/16/24/28px scale (sm, md, lg, xl,
 - **Do** use `pressable` on every tappable thing, and letter tiles instead of emoji in lists.
 - **Do** load optional heavy pieces (3D owl, rewards, celebration) through `softDynamic` so a failure falls back silently.
 - **Do** show locked stickers as washed art with a lock chip.
-- **Do** keep owl-voice and sticker copy short; it awaits native-speaker review in Hiligaynon and Tagalog.
+- **Do** keep owl-voice and sticker copy short; it awaits native-speaker review in Filipino.
 
 ### Don't:
 - **Don't** add a second sunrise action on a screen beyond the nav Scan button.

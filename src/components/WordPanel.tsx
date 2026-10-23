@@ -129,7 +129,7 @@ export default function WordPanel({ entry, saved, onSave, onRemove, onSpeak, spe
         className={cn("mt-4 rounded-xl bg-paper-2 px-4 py-3.5 transition-colors duration-300", reserve && "min-h-[7rem]", emphasize && "bg-marker/45")}
       >
         <p className="text-[0.8125rem] font-bold text-ink-2">{p.translationLabel}</p>
-        <p className="mt-1 text-xl leading-normal font-bold" lang={entry.language === "tagalog" ? "tl" : "hil"}>
+        <p className="mt-1 text-xl leading-normal font-bold" lang={entry.language === "english" ? "en" : "tl"}>
           {loading ? <span className="font-normal text-ink-2">{p.pending}</span> : entry.translation}
         </p>
       </div>

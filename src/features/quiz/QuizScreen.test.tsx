@@ -6,7 +6,7 @@ import type { SavedWord } from "@/stores/db";
 let mockWords: SavedWord[] | null = [];
 vi.mock("@/hooks/useSavedWords", () => ({ useSavedWords: () => mockWords }));
 vi.mock("next/navigation", () => ({ usePathname: () => "/quiz" }));
-vi.mock("@/lib/tts", () => ({ speak: vi.fn(), stop: vi.fn() }));
+vi.mock("@/lib/tts", () => ({ speechLang: () => "en-US", speak: vi.fn(), stop: vi.fn() }));
 let mockOnline = true;
 vi.mock("@/hooks/useOnlineStatus", () => ({ useOnlineStatus: () => ({ online: mockOnline }) }));
 vi.mock("next/link", () => ({ default: ({ href, children, ...r }: { href: string; children: React.ReactNode }) => <a href={href} {...r}>{children}</a> }));
@@ -18,7 +18,7 @@ import { useRewards } from "@/stores/rewards";
 
 const mk = (word: string, translation: string): SavedWord => ({
   key: word, word, translation, phonetic: `/${word}/`, english: `about ${word}`, emoji: "", difficulty: "easy", example: null,
-  source: "ai", language: "hiligaynon", bookId: null, savedAt: 1,
+  source: "ai", language: "tagalog", bookId: null, savedAt: 1,
 }) as SavedWord;
 const FIVE = [mk("cat", "iring"), mk("dog", "ido"), mk("sun", "adlaw"), mk("moon", "bulan"), mk("fish", "isda")];
 
@@ -40,7 +40,7 @@ function playAll(correct: boolean) {
     const right = opts.find((b) => b.textContent!.endsWith(answers[word]))!;
     const wrong = opts.find((b) => b !== right)!;
     fireEvent.click(correct ? right : wrong);
-    fireEvent.click(screen.getByRole("button", { name: i === 4 ? /resulta/i : /^Sunod$/ }));
+    fireEvent.click(screen.getByRole("button", { name: i === 4 ? /resulta/i : /^Susunod$/ }));
   }
 }
 
@@ -52,7 +52,7 @@ describe("QuizScreen", () => {
   it("shows the not-enough state with the count needed and a scan link", () => {
     mockWords = FIVE.slice(0, 2);
     render(<QuizScreen />);
-    expect(screen.getByTestId("quiz-not-enough").textContent).toMatch(/Kulang pa: kinahanglan ang 4/);
+    expect(screen.getByTestId("quiz-not-enough").textContent).toMatch(/Kulang pa: kailangan ng 4/);
     expect(screen.getByRole("link", { name: /scan/i }).getAttribute("href")).toBe("/scan");
   });
 
@@ -60,7 +60,7 @@ describe("QuizScreen", () => {
     mockWords = FIVE;
     const { rerender } = render(<QuizScreen />);
     playAll(true);
-    expect(screen.getByTestId("quiz-score").textContent).toMatch(/5 sang 5/);
+    expect(screen.getByTestId("quiz-score").textContent).toMatch(/5 sa 5/);
     rerender(<QuizScreen />);
     rerender(<QuizScreen />);
     expect(useProgress.getState()).toMatchObject({ quizHighScore: 5, quizStars: 1 });
@@ -70,10 +70,10 @@ describe("QuizScreen", () => {
     mockWords = FIVE;
     render(<QuizScreen />);
     playAll(false);
-    expect(screen.getByTestId("quiz-score").textContent).toMatch(/0 sang 5/);
+    expect(screen.getByTestId("quiz-score").textContent).toMatch(/0 sa 5/);
     expect(useProgress.getState().quizStars).toBe(1);
-    fireEvent.click(screen.getByRole("button", { name: /liwat/i }));
-    expect(screen.getByText("1 sang 5")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /ulitin/i }));
+    expect(screen.getByText("1 sa 5")).toBeTruthy();
     playAll(true);
     expect(useProgress.getState()).toMatchObject({ quizHighScore: 5, quizStars: 2 });
   });
@@ -83,7 +83,7 @@ describe("QuizScreen", () => {
     render(<QuizScreen />);
     const opts = optionButtons();
     fireEvent.click(opts[0]);
-    expect(screen.getByTestId("quiz-feedback").textContent).toMatch(/Tama!|Indi pa tama/);
+    expect(screen.getByTestId("quiz-feedback").textContent).toMatch(/Tama!|Hindi pa tama/);
     expect(opts.some((b) => b.getAttribute("data-answer") === "right")).toBe(true);
   });
 
@@ -118,7 +118,7 @@ describe("QuizScreen", () => {
   it("answers are a radiogroup named by the prompt, with the letter in each name", () => {
     mockWords = FIVE;
     render(<QuizScreen />);
-    const group = screen.getByRole("radiogroup", { name: "Ano ang buot silingon sini sa Hiligaynon?" });
+    const group = screen.getByRole("radiogroup", { name: "Ano ang kahulugan nito sa Filipino?" });
     expect(group).toBeTruthy();
     const radios = optionButtons();
     expect(radios).toHaveLength(4);
@@ -126,10 +126,10 @@ describe("QuizScreen", () => {
     expect(radios.every((r) => r.getAttribute("aria-checked") === "false")).toBe(true);
   });
 
-  it("keeps Sunod in a feedback bar from the start, disabled until an answer is in, and focuses it after", () => {
+  it("keeps Susunod in a feedback bar from the start, disabled until an answer is in, and focuses it after", () => {
     mockWords = FIVE;
     render(<QuizScreen />);
-    const next = screen.getByRole("button", { name: "Sunod" }) as HTMLButtonElement;
+    const next = screen.getByRole("button", { name: "Susunod" }) as HTMLButtonElement;
     expect(next.disabled).toBe(true);
     expect(next.closest("[data-slot=feedback-bar]")).toBeTruthy();
     fireEvent.click(optionButtons()[0]);
@@ -147,10 +147,10 @@ describe("QuizScreen", () => {
     const right = opts.find((b) => b.textContent!.endsWith(answers[word]))!;
     fireEvent.click(opts.find((b) => b !== right)!);
     expect(owlMood()).toBe("think");
-    expect(screen.getByTestId("quiz-feedback").textContent).toMatch(/Indi pa tama/);
+    expect(screen.getByTestId("quiz-feedback").textContent).toMatch(/Hindi pa tama/);
     // never a red wall: the wrong tile is warm, not destructive
     expect(document.querySelector("[data-answer=wrong]")?.className).not.toMatch(/destructive/);
-    fireEvent.click(screen.getByRole("button", { name: "Sunod" }));
+    fireEvent.click(screen.getByRole("button", { name: "Susunod" }));
     const w2 = screen.getByRole("heading", { level: 2 }).textContent!;
     const o2 = optionButtons();
     fireEvent.click(o2.find((b) => b.textContent!.endsWith(answers[w2]))!);
@@ -160,10 +160,10 @@ describe("QuizScreen", () => {
   it("greets the very first quiz once, ever", () => {
     mockWords = FIVE;
     render(<QuizScreen />);
-    expect(screen.getByText("Pasulit na! 5 ka pulong, kaya mo ini!")).toBeTruthy();
+    expect(screen.getByText("Pagsusulit na! 5 salita, kaya mo ito!")).toBeTruthy();
     cleanup();
     render(<QuizScreen />);
-    expect(screen.queryByText("Pasulit na! 5 ka pulong, kaya mo ini!")).toBeNull();
+    expect(screen.queryByText("Pagsusulit na! 5 salita, kaya mo ito!")).toBeNull();
   });
 
   it("three right in a row earns the owl's hop and a cheer line, once", () => {
@@ -174,11 +174,11 @@ describe("QuizScreen", () => {
       const word = screen.getByRole("heading", { level: 2 }).textContent!;
       fireEvent.click(optionButtons().find((b) => b.textContent!.endsWith(answers[word]))!);
       if (i < 2) {
-        expect(screen.queryByText("Tatlo ka sunod nga husto! Galing!")).toBeNull();
-        fireEvent.click(screen.getByRole("button", { name: "Sunod" }));
+        expect(screen.queryByText("Tatlong sunod na tama! Ang galing!")).toBeNull();
+        fireEvent.click(screen.getByRole("button", { name: "Susunod" }));
       }
     }
-    expect(screen.getAllByText("Tatlo ka sunod nga husto! Galing!").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Tatlong sunod na tama! Ang galing!").length).toBeGreaterThan(0);
   });
 
   it("compacts the question card while offline", () => {
@@ -201,9 +201,9 @@ describe("QuizScreen", () => {
         const right = opts.find((b) => b.textContent!.endsWith(answers[word]))!;
         // answer the first two right, the rest wrong
         fireEvent.click(i < 2 ? right : opts.find((b) => b !== right)!);
-        fireEvent.click(screen.getByRole("button", { name: i === 4 ? /resulta/i : /^Sunod$/ }));
+        fireEvent.click(screen.getByRole("button", { name: i === 4 ? /resulta/i : /^Susunod$/ }));
       }
-      expect(screen.getByTestId("quiz-score").textContent).toMatch(/2 sang 5/);
+      expect(screen.getByTestId("quiz-score").textContent).toMatch(/2 sa 5/);
       const stamps = Array.from(document.querySelectorAll("[data-testid=quiz-stamps] [data-stamp]"), (n) => n.getAttribute("data-stamp"));
       expect(stamps).toEqual(["earned", "earned", "missed", "missed", "missed"]);
       expect(screen.getByTestId("quiz-right").querySelectorAll("li")).toHaveLength(2);

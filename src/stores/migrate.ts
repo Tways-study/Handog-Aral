@@ -1,5 +1,6 @@
 import type { Language, ResolvedExplanation } from "@/shared/schemas";
-import { getDb, wordCacheBulkPut } from "./db";
+import { OFFLINE_TEXT } from "@/lib/dictionary/explain";
+import { enqueue, getDb, wordCacheBulkPut } from "./db";
 import { LEGACY_STORAGE_KEY } from "./bootMirror";
 import { useProgress } from "./progress";
 import { useSettings } from "./settings";
@@ -74,7 +75,10 @@ export async function migrateLegacyState(): Promise<boolean> {
   // Let persisted stores finish reading before we write over them.
   await Promise.all([useSettings.persist.rehydrate(), useProgress.persist.rehydrate()]);
 
-  const language: Language = old.language === "tagalog" ? "tagalog" : "hiligaynon";
+  // The pre-v3 app offered Hiligaynon, which is gone: those children continue in Filipino.
+  const language: Language = old.language === "english" ? "english" : "tagalog";
+  // Their saved words carry Hiligaynon text: keep the words, show an honest provisional line and let the lookup queue upgrade them.
+  const wasHiligaynon = old.language === "hiligaynon";
 
   useSettings.setState({
     childName: str(old.childName),
@@ -91,8 +95,9 @@ export async function migrateLegacyState(): Promise<boolean> {
   const saved: { entry: ResolvedExplanation; bookId: string | null }[] = [];
   if (Array.isArray(old.wordsLearned)) {
     for (const w of old.wordsLearned as LegacyWord[]) {
-      const entry = w && typeof w === "object" ? toExplanation(w, language, "ai") : null;
-      if (!entry) continue;
+      const base = w && typeof w === "object" ? toExplanation(w, language, "ai") : null;
+      if (!base) continue;
+      const entry: ResolvedExplanation = wasHiligaynon ? { ...base, translation: OFFLINE_TEXT[language], source: "offline" } : base;
       const key = entry.word.toLowerCase();
       if (seen.has(key)) continue;
       seen.add(key);
@@ -104,6 +109,7 @@ export async function migrateLegacyState(): Promise<boolean> {
     await db.words.bulkPut(
       saved.map(({ entry, bookId }, i) => ({ ...entry, key: entry.word.toLowerCase(), bookId, savedAt: now + i })),
     );
+    if (wasHiligaynon) for (const { entry } of saved) await enqueue({ word: entry.word, sentence: "", language });
   }
 
   // Cached lookups (keys look like "word_language").
@@ -111,7 +117,8 @@ export async function migrateLegacyState(): Promise<boolean> {
   if (old.wordCache && typeof old.wordCache === "object") {
     for (const [k, v] of Object.entries(old.wordCache as Record<string, LegacyWord>)) {
       if (!v || typeof v !== "object") continue;
-      const m = /_(hiligaynon|tagalog)$/.exec(k);
+      if (/_hiligaynon$/.test(k)) continue; // a retired language: its explanations are not Filipino
+      const m = /_(tagalog|english)$/.exec(k);
       const lang: Language = m ? (m[1] as Language) : language;
       if (OLD_PLACEHOLDERS.has(str(v.translation))) continue;
       const entry = toExplanation(v, lang, "ai");
