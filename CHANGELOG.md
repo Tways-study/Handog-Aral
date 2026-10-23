@@ -4,6 +4,11 @@ Version history for Handog Aral, reconstructed from the git log. v2 was the Vite
 
 ## v3 (3.0.0-beta.1)
 
+### 2026-10-24 · Premium feel (branch `premium-apple-feel`)
+- Frosted chrome (`.material`): bottom nav, desktop rail, reader bar and word sheet are translucent glass with a bright top edge. It falls back to solid paper for reduced transparency, increased contrast, forced colors, low-end or save-data devices and "Gentle animations" off.
+- Springs: presses answer at once (scale .97) and release on a damped spring (`--ease-spring`, a CSS `linear()` curve); the switch thumb uses the same spring; dialogs arrive critically damped (no bounce, as nothing flicked them). Reduced motion keeps short ease-outs.
+- Optical type: h1 tightened to -0.02em, h2 -0.01em (OpenDyslexic keeps its own spacing); squircle corners on buttons, tiles and the sheet where supported; the primary CTA gets a light top edge.
+
 ### 2026-10-24 · Polish pass
 - Horizon props shrink on phones so they never sit behind a long subtitle; page titles get breathing room below the band.
 - The owl blinks eight times after it appears (CSS, same gate as the scenery); Settings: "Gentle animations".

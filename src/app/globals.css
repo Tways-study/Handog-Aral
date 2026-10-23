@@ -84,11 +84,13 @@
 
   /* geometry */
   --radius: 1rem;
+  /* a damped spring (response ~0.6 s, damping 0.78, about 2% overshoot) for release and arrival; presses use ease-out */
+  --ease-spring: linear(0, 0.0534, 0.1763, 0.3269, 0.4787, 0.6163, 0.7323, 0.8248, 0.8947, 0.9449, 0.9789, 1.0004, 1.0127, 1.0184, 1.0199, 1.0188, 1.0164, 1.0134, 1.0103, 1.0076, 1.0053, 1.0035, 1.0021, 1.0011, 1.0004, 1, 0.9997, 0.9996, 1);
   --elev-sm: 0 1px 2px rgb(29 35 64 / 0.08), 0 4px 10px -6px rgb(29 35 64 / 0.18);
   --elev-md: 0 1px 2px rgb(29 35 64 / 0.08), 0 8px 24px -12px rgb(29 35 64 / 0.25);
   --elev-lg: 0 2px 4px rgb(29 35 64 / 0.08), 0 14px 32px -14px rgb(29 35 64 / 0.4);
   --elev-sheet: 0 -12px 40px -16px rgb(29 35 64 / 0.45);
-  --elev-cta: 0 1px 2px rgb(29 35 64 / 0.2), 0 10px 20px -10px rgb(29 35 64 / 0.55);
+  --elev-cta: inset 0 1px 0 rgb(255 255 255 / 0.34), 0 1px 2px rgb(29 35 64 / 0.2), 0 10px 20px -10px rgb(29 35 64 / 0.55);
   --elev-pressed: 0 1px 1px rgb(29 35 64 / 0.2), 0 2px 4px -2px rgb(29 35 64 / 0.35);
   /* a tile lifted off the pad: cards you press (scan entry tiles, quiz options) */
   --elev-tile: 0 1px 0 rgb(29 35 64 / 0.06), 0 2px 3px rgb(29 35 64 / 0.08), 0 8px 16px -10px rgb(29 35 64 / 0.28);
@@ -297,6 +299,9 @@ h1, h2, h3, h4, .font-heading {
   line-height: 1.15;
   letter-spacing: -0.005em;
 }
+/* Optical tracking: the larger the type, the tighter (large letters read too far apart). Headings only; body stays at 0. */
+h1 { letter-spacing: -0.02em; }
+h2 { letter-spacing: -0.01em; }
 /* OpenDyslexic brings its own (wide) letter-spacing from body; do not tighten it. */
 body.dyslexia-font :is(h1, h2, h3, h4, .font-heading) { letter-spacing: inherit; }
 /* No widows in short copy. */
@@ -484,7 +489,7 @@ a { text-underline-offset: 4px; }
 }
 @keyframes ui-fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes ui-fade-out { from { opacity: 1; } to { opacity: 0; } }
-@keyframes ui-pop-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+@keyframes ui-pop-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: scale(1); } }
 @keyframes ui-pop-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.96); } }
 @keyframes ui-slide-in-right { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @keyframes ui-slide-out-right { from { transform: translateX(0); } to { transform: translateX(100%); } }
@@ -497,7 +502,7 @@ a { text-underline-offset: 4px; }
 
 .ui-fade[data-state="open"] { animation: ui-fade-in 200ms var(--ease-out) both; }
 .ui-fade[data-state="closed"] { animation: ui-fade-out 150ms var(--ease-in) both; }
-.ui-pop[data-state="open"], .ui-pop[data-state="delayed-open"], .ui-pop[data-state="instant-open"] { animation: ui-pop-in 200ms var(--ease-out) both; }
+.ui-pop[data-state="open"], .ui-pop[data-state="delayed-open"], .ui-pop[data-state="instant-open"] { animation: ui-pop-in 300ms var(--ease-out) both; }
 .ui-pop[data-state="closed"] { animation: ui-pop-out 150ms var(--ease-in) both; }
 .ui-slide-right[data-state="open"] { animation: ui-slide-in-right 250ms var(--ease-out) both; }
 .ui-slide-right[data-state="closed"] { animation: ui-slide-out-right 200ms var(--ease-in) both; }
@@ -518,12 +523,44 @@ a { text-underline-offset: 4px; }
 @utility pressable {
   cursor: pointer;
   touch-action: manipulation;
-  transition-property: background-color, color, border-color, box-shadow, translate;
-  transition-duration: 140ms;
+  transition-property: background-color, color, border-color, box-shadow, translate, scale;
+  transition-duration: 140ms, 140ms, 140ms, 140ms, 140ms, 140ms;
   transition-timing-function: var(--ease-out);
   @media (prefers-reduced-motion: no-preference) {
-    &:active:not(:disabled, [aria-disabled="true"]) { translate: 0 2px; }
+    /* Letting go springs back (a touch of overshoot); the press itself answers at once. */
+    transition-duration: 140ms, 140ms, 140ms, 140ms, 140ms, 520ms;
+    transition-timing-function: var(--ease-out), var(--ease-out), var(--ease-out), var(--ease-out), var(--ease-out), var(--ease-spring);
+    &:active:not(:disabled, [aria-disabled="true"]) {
+      translate: 0 1px;
+      scale: 0.97;
+      transition-duration: 140ms, 140ms, 140ms, 140ms, 90ms, 90ms;
+      transition-timing-function: var(--ease-out);
+    }
   }
+}
+
+/* Frosted chrome: the bottom nav, the desktop rail, the reader bar and the word sheet float over the page like glass,
+   with a bright top edge. Where blur costs too much or is unwanted (reduced transparency, increased contrast, low-end or
+   save-data devices via html[data-scenery="still"], or "Gentle animations" off) it is simply the solid paper. */
+.material {
+  --material-bg: color-mix(in srgb, var(--paper) 74%, transparent);
+  background-color: var(--material-bg);
+  border-color: color-mix(in srgb, var(--line) 70%, transparent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5);
+}
+.dark .material { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06); }
+.material-thick { --material-bg: color-mix(in srgb, var(--paper) 90%, transparent); }
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .material { -webkit-backdrop-filter: saturate(170%) blur(22px); backdrop-filter: saturate(170%) blur(22px); }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active) {
+  .material { background-color: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+html[data-scenery="still"] .material { background-color: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+
+/* Continuous (squircle) corners where the browser supports them: same radii, the softer Apple curve. */
+@supports (corner-shape: squircle) {
+  [data-slot="button"], [data-slot="scan-tile"], [data-slot="drawer-content"], .pressable { corner-shape: squircle; }
 }
 
 /* Static placeholder: one gentle fade-in when it mounts, never a loop. */

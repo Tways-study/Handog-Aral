@@ -77,7 +77,7 @@ function BottomNav() {
     <nav
       aria-label={t.shell.mainNavLabel}
       data-slot="bottom-nav"
-      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 items-end border-t-[1.5px] border-border bg-background pb-[env(safe-area-inset-bottom)] lg:hidden"
+      className="material fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 items-end border-t pb-[env(safe-area-inset-bottom)] lg:hidden"
       style={{ minHeight: "calc(var(--nav-h) + env(safe-area-inset-bottom, 0px))" }}
     >
       {NAV_ITEMS.map((item) => {
@@ -141,7 +141,7 @@ function Rail() {
     <nav
       aria-label={t.shell.mainNavLabel}
       data-slot="nav-rail"
-      className="fixed inset-y-0 left-0 z-40 hidden w-[var(--rail-w)] flex-col items-center gap-1.5 border-r-[1.5px] border-border bg-background py-5 lg:flex"
+      className="material fixed inset-y-0 left-0 z-40 hidden w-[var(--rail-w)] flex-col items-center gap-1.5 border-r py-5 lg:flex"
     >
       <Mascot size={52} className="mb-4" />
       {NAV_ITEMS.map((item) => {

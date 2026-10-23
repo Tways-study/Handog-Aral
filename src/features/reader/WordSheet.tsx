@@ -39,7 +39,7 @@ export default function WordSheet({
         <DrawerPrimitive.Content
           data-slot="drawer-content"
           onCloseAutoFocus={onCloseAutoFocus}
-          className="group/drawer-content fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto max-h-[80vh] flex-col rounded-t-[1.75rem] border-t-[1.5px] bg-background shadow-sheet"
+          className="group/drawer-content fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto max-h-[80vh] flex-col material material-thick rounded-t-[1.75rem] border-t shadow-sheet"
         >
           {moment && (
             <div data-slot="sheet-moment" className="pointer-events-none absolute -top-[3.25rem] right-3 flex items-end gap-1.5" role="status">
