@@ -42,7 +42,7 @@ test("nothing earned yet: an invitation, and every sticker is a locked outline w
   await expect(page.getByTestId("sticker-count")).toHaveText("0 sa 14");
   await expect(page.getByTestId("stickers-empty")).toBeVisible();
   await expect(page.locator("li[data-sticker][data-state=locked]")).toHaveCount(14);
-  await expect(page.getByText("I-save ang imo una nga pulong.")).toBeVisible();
+  await expect(page.getByText("I-save ang una mong salita.")).toBeVisible();
   await expect(page.getByText("Mga sticker ni Ana")).toBeVisible();
 });
 
@@ -53,8 +53,8 @@ test("earned stickers are in colour with a date; locked ones keep a hint; NEW cl
   await expect(page.locator("li[data-sticker][data-state=earned]")).toHaveCount(2);
   await expect(page.locator("li[data-sticker][data-state=locked]")).toHaveCount(12);
   const first = page.locator("li[data-sticker=first-word]");
-  await expect(first).toContainText("Una nga Pulong");
-  await expect(first).toContainText("Nakuha sang");
+  await expect(first).toContainText("Unang Salita");
+  await expect(first).toContainText("Nakuha noong");
   await expect(page.locator("li[data-sticker=hard-word]")).toContainText("Hindi pa nakukuha");
   await expect(page.getByTestId("new-marker")).toHaveCount(2);
 
@@ -79,21 +79,21 @@ test("owl wardrobe: outfits unlock with their sticker, a locked one cannot be wo
   await open(page, { earned, seen: ["first-word", "five-words"], flags, bonusStars: 0 });
   await page.getByRole("tab", { name: "Kuwago" }).click();
   const group = page.getByRole("radiogroup", { name: "Isusuot ng kuwago" });
-  await expect(group.getByRole("radio", { name: /Antipara/ })).not.toHaveAttribute("aria-disabled", "true");
-  await expect(group.getByRole("radio", { name: /Kalo/ })).toHaveAttribute("aria-disabled", "true");
+  await expect(group.getByRole("radio", { name: /Salamin/ })).not.toHaveAttribute("aria-disabled", "true");
+  await expect(group.getByRole("radio", { name: /Sombrero/ })).toHaveAttribute("aria-disabled", "true");
   await expect(group.getByRole("radio", { name: /Laso/ })).toHaveAttribute("aria-disabled", "true");
-  await expect(group.getByRole("radio", { name: /Kalo/ })).toContainText("Makuha sa sticker: Una nga Libro");
+  await expect(group.getByRole("radio", { name: /Sombrero/ })).toContainText("Makukuha sa sticker: Unang Aklat");
 
-  await group.getByRole("radio", { name: /Kalo/ }).click({ force: true });
-  await expect(page.getByTestId("wearing")).toHaveText("Ginasul-ob: Wala");
+  await group.getByRole("radio", { name: /Sombrero/ }).click({ force: true });
+  await expect(page.getByTestId("wearing")).toHaveText("Suot: Wala");
 
-  await group.getByRole("radio", { name: /Antipara/ }).click();
-  await expect(page.getByTestId("wearing")).toHaveText("Ginasul-ob: Antipara");
+  await group.getByRole("radio", { name: /Salamin/ }).click();
+  await expect(page.getByTestId("wearing")).toHaveText("Suot: Salamin");
   await expect.poll(async () => (await readPersisted(page, "handog-settings"))?.state.owlOutfit).toBe("glasses");
 
   await page.reload();
   await page.getByRole("tab", { name: "Kuwago" }).click();
-  await expect(page.getByTestId("wearing")).toHaveText("Ginasul-ob: Antipara");
+  await expect(page.getByTestId("wearing")).toHaveText("Suot: Salamin");
 });
 
 test("Tagalog sticker book", async ({ page }) => {

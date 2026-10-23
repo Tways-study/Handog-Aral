@@ -1,4 +1,5 @@
 import { PageContainer } from "@/components/PageLayout";
+import BandScene from "@/components/BandScene";
 import PadSkeleton from "@/components/PadSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -19,7 +20,8 @@ export function HomeSkeleton({ label, className }: SkeletonProps) {
     <PageContainer className={className}>
       <div role="status" aria-busy="true" aria-label={label} data-slot="home-skeleton" className="grid gap-5 lg:grid-cols-2 lg:gap-8">
         <div className="grid content-start gap-3 lg:col-span-2">
-          <div className="page-band grid gap-3 pt-6 pb-7 lg:pt-10">
+          <div className="page-band grid gap-3 pt-6 pb-8 lg:pt-10 lg:pb-12">
+            <BandScene />
             <Skeleton className="h-9 w-3/5 max-w-sm rounded-lg bg-white/30" />
             <Skeleton className="h-4 w-2/5 max-w-[14rem] bg-white/30" />
           </div>
@@ -58,7 +60,8 @@ export function ListSkeleton({ label, className }: SkeletonProps) {
   return (
     <PageContainer className={className}>
       <div className="grid gap-4">
-        <div className="page-band pt-6 pb-7 lg:pt-10">
+        <div className="page-band pt-6 pb-8 lg:pt-10 lg:pb-12">
+          <BandScene />
           <Skeleton className="h-9 w-1/2 max-w-xs rounded-lg bg-white/30" />
         </div>
         <Skeleton className="h-11 w-full max-w-md rounded-full" />

@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { findBook } from "@/data/books";
+import { PageHeader } from "@/components/PageLayout";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useSavedWords } from "@/hooks/useSavedWords";
 import { useT } from "@/hooks/useT";
@@ -312,10 +313,9 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
     const hasError = scan.state.status === "error" && !!errKey;
     return (
       <div className="mx-auto w-full max-w-[var(--content-max)] pb-nav">
-        <header className="px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-3 lg:px-8 lg:pt-8">
-          <h1 className="font-heading text-2xl leading-[1.1] font-bold lg:text-4xl">{s.title}</h1>
-          <p className="mt-1 text-[0.9375rem] text-ink-2 lg:text-base">{s.startPrompt}</p>
-        </header>
+        <div className="px-5 lg:px-8">
+          <PageHeader title={s.title} subtitle={s.startPrompt} />
+        </div>
         <div className={cn("pad mx-5 min-h-[22rem] py-6 lg:mx-8", overlayClass)}>
           <input
             ref={galleryRef}

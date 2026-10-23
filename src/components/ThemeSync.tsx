@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useSyncExternalStore } from "react";
+import { lowEndDevice, saveDataOn } from "@/lib/owl/capability";
 import { useSettings, useSettingsHydrated } from "@/stores/settings";
 
 /** Browser toolbar color (the page band: pale lilac, deep violet in dark mode). Plain localStorage mirror of the theme, read by the inline script in layout.tsx to avoid a flash. */
@@ -37,7 +38,14 @@ export default function ThemeSync() {
   const fontSize = useSettings((s) => s.fontSize);
   const dyslexiaFont = useSettings((s) => s.dyslexiaFont);
   const language = useSettings((s) => s.language);
+  const scenery = useSettings((s) => s.scenery);
   const resolved = useResolvedTheme();
+
+  // The horizon scenery moves only when the child allows it and the device can afford it (CSS also checks reduced motion).
+  useEffect(() => {
+    if (!hydrated) return;
+    document.documentElement.dataset.scenery = scenery && !saveDataOn() && !lowEndDevice() ? "moving" : "still";
+  }, [hydrated, scenery]);
 
   // The page language follows the child's language (Filipino by default).
   useEffect(() => {

@@ -203,12 +203,17 @@ function FunSection() {
   const setSound = useSettings((s) => s.setSound);
   const haptics = useSettings((s) => s.haptics);
   const setHaptics = useSettings((s) => s.setHaptics);
+  const scenery = useSettings((s) => s.scenery);
+  const setScenery = useSettings((s) => s.setScenery);
 
   return (
     <>
       <Section id="sec-fun" title={t.settings.funHeading}>
         <Row label={t.settings.owl3dLabel} help={t.settings.owl3dHelp} htmlFor="owl-3d">
           <Switch id="owl-3d" checked={owl3d} onCheckedChange={setOwl3d} />
+        </Row>
+        <Row label={t.settings.sceneryLabel} help={t.settings.sceneryHelp} htmlFor="scenery">
+          <Switch id="scenery" checked={scenery} onCheckedChange={setScenery} />
         </Row>
         <Row label={t.settings.soundLabel} help={t.settings.soundHelp} htmlFor="sound-fx">
           <div className="flex flex-wrap items-center gap-3">

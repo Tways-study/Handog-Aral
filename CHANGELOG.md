@@ -4,6 +4,16 @@ Version history for Handog Aral, reconstructed from the git log. v2 was the Vite
 
 ## v3 (3.0.0-beta.1)
 
+### 2026-10-24 · Polish pass
+- Horizon props shrink on phones so they never sit behind a long subtitle; page titles get breathing room below the band.
+- The owl blinks eight times after it appears (CSS, same gate as the scenery); Settings: "Gentle animations".
+- Scan gets the same title band as every other screen; Home's phone cover tucks the small book behind the label card; the Home empty state no longer repeats a heading.
+- Removed the wavy underline from section headings.
+- e2e: replaced stale Hiligaynon literals and dismissed the first-visit sticker dialog in the streak test.
+
+### 2026-10-24 · Barrio horizon band
+- The page band's confetti is replaced by a small barrio horizon (mountains, a nipa hut on terraced hills, sun, clouds; the page ground is the front hill). It rises into place once, the clouds drift for about two minutes and settle. Pure CSS, no JS, transform/opacity only; still under reduced motion, save-data, low-end devices or the new Settings "Moving scenery" switch; hidden under forced colors; a dark-mode night twin with a moon.
+
 ### 2026-10-23 · Hiligaynon removed, English and Filipino both ways
 - Hiligaynon is gone (translations were not accurate enough). The language setting is now Filipino or English and doubles as the lookup direction: English words explained in Filipino, or Filipino words explained in English.
 - Four short Filipino stories and a ~200-word curated Filipino dictionary (marked for native-speaker review), a Filipino TTS voice, and an AI prompt that switches direction.

@@ -5,7 +5,7 @@ const WORDS = ["brave", "forest", "quiet", "stone", "happy", "snow"].map((w, i) 
 
 async function open(page: Page, rows: ReturnType<typeof savedWordRow>[]) {
   await gotoAs(page, "/");
-  await expect(page.getByRole("heading", { name: /Maayong/ })).toBeVisible(); // Dexie is open
+  await expect(page.getByRole("heading", { name: /Magandang/ })).toBeVisible(); // Dexie is open
   if (rows.length) await seedWords(page, rows);
   await page.goto("/play");
   await expect(page.getByRole("heading", { name: "Pares" })).toBeVisible();
@@ -19,7 +19,7 @@ async function pairsOf(page: Page): Promise<number[][]> {
   const texts = await cards(page).evaluateAll((els) => els.map((e) => (e.querySelector("[class*='rotateY']") ?? e).textContent ?? ""));
   const byKey = new Map<string, number[]>();
   texts.forEach((t, i) => {
-    const key = t.replace(/^(Pulong|Kahulugan):\s*/, "").replace("Filipino-", "");
+    const key = t.replace(/^(Salita|Kahulugan):\s*/, "").replace("Filipino-", "");
     byKey.set(key, [...(byKey.get(key) ?? []), i]);
   });
   return [...byKey.values()];
@@ -62,7 +62,7 @@ test("a deck of 3 to 6 pairs; a wrong pair flips back by itself and counts one m
   await expect(cards(page).nth(pairs[0][0])).toHaveAttribute("data-state", "up");
   await press(page, pairs[1][0]);
   await expect(moves(page)).toHaveText("1");
-  await expect(page.getByTestId("announce")).toContainText("Indi pa pares");
+  await expect(page.getByTestId("announce")).toContainText("Hindi pa pares");
   await expect(cards(page).nth(pairs[1][0])).toHaveAttribute("data-state", "down", { timeout: 3000 });
   await expect(cards(page).nth(pairs[0][0])).toHaveAttribute("data-state", "down");
   // a tap while a wrong pair shows never traps input
@@ -86,7 +86,7 @@ test("a perfect game: matches stay up, the win gives 2 stars and the sticker, th
   }
   await expect(page.getByTestId("play-win")).toBeVisible();
   await expect(page.getByTestId("win-stars")).toContainText("2 bituin");
-  const dialog = page.getByRole("dialog", { name: "Una nga Daog sa Pares" });
+  const dialog = page.getByRole("dialog", { name: "Unang Panalo sa Pares" });
   await expect(dialog).toBeVisible();
   await dialog.getByRole("button", { name: "Sige!" }).click();
   await expect(dialog).toHaveCount(0);
@@ -102,7 +102,7 @@ test("a perfect game: matches stay up, the win gives 2 stars and the sticker, th
   await expect(page.getByTestId("play-win")).toBeVisible();
   await expect(page.getByRole("dialog")).toHaveCount(0); // the sticker is only celebrated once
   await expect.poll(async () => (await readPersisted(page, "handog-rewards"))?.state.bonusStars).toBe(4);
-  await expect(page.getByRole("link", { name: "Bumalik sa mga salita" })).toHaveAttribute("href", "/words");
+  await expect(page.getByRole("link", { name: "Balik sa mga salita" })).toHaveAttribute("href", "/words");
 });
 
 test("reduced motion: instant flips and no confetti nodes on the win", async ({ page }) => {
@@ -128,7 +128,7 @@ test("all twelve cards fit above the nav on a phone, the owl reacts to a miss, a
   const last = (await cards(page).nth(11).boundingBox())!;
   expect(last.y + last.height).toBeLessThanOrEqual(nav.y);
   await expect(page.locator("[data-art=card-back]").first()).toHaveAttribute("aria-hidden", "true");
-  await expect(page.getByTestId("owl-says")).toContainText("Pangitaa");
+  await expect(page.getByTestId("owl-says")).toContainText("Hanapin ang salita");
   const pairs = await pairsOf(page);
   const odd = pairs.find((p) => p[0] !== pairs[0][0])![0];
   await press(page, pairs[0][0]);

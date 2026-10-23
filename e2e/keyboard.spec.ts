@@ -46,14 +46,14 @@ test.beforeEach(async ({ context }) => {
 
 test("keyboard only: Home to Books to Reader, tap a word with Enter", async ({ page }) => {
   await gotoAs(page, "/");
-  await expect(page.getByRole("heading", { name: /Maayong/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Magandang/ })).toBeVisible();
 
   // The first stop is the skip link; its target is <main>.
   await page.keyboard.press("Tab");
   expect((await active(page)).name).toBe("Lumaktaw sa nilalaman");
 
   // Home: tab to the Books navigation link (rail on desktop, bottom nav on mobile).
-  const homeTrail = await tabTo(page, (s) => s.role === "link" && s.name === "Libro");
+  const homeTrail = await tabTo(page, (s) => s.role === "link" && s.name === "Aklat");
   // Sanity of the order: content actions come before the bottom nav on mobile, rail first on desktop.
   expect(homeTrail.length).toBeGreaterThan(0);
   await page.keyboard.press("Enter");
@@ -87,7 +87,7 @@ test("keyboard only: Home to Books to Reader, tap a word with Enter", async ({ p
 
 test("the skip link moves focus to <main>", async ({ page }) => {
   await gotoAs(page, "/");
-  await expect(page.getByRole("heading", { name: /Maayong/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Magandang/ })).toBeVisible();
   await page.keyboard.press("Tab");
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/#main$/);

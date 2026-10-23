@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { SettingsLink } from "@/components/AppShell";
+import BandScene from "@/components/BandScene";
 import { cn } from "@/lib/utils";
 
 /**
@@ -56,10 +57,11 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "page-band pt-[max(1rem,env(safe-area-inset-top))] pb-6 lg:pt-8 lg:pb-8",
+        "page-band mb-4 pt-[max(1rem,env(safe-area-inset-top))] pb-6 lg:mb-5 lg:pt-8 lg:pb-8",
         className,
       )}
     >
+      <BandScene />
       <div
         className={cn("flex items-start justify-between gap-3", innerClassName)}
       >

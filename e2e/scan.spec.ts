@@ -121,7 +121,7 @@ test("a proxy that returns blank text falls back to the local engine, which repo
     return c.toDataURL("image/png");
   });
   await upload(page, { name: "blank.png", mimeType: "image/png", buffer: Buffer.from(blank.split(",")[1], "base64") });
-  await expect(page.getByText("Wala kami sang makita nga teksto")).toBeVisible({ timeout: 90_000 });
+  await expect(page.getByText("Walang nakitang teksto")).toBeVisible({ timeout: 90_000 });
   await expect(page.getByRole("progressbar")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Buksan ang camera" })).toBeVisible();
 });
@@ -162,7 +162,7 @@ test("a finished scan: the owl says it once, then the prompt; whoosh-time sticke
   await expect(intro).toContainText("I-tap ang salitang hindi mo alam", { timeout: 6000 });
   // the first scan earns its sticker after the reveal
   await expect(page.getByTestId("celebration")).toBeVisible({ timeout: 4000 });
-  await expect(page.getByTestId("celebration")).toContainText("Una nga Scan");
+  await expect(page.getByTestId("celebration")).toContainText("Unang Scan");
   await settleCelebrations(page, 500);
   // every line ended up fully opaque
   await expect.poll(() => page.locator("[data-slot=reader-text] [data-line]").evaluateAll((els) => els.every((e) => getComputedStyle(e).opacity === "1"))).toBe(true);

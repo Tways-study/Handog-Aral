@@ -201,7 +201,8 @@ export default function HomeScreen() {
             {/* Desktop: the owl perches on the cover's top edge, in the gutter beside the greeting. */}
             {isDesktop && <div className="absolute -top-[8.75rem] right-3 z-10">{owl}</div>}
 
-            <div className="rounded-[0.625rem] border-2 border-black/10 bg-label-paper px-3.5 py-2.5 text-label-ink lg:px-4 lg:py-3">
+            {/* The label sits above the small cover on a phone, so the tilted book tucks behind it instead of crossing it. */}
+            <div className="relative z-10 rounded-[0.625rem] border-2 border-black/10 bg-label-paper px-3.5 py-2.5 text-label-ink lg:px-4 lg:py-3">
               <p className="flex items-baseline gap-1.5 text-[0.8125rem] text-label-ink-2">
                 {t.home.bookLabel}
                 <span className="flex-1 border-b-[1.5px] border-label-rule font-heading text-xl leading-[1.15] font-bold text-label-ink lg:text-2xl">
@@ -288,7 +289,7 @@ export default function HomeScreen() {
                 </ul>
               ) : (
                 <div className="pad-line pb-4 [line-height:1.5]">
-                  <p className="font-heading text-lg font-bold">{t.home.emptyTitle}</p>
+                  <p className="text-[1.0625rem] font-semibold">{t.home.emptyTitle}</p>
                   <p className="text-ink-2">{t.home.emptyBody}</p>
                 </div>
               )}

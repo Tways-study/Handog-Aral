@@ -7,7 +7,7 @@ const WORDS = ["brave", "forest", "quiet", "stone", "happy", "snow", "path", "fo
 
 async function seed(page: Page, rows = WORDS) {
   await gotoAs(page, "/");
-  await expect(page.getByRole("heading", { name: /Maayong/ })).toBeVisible(); // Dexie is open and home is ready
+  await expect(page.getByRole("heading", { name: /Magandang/ })).toBeVisible(); // Dexie is open and home is ready
   await seedWords(page, rows);
   await page.goto("/quiz");
 }
@@ -18,7 +18,7 @@ const options = (page: Page) => page.getByRole("radiogroup", { name: "Ano ang ka
 async function playQuiz(page: Page) {
   const seen: { word: string; options: string[] }[] = [];
   for (let i = 1; i <= 5; i++) {
-    await expect(page.getByText(`${i} sang 5`).first()).toBeVisible();
+    await expect(page.getByText(`${i} sa 5`).first()).toBeVisible();
     await expect(options(page)).toHaveCount(4);
     const opts = await options(page).evaluateAll((els) => els.map((e) => (e.querySelector("span.flex-1") ?? e).textContent ?? ""));
     const word = (await page.locator("main h2, h2").first().textContent()) ?? "";
@@ -49,10 +49,10 @@ test("5 questions, 4 distinct options each, results record stars exactly once", 
   }
 
   const score = await page.getByTestId("quiz-score").textContent();
-  expect(score).toMatch(/^\d sang 5 ang tama$/);
+  expect(score).toMatch(/^\d sa 5 ang tama$/);
   await expect.poll(() => quizStars(page)).toBe(1);
   // Stars on screen: word stars come from the (unsynced, raw-seeded) counter, so the quiz star is the total.
-  await expect(page.getByText("Mga bituon: 1")).toBeVisible();
+  await expect(page.getByText("Mga bituin: 1")).toBeVisible();
 
   // A re-render does not record a second time.
   await page.waitForTimeout(500);
@@ -86,7 +86,7 @@ test("with fewer than 4 saved words the quiz shows the not-enough state", async 
   await seed(page, WORDS.slice(0, 3));
   const state = page.getByTestId("quiz-not-enough");
   await expect(state).toBeVisible();
-  await expect(state).toContainText("May 3 salita");
+  await expect(state).toContainText("May 3 ka nang salita");
   await expect(options(page)).toHaveCount(0);
   expect(await quizStars(page)).toBe(0);
 });

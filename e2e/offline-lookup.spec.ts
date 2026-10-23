@@ -41,18 +41,18 @@ test("offline lookup is honest and provisional; coming back online upgrades it i
   await gotoAs(page, "/read/fox");
   await expect(wordButton(page, "searched")).toBeVisible();
   await waitForDictionary(page); // curated words resolve from Dexie, no network
-  await expect(page.locator("[data-slot=offline-banner]").getByText(/Wala sang internet/)).toHaveCount(0);
+  await expect(page.locator("[data-slot=offline-banner]").getByText(/Walang internet/)).toHaveCount(0);
 
   await context.setOffline(true);
-  await expect(page.locator("[data-slot=offline-banner]").getByText(/Wala sang internet/)).toBeVisible();
+  await expect(page.locator("[data-slot=offline-banner]").getByText(/Walang internet/)).toBeVisible();
 
   // 1. Curated word while offline: the full curated explanation, not the provisional one.
   await wordButton(page, "brave").click();
   const curated = panel(page);
   await expect(curated).toHaveAttribute("data-source", "curated");
-  await expect(curated.getByText("Maisog gid, pareho sang soldado!")).toBeVisible();
+  await expect(curated.getByText("Matapang, tulad ng sundalo!")).toBeVisible();
   await expect(curated.getByText("Mula sa diksyunaryo ng app")).toBeVisible();
-  await expect(curated.getByText(/Simple lang ini nga kahulugan/)).toHaveCount(0);
+  await expect(curated.getByText(/Payak lang ang kahulugang ito/)).toHaveCount(0);
   await expect(page.locator("[data-slot=offline-banner]")).toBeVisible();
   await closeDrawer(page);
 
@@ -60,8 +60,8 @@ test("offline lookup is honest and provisional; coming back online upgrades it i
   await wordButton(page, "searched").click();
   const offline = panel(page);
   await expect(offline).toHaveAttribute("data-source", "offline");
-  await expect(offline.getByText("Wala pa sang paathag. Ipakita namon kon may internet na.")).toBeVisible();
-  await expect(offline.getByText(/Simple lang ini nga kahulugan karon\. Mas klaro na ini kon may internet\./)).toBeVisible();
+  await expect(offline.getByText("Wala pang paliwanag. Ipapakita namin kapag may internet na.")).toBeVisible();
+  await expect(offline.getByText(/Payak lang ang kahulugang ito ngayon\. Magiging mas malinaw ito kapag may internet\./)).toBeVisible();
   await expect(page.locator("[data-slot=offline-banner]")).toBeVisible();
   expect(stub.explainCalls, "no proxy call while offline").toHaveLength(0);
   await expect.poll(() => countRows(page, "lookupQueue")).toBe(1);
@@ -70,12 +70,12 @@ test("offline lookup is honest and provisional; coming back online upgrades it i
 
   // 3. Back online: the queue upgrades the word, a toast tells the child, the open panel updates in place.
   await context.setOffline(false);
-  await expect(page.getByText("Mas klaro na ang 1 salita.")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("Mas malinaw na ang 1 salita.")).toBeVisible({ timeout: 15_000 });
   await expect(panel(page)).toHaveAttribute("data-source", "ai");
   await expect(panel(page).getByText(UPGRADED.translation)).toBeVisible();
   await expect(panel(page).getByText(/Ipinaliwanag ng AI/)).toBeVisible();
-  await expect(panel(page).getByText(/Simple lang ini nga kahulugan/)).toHaveCount(0);
-  await expect(page.locator("[data-slot=offline-banner]").getByText(/Wala sang internet/)).toHaveCount(0);
+  await expect(panel(page).getByText(/Payak lang ang kahulugang ito/)).toHaveCount(0);
+  await expect(page.locator("[data-slot=offline-banner]").getByText(/Walang internet/)).toHaveCount(0);
   expect(stub.explainCalls.map((c) => c.word)).toEqual(["searched"]);
   await expect.poll(() => countRows(page, "lookupQueue")).toBe(0);
 

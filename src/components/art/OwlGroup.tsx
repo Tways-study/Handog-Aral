@@ -26,6 +26,8 @@ export const OWL = {
 interface OwlGroupProps {
   mood?: OwlGroupMood;
   outfit?: OwlGroupOutfit;
+  /** The mascot blinks a few times after it appears (CSS, gated like the page scenery); static art leaves this off. */
+  blink?: boolean;
 }
 
 const SHOULDER = { left: { x: 18, y: 80 }, right: { x: 102, y: 80 } } as const;
@@ -40,7 +42,7 @@ function Wing({ side, angle }: { side: "left" | "right"; angle: number }) {
   );
 }
 
-function Eye({ cx, mood, side }: { cx: number; mood: OwlGroupMood; side: "left" | "right" }) {
+function Eye({ cx, mood, side, blink }: { cx: number; mood: OwlGroupMood; side: "left" | "right"; blink?: boolean }) {
   const cy = 60;
   const part = `eye-${side}`;
   if (mood === "cheer" || mood === "sleep") {
@@ -58,7 +60,7 @@ function Eye({ cx, mood, side }: { cx: number; mood: OwlGroupMood; side: "left" 
   const px = cx + dx + (side === "left" ? 1 : -1);
   const py = cy + dy;
   return (
-    <g data-part={part}>
+    <g data-part={part} className={blink ? "owl-eye" : undefined}>
       <circle cx={cx} cy={cy} r={19} fill={OWL.eye} />
       <circle cx={px} cy={py} r={12} fill={OWL.pupil} />
       <circle cx={px - 3.8} cy={py - 4.4} r={4.2} fill="#fff" />
@@ -117,7 +119,7 @@ function Ticks({ x, y }: { x: number; y: number }) {
  * it). Static. A chubby egg of one brown, cream "goggle" eyes, rosy cheeks, a tiny beak and a
  * smiling tummy, with no outline, like the reference sheet.
  */
-export default function OwlGroup({ mood = "idle", outfit = "none" }: OwlGroupProps): ReactElement {
+export default function OwlGroup({ mood = "idle", outfit = "none", blink = false }: OwlGroupProps): ReactElement {
   const cheer = mood === "cheer";
   const wingL = cheer ? 150 : 10;
   const wingR = cheer ? -150 : mood === "wave" ? -150 : mood === "think" ? 78 : -10;
@@ -140,8 +142,8 @@ export default function OwlGroup({ mood = "idle", outfit = "none" }: OwlGroupPro
         <ellipse cx={60} cy={98} rx={27} ry={15} fill={OWL.belly} />
         <path d="M46 94q3 3 6 0M68 94q3 3 6 0M54 102q6 5 12 0" stroke={OWL.bellyLine} strokeWidth={2.2} fill="none" />
       </g>
-      <Eye cx={41} mood={mood} side="left" />
-      <Eye cx={79} mood={mood} side="right" />
+      <Eye cx={41} mood={mood} side="left" blink={blink} />
+      <Eye cx={79} mood={mood} side="right" blink={blink} />
       <g data-part="cheeks" fill={OWL.cheek} opacity={0.9}>
         <circle cx={30} cy={84} r={7} />
         <circle cx={90} cy={84} r={7} />

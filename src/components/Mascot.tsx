@@ -19,7 +19,7 @@ interface MascotProps {
 
 /**
  * The Handog owl, kawaii flat gouache: chubby, huge shiny eyes, rosy cheeks, tummy scallops.
- * Static (no animation inside); every part is a `data-part` group so GSAP can target it. The 3D
+ * No JS animation inside (the eyes blink a few times through CSS, gated by html[data-scenery]); every part is a `data-part` group so GSAP can target it. The 3D
  * owl falls back to this one.
  */
 function Mascot({ mood = "idle", outfit = "none", size = 96, className, title }: MascotProps) {
@@ -34,7 +34,7 @@ function Mascot({ mood = "idle", outfit = "none", size = 96, className, title }:
       data-mood={mood}
       data-outfit={outfit}
     >
-      <OwlGroup mood={mood} outfit={outfit} />
+      <OwlGroup mood={mood} outfit={outfit} blink />
     </svg>
   );
 }

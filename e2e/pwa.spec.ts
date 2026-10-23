@@ -58,16 +58,16 @@ test("manifest.webmanifest is served with installable icons", async ({ request, 
 test("/offline renders its own page", async ({ page }) => {
   const res = await page.goto("/offline");
   expect(res?.status()).toBe(200);
-  await expect(page.getByRole("heading", { name: "Wala ka sang internet" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Walang internet" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Subukan ulit" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Pauli sa Tahanan" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Bumalik sa Tahanan" })).toBeVisible();
 });
 
 test("the service worker registers and the app shell loads offline after the first visit", async ({ page, context }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await gotoAs(page, "/", { childName: "Ana" });
-  await expect(page.getByRole("heading", { name: /Maayong .*Ana/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Magandang .*Ana/ })).toBeVisible();
   await swReady(page);
   const sw = await page.evaluate(async () => {
     const reg = await navigator.serviceWorker.ready;
@@ -83,14 +83,14 @@ test("the service worker registers and the app shell loads offline after the fir
     await expect(page.getByRole("heading").first()).toBeVisible();
   }
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /Maayong .*Ana/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Magandang .*Ana/ })).toBeVisible();
 
   await context.setOffline(true);
   await page.reload();
-  await expect(page.getByRole("heading", { name: /Maayong .*Ana/ })).toBeVisible();
-  await expect(page.locator("[data-slot=offline-banner]").getByText(/Wala sang internet/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Magandang .*Ana/ })).toBeVisible();
+  await expect(page.locator("[data-slot=offline-banner]").getByText(/Walang internet/)).toBeVisible();
   // Settings come from IndexedDB, so the child still sees their name and the nav.
-  await expect(page.getByRole("link", { name: "Libro" }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: "Aklat" }).first()).toBeVisible();
 
   // Visited routes load offline, including a hard navigation.
   await page.goto("/books");
@@ -124,7 +124,7 @@ test("the service worker never caches the proxy, so a lost connection is detecte
   await swReady(page);
   await precacheWarm(page);
   await page.reload(); // controlled page: /api/health goes through the worker
-  await expect(page.getByRole("heading", { name: /Maayong .*Ana/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Magandang .*Ana/ })).toBeVisible();
   expect(await page.evaluate(async () => (await fetch("/api/health", { cache: "no-store" })).status)).toBe(200);
   const cachedApi = await page.evaluate(async () => {
     const hits: string[] = [];

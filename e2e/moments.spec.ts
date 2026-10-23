@@ -44,7 +44,7 @@ test.describe("reader moments (motion allowed)", () => {
     await expect(page.getByText("Nabasa mo na!")).toHaveCount(0);
   });
 
-  test("first save: the big stamp lands on the word, a star flies to Pulong, the tab pops, then the sticker dialog (never on top of the stamp)", async ({ page }) => {
+  test("first save: the big stamp lands on the word, a star flies to Salita, the tab pops, then the sticker dialog (never on top of the stamp)", async ({ page }) => {
     await gotoAs(page, "/read/fox");
     await recordTabPops(page);
     await wordButton(page, "searched").click();
@@ -77,7 +77,7 @@ test.describe("reader moments (motion allowed)", () => {
     // Then the sticker dialog: the stamp is gone by then.
     await expect(celebration(page)).toBeVisible({ timeout: 4000 });
     await expect(stamp).toHaveCount(0);
-    await expect(celebration(page)).toContainText("Una nga Pulong");
+    await expect(celebration(page)).toContainText("Unang Salita");
     // A hard word also earns its own sticker (the real difficulty was passed on); both are queued.
     await expect(celebration(page)).toContainText(/\+?\s*1/);
     expect(await settleCelebrations(page, 500)).toBeGreaterThanOrEqual(1);
@@ -110,7 +110,7 @@ test.describe("reader moments (motion allowed)", () => {
       await wordButton(page, "searched").click();
       await page.getByRole("complementary").getByRole("button", { name: "I-save" }).click();
       await settleCelebrations(page, 4000);
-      await expect(page.locator("[data-slot=pane-owl]")).toContainText("1 salita sa pahina nga ini ang natipigan mo na", { timeout: 6000 });
+      await expect(page.locator("[data-slot=pane-owl]")).toContainText("1 salita sa pahinang ito ang na-save mo na", { timeout: 6000 });
       return;
     }
     const owl = page.locator("[data-slot=peek-owl]");
@@ -178,7 +178,7 @@ test.describe("read-along", () => {
     await expect(page.locator("[data-reading=true]")).toHaveCount(1);
     // listening for the first time earns a sticker
     await expect(celebration(page)).toBeVisible({ timeout: 3000 });
-    await expect(celebration(page)).toContainText("Una nga Pakinggan");
+    await expect(celebration(page)).toContainText("Unang Pakikinig");
     expect(await page.evaluate(() => (window as unknown as { __spoken: string[] }).__spoken[0])).toContain("The small fox ran");
   });
 
@@ -235,7 +235,7 @@ test.describe("quiz moments", () => {
   async function openQuiz(page: Page, context?: unknown) {
     void context;
     await gotoAs(page, "/");
-    await expect(page.getByRole("heading", { name: /Maayong/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Magandang/ })).toBeVisible();
     await seedWords(page, WORDS);
     await page.goto("/quiz");
     await expect(page.getByRole("radiogroup")).toBeVisible();
@@ -258,7 +258,7 @@ test.describe("quiz moments", () => {
 
   test("the first quiz ever greets the child once; the owl cheers on right and tilts on wrong", async ({ page }) => {
     await openQuiz(page);
-    await expect(page.getByText("Pagsusulit na! 5 salita, kaya mo ini!")).toBeVisible();
+    await expect(page.getByText("Pagsusulit na! 5 salita, kaya mo ito!")).toBeVisible();
     await expect.poll(async () => (await readPersisted(page, "handog-moments"))?.state.firstQuiz).toBe(true);
     await answer(page, false);
     await expect.poll(() => owlMood(page)).toBe("think");
@@ -291,11 +291,11 @@ test.describe("quiz moments", () => {
     await context.unroute("**/api/health");
     await context.route("**/api/health", (route) => route.abort("internetdisconnected"));
     await openQuiz(page);
-    await expect(page.locator("[data-slot=offline-banner]")).toContainText(/Wala sang internet/);
+    await expect(page.locator("[data-slot=offline-banner]")).toContainText(/Walang internet/);
     await answer(page, false);
     const nextBtn = next(page);
     await expect(nextBtn).toBeFocused();
-    await expect(page.getByTestId("quiz-feedback")).toContainText("Ang husto:");
+    await expect(page.getByTestId("quiz-feedback")).toContainText("Ang tama:");
     await expectInViewport(page, await nextBtn.boundingBox(), "Susunod");
     await expectInViewport(page, await page.getByTestId("quiz-feedback").boundingBox(), "feedback");
     const nav = page.locator("[data-slot=bottom-nav]");
@@ -331,7 +331,7 @@ test.describe("quiz moments", () => {
     await expect(page.locator("main .bg-destructive")).toHaveCount(0);
     // quiz-finished once: the sticker dialog arrives after the stamps
     await expect(celebration(page)).toBeVisible({ timeout: 4000 });
-    await expect(celebration(page)).toContainText("Una nga Pagsusulit");
+    await expect(celebration(page)).toContainText("Unang Pagsusulit");
     await settleCelebrations(page, 500);
     const flags = (await readPersisted(page, "handog-rewards"))!.state.flags as { quizzed: boolean };
     expect(flags.quizzed).toBe(true);

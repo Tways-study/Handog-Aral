@@ -624,7 +624,7 @@
     "overview": "The page is a quiet, near-white warm sheet and it is open: reading text, word lists and settings sit directly on the ground with no card. Lists use dotted divider rows, headings carry a wavy sunrise underline, and small things (owl tag, chips, quiz options, scan tiles, nudges) are paper-2 tinted pills with no border or shadow. Boxes remain only for physical objects: the notebook cover, its label, the memory-game cards. The page band (pale lilac #E7DFFF; dark #3A2E7A, 2rem bottom radius, masked static confetti) sits behind every screen title. Deep navy ink, a sunrise orange primary, cloth-colored jackets, and the owl as the single character.\n\nThe system is calm and low-density: one thing burns brightest at a time, and nothing loops. Dark mode is a deep-violet night sheet (#1B1633) with a #3A2E7A band.",
     "keyCharacteristics": [
       "One vertical rhythm: `--pitch` sets reading line-height and row height at every font-size setting, even though the sheet is no longer ruled.",
-      "Quiet warm-white open ground, a lilac confetti page band behind each title, dotted rows and wavy headings, boxes only for physical objects, navy ink, flat cloth-colored jackets, one orange accent.",
+      "Quiet warm-white open ground, a lilac horizon page band behind each title, dotted rows and plain headings, boxes only for physical objects, navy ink, flat cloth-colored jackets, one orange accent.",
       "One character family: owl (idle, cheer, think, wave, sleep; outfits none, glasses, cap, bow) across flat art, 3D, covers, stickers and empty states.",
       "State by shape first (circle/square/triangle difficulty stamps), color only reinforces.",
       "Offline-to-AI upgrades restyle in place with reserved space, no layout shift.",

@@ -41,9 +41,9 @@ describe("settings onboarded", () => {
 });
 
 describe("settings owl, sound and haptics", () => {
-  it("defaults: 3D owl on, no outfit, sound off, haptics on", () => {
+  it("defaults: 3D owl on, no outfit, sound off, haptics on, scenery on", () => {
     const s = useSettings.getState();
-    expect([s.owl3d, s.owlOutfit, s.sound, s.haptics]).toEqual([true, "none", false, true]);
+    expect([s.owl3d, s.owlOutfit, s.sound, s.haptics, s.scenery]).toEqual([true, "none", false, true, true]);
   });
 
   it("setters write each field", () => {

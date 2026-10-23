@@ -38,7 +38,7 @@ test("first superpower: tap a real word, the owl cheers, save it, earn the first
   await page.getByRole("button", { name: "Sige, tara na!" }).click();
   await expect(page).toHaveURL(/\/$/);
   expect((await readPersisted(page, "handog-settings"))?.state).toMatchObject({ childName: "Ana", onboarded: true });
-  await expect(page.getByRole("heading", { name: /Maayong/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Magandang/ })).toBeVisible();
 });
 
 test("the superpower works with no network at all, and Laktawan skips it", async ({ page, context }) => {

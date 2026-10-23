@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { gotoAs, readPersisted, stubApi } from "./helpers";
 
 const GREETING_TL = /Magandang (umaga|hapon|gabi), Ana!/;
-const GREETING_HIL = /Maayong (aga|hapon|gab-i)/;
+const GREETING = /Magandang (umaga|hapon|gabi)/;
 
 test.beforeEach(async ({ context }) => {
   await stubApi(context);
@@ -47,11 +47,11 @@ test("Laktawan skips setup without a name and never shows /welcome again", async
 
   await expect(page).toHaveURL(/\/$/);
   // Default language is Filipino and the greeting has no name.
-  await expect(page.getByRole("heading", { name: GREETING_HIL })).toBeVisible();
+  await expect(page.getByRole("heading", { name: GREETING })).toBeVisible();
   await expect(page.getByRole("heading", { name: /,/ })).toHaveCount(0);
 
   await page.reload();
-  await expect(page.getByRole("heading", { name: GREETING_HIL })).toBeVisible();
+  await expect(page.getByRole("heading", { name: GREETING })).toBeVisible();
   await expect(page).toHaveURL(/\/$/);
   // Other routes do not redirect either.
   await page.goto("/books");

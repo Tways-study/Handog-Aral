@@ -26,7 +26,7 @@ test("the owl's tag shows the newest word, the sticker row counts, and Tara, lar
   await seedWords(page, ["brave", "forest"].map((w, i) => savedWordRow(w, `T-${w}`, {}, i)));
   await page.goto("/");
   await expect(page.getByRole("button", { name: /brave/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Mga sticker/ })).toContainText("sang 14");
+  await expect(page.getByRole("link", { name: /Mga sticker/ })).toContainText("sa 14");
   await expect(page.getByRole("link", { name: /Tara, laro tayo/ })).toHaveCount(0);
   await seedWords(page, [savedWordRow("quiet", "T-quiet", {}, 2)]);
   await page.reload();
@@ -38,6 +38,9 @@ test("nothing scrolls sideways and the primary action is reachable at 320 and wi
   for (const [w, h, fontSize] of [[320, 640, "medium"], [320, 640, "large"], [375, 812, "large"]] as const) {
     await page.setViewportSize({ width: w, height: h });
     await gotoAs(page, "/", { childName: "A very long child name indeed", fontSize }, PROGRESS);
+    // A streak of 3 earns the "Tatlong Araw" sticker on the first visit: its celebration dialog is modal, so dismiss it first.
+    const sige = page.getByRole("button", { name: "Sige!" });
+    if (await sige.waitFor({ timeout: 3000 }).then(() => true, () => false)) await sige.click();
     const cta = page.getByRole("link", { name: "Ituloy ang pagbabasa" });
     await cta.evaluate((el) => el.scrollIntoView({ block: "center" }));
     await expect(cta).toBeVisible();
@@ -48,9 +51,9 @@ test("nothing scrolls sideways and the primary action is reachable at 320 and wi
   }
 });
 
-test("tab pop event and /play, /stickers keep Pulong lit", async ({ page }) => {
+test("tab pop event and /play, /stickers keep Salita lit", async ({ page }) => {
   await gotoAs(page, "/stickers");
-  const words = page.locator("[data-slot=bottom-nav], [data-slot=nav-rail]").getByRole("link", { name: "Pulong" });
+  const words = page.locator("[data-slot=bottom-nav], [data-slot=nav-rail]").getByRole("link", { name: "Salita" });
   await expect(words.first()).toHaveAttribute("aria-current", "page").catch(async () => {
     await expect(words.last()).toHaveAttribute("aria-current", "page");
   });

@@ -45,6 +45,8 @@ const tagalog = {
   funHeading: "Fun",
   owl3dLabel: "Animated 3D owl",
   owl3dHelp: "The owl looks around and reacts. Turn it off on slower phones or to save battery; the flat owl is used instead.",
+  sceneryLabel: "Gentle animations",
+  sceneryHelp: "The little hills, sun and clouds at the top of each page drift into place, and the owl blinks. Turn it off to keep everything still. It is always still when the phone asks for less motion, is saving data, or is a slower model.",
   soundLabel: "Sounds",
   soundHelp: "Short, soft sounds for stamps and stars. Off by default so shared devices stay quiet.",
   soundTest: "Play a test sound",

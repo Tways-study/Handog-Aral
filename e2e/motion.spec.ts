@@ -66,7 +66,7 @@ test.describe("prefers-reduced-motion: reduce", () => {
 
   test("quiz: answering and finishing runs no tween and leaves no running animation", async ({ page }) => {
     await gotoAs(page, "/");
-    await expect(page.getByRole("heading", { name: /Maayong/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Magandang/ })).toBeVisible();
     await seedWords(page, WORDS);
     await page.goto("/quiz");
     const options = page.getByRole("radiogroup", { name: /Filipino/ }).getByRole("radio");
@@ -75,7 +75,7 @@ test.describe("prefers-reduced-motion: reduce", () => {
     for (let i = 1; i <= 4; i++) {
       await options.first().click();
       await page.getByRole("button", { name: i === 4 ? "Tingnan ang resulta" : "Susunod" }).click();
-      await expect(page.getByText(`${i + 1} sang 4`).or(page.getByTestId("quiz-score")).first()).toBeVisible();
+      await expect(page.getByText(`${i + 1} sa 4`).or(page.getByTestId("quiz-score")).first()).toBeVisible();
     }
     await expect(page.getByTestId("quiz-score")).toBeVisible();
     await page.waitForTimeout(600);
@@ -85,7 +85,7 @@ test.describe("prefers-reduced-motion: reduce", () => {
 
   test("route changes and the settings dialog are still", async ({ page }) => {
     await gotoAs(page, "/");
-    await expect(page.getByRole("heading", { name: /Maayong/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Magandang/ })).toBeVisible();
     await page.goto("/settings");
     await watchTweens(page);
     await page.getByRole("button", { name: "Reset progress" }).click();

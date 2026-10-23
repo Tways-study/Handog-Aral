@@ -101,7 +101,13 @@
   --band: #E7DFFF;
   --band-ink: #1D2340;
   --band-ink-2: #3B4468;
-  --band-confetti: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='360' viewBox='0 0 360 360'><g opacity='0.7'><polygon points='70.0,36.0 73.8,44.8 83.3,45.7 76.1,52.0 78.2,61.3 70.0,56.4 61.8,61.3 63.9,52.0 56.7,45.7 66.2,44.8' fill='%23F5C53F'/><polygon points='300.0,109.0 303.0,115.9 310.5,116.6 304.8,121.6 306.5,128.9 300.0,125.1 293.5,128.9 295.2,121.6 289.5,116.6 297.0,115.9' fill='%23F08A24'/><polygon points='170.0,238.0 173.2,245.5 181.4,246.3 175.2,251.7 177.1,259.7 170.0,255.5 162.9,259.7 164.8,251.7 158.6,246.3 166.8,245.5' fill='%23F5C53F'/><polygon points='40.0,290.0 42.7,296.3 49.5,296.9 44.4,301.4 45.9,308.1 40.0,304.6 34.1,308.1 35.6,301.4 30.5,296.9 37.3,296.3' fill='%23F08A24'/><circle cx='150' cy='60' r='5' fill='%234CC3A8'/><circle cx='250' cy='40' r='4' fill='%238A6FF0'/><circle cx='330' cy='230' r='6' fill='%234CC3A8'/><circle cx='100' cy='160' r='5' fill='%238A6FF0'/><circle cx='30' cy='200' r='4' fill='%234CC3A8'/><circle cx='240' cy='330' r='5' fill='%238A6FF0'/><path d='M210 110q9-12 18 0t18 0' fill='none' stroke='%23F08A24' stroke-width='5' stroke-linecap='round'/><path d='M20 110q9-12 18 0t18 0' fill='none' stroke='%238A6FF0' stroke-width='5' stroke-linecap='round'/><path d='M270 300q9-12 18 0t18 0' fill='none' stroke='%23F5C53F' stroke-width='5' stroke-linecap='round'/><path d='M290 30l12-21 12 21z' fill='%238A6FF0'/><path d='M110 310l12-21 12 21z' fill='%23F08A24'/><rect x='30' y='40' width='20' height='20' rx='6' transform='rotate(14 40 50)' fill='%234CC3A8'/><rect x='320' y='330' width='20' height='20' rx='6' transform='rotate(14 330 340)' fill='%234CC3A8'/><rect x='120' y='230' width='20' height='20' rx='6' transform='rotate(14 130 240)' fill='%23F5C53F'/></g></svg>");
+  /* barrio horizon (decorative, text never sits on it): the page ground is the front hill */
+  --horizon-far: #D3C8F8;
+  --horizon-mid: #B9DDD8;
+  --horizon-terrace: #8FC4BB;
+  --horizon-hut: #8F7BD6;
+  --horizon-sun: #F5C53F;
+  --horizon-cloud: rgb(255 255 255 / 0.78);
 
   /* reading sheet: one pitch (line height and row height), rem-based so it scales with html.font-* */
   --pitch: 2.25rem;
@@ -131,7 +137,12 @@
   --band: #3A2E7A;
   --band-ink: #FFFFFF;
   --band-ink-2: #E4DDFB;
-  --band-confetti: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='360' viewBox='0 0 360 360'><g opacity='0.2'><polygon points='70.0,36.0 73.8,44.8 83.3,45.7 76.1,52.0 78.2,61.3 70.0,56.4 61.8,61.3 63.9,52.0 56.7,45.7 66.2,44.8' fill='%23F5C53F'/><polygon points='300.0,109.0 303.0,115.9 310.5,116.6 304.8,121.6 306.5,128.9 300.0,125.1 293.5,128.9 295.2,121.6 289.5,116.6 297.0,115.9' fill='%23FFFFFF'/><polygon points='170.0,238.0 173.2,245.5 181.4,246.3 175.2,251.7 177.1,259.7 170.0,255.5 162.9,259.7 164.8,251.7 158.6,246.3 166.8,245.5' fill='%23F5C53F'/><polygon points='40.0,290.0 42.7,296.3 49.5,296.9 44.4,301.4 45.9,308.1 40.0,304.6 34.1,308.1 35.6,301.4 30.5,296.9 37.3,296.3' fill='%23FFFFFF'/><circle cx='150' cy='60' r='5' fill='%23FFFFFF'/><circle cx='250' cy='40' r='4' fill='%23FFFFFF'/><circle cx='330' cy='230' r='6' fill='%23FFFFFF'/><circle cx='100' cy='160' r='5' fill='%23FFFFFF'/><circle cx='30' cy='200' r='4' fill='%23FFFFFF'/><circle cx='240' cy='330' r='5' fill='%23FFFFFF'/><path d='M210 110q9-12 18 0t18 0' fill='none' stroke='%23F5A1B5' stroke-width='5' stroke-linecap='round'/><path d='M20 110q9-12 18 0t18 0' fill='none' stroke='%23FFFFFF' stroke-width='5' stroke-linecap='round'/><path d='M270 300q9-12 18 0t18 0' fill='none' stroke='%23F5C53F' stroke-width='5' stroke-linecap='round'/><path d='M290 30l12-21 12 21z' fill='%23FFFFFF'/><path d='M110 310l12-21 12 21z' fill='%23F5A1B5'/><rect x='30' y='40' width='20' height='20' rx='6' transform='rotate(14 40 50)' fill='%2380E0C8'/><rect x='320' y='330' width='20' height='20' rx='6' transform='rotate(14 330 340)' fill='%2380E0C8'/><rect x='120' y='230' width='20' height='20' rx='6' transform='rotate(14 130 240)' fill='%23FFFFFF'/></g></svg>");
+  --horizon-far: #4B3D95;
+  --horizon-mid: #33407E;
+  --horizon-terrace: #46559A;
+  --horizon-hut: #241C4A;
+  --horizon-sun: #FFF1C2;
+  --horizon-cloud: rgb(255 255 255 / 0.16);
 
   --sunrise: #F39A3D;
   --sunrise-ink: #1D2340;
@@ -336,47 +347,77 @@ a { text-underline-offset: 4px; }
 .row-line { border-bottom: 2px dotted var(--line); }
 .row-line:last-child { border-bottom: 0; }
 
-/* Section titles carry a hand-drawn wavy underline in the accent instead of a boxed header. */
-.section-title {
-  display: inline-block;
-  padding-bottom: 0.35rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='6' viewBox='0 0 24 6'%3E%3Cpath d='M0 3q3-3 6 0t6 0 6 0 6 0' fill='none' stroke='%23F08A24' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: repeat-x;
-  background-position: left bottom;
-  background-size: 24px 6px;
-}
-/* The page band: a full-width pale lilac block behind the screen title, curved at the bottom, with a quiet confetti tile.
-   It is the one place the confetti lives; the ground stays quiet and the reading sheet stays plain. */
+/* Section titles are plain headings: no underline or other ornament (orange stays reserved for the one primary action). */
+.section-title { display: block; }
+/* The page band: a full-width pale lilac sky behind the screen title with the barrio horizon (BandScene) along its foot.
+   The page ground is the front hill, so the band has no curved edge of its own. Decoration only, never behind text:
+   the left of the horizon is low and the sun, clouds and hut live in the right 40%. */
 .page-band { position: relative; isolation: isolate; color: var(--band-ink); }
-.page-band::before,
-.page-band::after {
+.page-band::before {
   content: "";
   position: absolute;
-  z-index: -1;
+  z-index: -2;
   top: 0;
   bottom: 0;
   left: 50%;
   width: 100vw;
   transform: translateX(-50%);
-  border-radius: 0 0 2rem 2rem;
+  background-color: var(--band);
 }
-.page-band::before { background-color: var(--band); }
-/* The confetti fades out under the title so no shape ever sits behind text. */
-.page-band::after {
-  background-image: var(--band-confetti);
-  background-size: 360px 360px;
-  /* The second layer fades the bottom edge so the next tile row never shows as half-cut slivers under the band. */
-  --band-fade-x: linear-gradient(to right, transparent 0, transparent 62%, #000 92%);
-  -webkit-mask-image: var(--band-fade-x), linear-gradient(to bottom, #000 0, #000 55%, transparent 88%);
-  mask-image: var(--band-fade-x), linear-gradient(to bottom, #000 0, #000 55%, transparent 88%);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
+.band-scene {
+  --scene-h: 2.75rem;
+  position: absolute;
+  z-index: -1;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  height: var(--scene-h);
+  transform: translateX(-50%);
+  overflow: hidden;
+  pointer-events: none;
 }
+@media (min-width: 1024px) { .band-scene { --scene-h: 4.25rem; } }
+.scene-layer { position: absolute; inset: auto 0 0 0; width: 100%; height: 100%; }
+.scene-far path { fill: var(--horizon-far); }
+.scene-mid path { fill: var(--horizon-mid); }
+.scene-mid .scene-terrace { fill: none; stroke: var(--horizon-terrace); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.scene-near path { fill: var(--paper); }
+.scene-hut { position: absolute; right: 22%; bottom: 26%; width: 1.125rem; fill: var(--horizon-hut); stroke: var(--horizon-hut); }
+.scene-sun { position: absolute; right: 9%; bottom: 22%; width: 0.875rem; height: 0.875rem; border-radius: 50%; background: var(--horizon-sun); }
+.scene-cloud { position: absolute; width: 1.75rem; height: 0.5rem; border-radius: var(--radius-xl); background: var(--horizon-cloud); }
+.scene-cloud::before { content: ""; position: absolute; left: 22%; bottom: 35%; width: 0.75rem; height: 0.625rem; border-radius: 50%; background: inherit; }
+.scene-cloud-a { right: 34%; bottom: 50%; }
+.scene-cloud-b { right: 4%; bottom: 46%; transform: scale(0.8); }
 @media (min-width: 1024px) {
-  .page-band::after {
-    --band-fade-x: linear-gradient(to right, transparent 0, transparent 46%, #000 78%);
-  }
+  .scene-hut { right: 24%; bottom: 33%; width: 2.25rem; }
+  .scene-sun { right: 12%; bottom: 40%; width: 1.75rem; height: 1.75rem; }
+  .scene-cloud-a { bottom: 66%; }
+  .scene-cloud-b { right: 6%; bottom: 60%; }
+  .scene-cloud { width: 2.75rem; height: 0.75rem; }
+  .scene-cloud::before { width: 1.125rem; height: 0.9rem; }
 }
+
+/* Motion: transform and opacity only, each layer rises into place once, then the clouds drift for a couple of
+   minutes and settle (nothing loops forever). Off for reduced motion, the Settings switch, save-data and low-end
+   devices (ThemeSync sets html[data-scenery="still"]); a still scene is simply the finished picture. */
+/* The same gate also lets the mascot blink (.owl-eye). */
+:root { --scene-rise: none; --scene-sun: none; --scene-drift: none; --owl-blink: none; }
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-scenery="still"]) { --scene-rise: scene-rise; --scene-sun: scene-sun; --scene-drift: scene-drift; --owl-blink: owl-blink; }
+}
+.scene-far  { animation: var(--scene-rise) 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.scene-hut  { animation: var(--scene-rise) 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both; }
+.scene-mid  { animation: var(--scene-rise) 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both; }
+.scene-near { animation: var(--scene-rise) 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both; }
+.scene-sun  { animation: var(--scene-sun) 1s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both; }
+.scene-cloud-a { animation: var(--scene-drift) 52s ease-in-out 2 alternate both; }
+.scene-cloud-b { animation: var(--scene-drift) 67s ease-in-out 2 alternate-reverse both; }
+@keyframes scene-rise { from { transform: translateY(45%); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes scene-sun { from { transform: translateY(160%); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes scene-drift { from { translate: -1.25rem 0; } to { translate: 1.25rem 0; } }
+/* The mascot blinks eight times (about 45 s) after it appears, then rests. */
+.owl-eye { transform-box: fill-box; transform-origin: 50% 55%; animation: var(--owl-blink) 5.6s ease-in-out 1.4s 8 both; }
+@keyframes owl-blink { 0%, 90%, 100% { transform: none; } 94% { transform: scaleY(0.08); } }
 .pad-text {
   font-size: var(--pad-text-size);
   line-height: var(--pitch);

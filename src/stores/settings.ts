@@ -29,6 +29,8 @@ export interface SettingsData {
   sound: boolean;
   /** Tiny vibration on stamps and celebrations where the device supports it. */
   haptics: boolean;
+  /** Moving horizon scenery in the page band (still when off, and always still for reduced motion, save-data, low-end). */
+  scenery: boolean;
 }
 
 export interface SettingsState extends SettingsData {
@@ -44,6 +46,7 @@ export interface SettingsState extends SettingsData {
   setOwlOutfit: (v: OwlOutfit) => void;
   setSound: (v: boolean) => void;
   setHaptics: (v: boolean) => void;
+  setScenery: (v: boolean) => void;
   resetSettings: () => void;
 }
 
@@ -60,6 +63,7 @@ export const defaultSettings: SettingsData = {
   owlOutfit: "none",
   sound: false,
   haptics: true,
+  scenery: true,
 };
 
 export const SETTINGS_STORAGE_NAME = "handog-settings";
@@ -80,6 +84,7 @@ export const useSettings = create<SettingsState>()(
       setOwlOutfit: (owlOutfit) => set({ owlOutfit }),
       setSound: (sound) => set({ sound }),
       setHaptics: (haptics) => set({ haptics }),
+      setScenery: (scenery) => set({ scenery }),
       // Resetting preferences must not send the child back through the welcome screen.
       resetSettings: () => set({ ...defaultSettings, onboarded: true }),
     }),
@@ -113,6 +118,7 @@ export const useSettings = create<SettingsState>()(
         owlOutfit: s.owlOutfit,
         sound: s.sound,
         haptics: s.haptics,
+        scenery: s.scenery,
       }),
     },
   ),

@@ -96,6 +96,9 @@ select {
 /* The system replaces our colours, so state that relied on a background gets a border, outline or
    underline in system colours. */
 @media (forced-colors: active) {
+  /* The horizon is decoration, and the system palette would turn it into noise. */
+  .band-scene { display: none; }
+
   :focus-visible {
     outline: 3px solid Highlight;
     outline-offset: 2px;

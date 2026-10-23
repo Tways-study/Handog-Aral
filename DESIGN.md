@@ -211,11 +211,11 @@ components:
 
 The page is a quiet, near-white warm sheet (#FFFDF9) and it is open: reading text, word lists and settings sit directly on the ground with no card around them. Lists are divided by dotted rules, section headings carry a wavy sunrise underline, and small things (owl tag, chips, quiz options, scan tiles, the recent-words nudge) are `paper-2` tinted shapes with no border or shadow. A real box appears only for a physical object: the notebook book cover and its label, and the memory-game cards. The white keyline sticker (`--sticker`) is kept only for special sticker moments. The one place the system gets playful is the page band: a full-width pale lilac block behind every screen title, curved at the bottom, carrying a quiet confetti tile (stars, squiggles, triangles, rounded squares, dots) that fades out under the title so no shape ever sits behind text. Deep navy ink, a sunrise orange primary, and saturated book-jacket cloth (indigo, mango, kangkong green, gumamela red) that owns whole regions. Rewards are rubber-stamp stars, teacher check marks and die-cut stickers in a sticker book. The owl (purple #8A6FF0 app-icon tile) is the single character, and it speaks through a small speech tag.
 
-The system is calm and low-density in its controls: one thing burns brightest at a time, and nothing loops. The band confetti is a static 360px tile (about 0.7 opacity light, 0.2 dark), not animated and masked away from the title. It is cute through one drawn character family (flat SVG owl, toon-shaded 3D owl, covers, stickers, empty-state art, card back, scan doodles) sharing the dark brown outline, warm owl browns and rounded forms. It refuses candy-gradient cards, emoji chrome and stat tiles. Dark mode is a deep-violet night sheet with the same structure: dark violet ground (#1B1633), #2A2350 sticker cards, a dark keyline, and a deeper violet band (#3A2E7A) with white ink and faint confetti. Browser toolbar color (themeColor, ThemeSync, manifest) follows the band: #E7DFFF light, #3A2E7A dark. The app icon tile stays purple #8A6FF0.
+The system is calm and low-density in its controls: one thing burns brightest at a time, and nothing loops. The page band carries a small barrio horizon (hills, hut, sun, clouds) that rises into place once, drifts for a couple of minutes and settles; it is pure CSS and still whenever motion is reduced. It is cute through one drawn character family (flat SVG owl, toon-shaded 3D owl, covers, stickers, empty-state art, card back, scan doodles) sharing the dark brown outline, warm owl browns and rounded forms. It refuses candy-gradient cards, emoji chrome and stat tiles. Dark mode is a deep-violet night sheet with the same structure: dark violet ground (#1B1633), #2A2350 sticker cards, a dark keyline, and a deeper violet band (#3A2E7A) with white ink and faint confetti. Browser toolbar color (themeColor, ThemeSync, manifest) follows the band: #E7DFFF light, #3A2E7A dark. The app icon tile stays purple #8A6FF0.
 
 **Key Characteristics:**
 - One vertical rhythm: `--pitch` sets reading line-height and row height at every font-size setting, even though the sheet is no longer ruled.
-- Quiet warm-white ground, a lilac confetti page band behind each title, an open ground with dotted rows and wavy headings, boxes only for physical objects, navy ink, flat cloth-colored jackets, one orange accent.
+- Quiet warm-white ground, a lilac horizon page band behind each title, an open ground with dotted rows and plain headings, boxes only for physical objects, navy ink, flat cloth-colored jackets, one orange accent.
 - One character family: owl (idle, cheer, think, wave, sleep; outfits none, glasses, cap, bow) across flat art, 3D, covers, stickers and empty states.
 - State by shape first (circle/square/triangle difficulty stamps), color only reinforces.
 - Offline-to-AI upgrades restyle in place with reserved space, no layout shift.
@@ -257,7 +257,7 @@ Warm-white ground and navy ink carry nearly everything; the lilac band is the on
 
 **The Open-Page Rule.** No cards for lists, reading text or settings. Lists are rows divided by `.row-line` (2px dotted `--line`, none after the last); settings groups are an open section (title plus dotted-divided rows); headings use `.section-title`. Tinted `paper-2` pills (no border, no shadow) are for chips, the owl tag, quiz options, scan tiles and nudges. Real box shapes are reserved for physical objects: the notebook cover, its label, the memory-game cards. Locked stickers keep a dashed empty-slot outline; earned sticker tiles are borderless.
 
-**The Band-Only Confetti Rule.** Confetti lives only in the page band (`.page-band`), never on the page ground or a card, and never behind text: the tile is masked to be empty under the title (left ~62% of the band on phones, ~46% at lg). Static, no animation.
+**The Band-Only Horizon Rule.** The barrio horizon (`BandScene`: far mountains, a nipa hut on a terraced hill, a sun, two clouds, the page ground as the front hill) lives only in the page band (`.page-band`), never on the page ground or a card, and never behind text: the left of the scene is low, and the sun, clouds and hut sit in the right 40%. It replaces the old confetti tile. Motion is the one allowed ambient exception: transform/opacity only, each layer rises once, the clouds drift for about two minutes and settle (nothing loops forever), and it is still under reduced motion, the Settings "Moving scenery" switch, save-data and low-end devices (`html[data-scenery="still"]`, set by `ThemeSync`). Hidden under forced colors.
 
 ## Typography
 
@@ -299,7 +299,7 @@ Screen structure:
 - **Sticker book:** earned stickers first (borderless tiles), the locked ones nearest to earning next in a dashed empty-slot outline.
 - Lists use a letter tile (first letter on cloth color) instead of emoji.
 
-Page band: `.page-band` wraps the screen title via `PageHeader`; it bleeds to the viewport width (100vw), has a `2rem` bottom radius (`0 0 2rem 2rem`) and two layers (`::before` fill, `::after` masked confetti).
+Page band: `.page-band` wraps the screen title via `PageHeader`; it bleeds to the viewport width (100vw), has a `::before` sky fill and a `BandScene` horizon along its foot (no bottom radius: the page ground is the front hill).
 
 Known gaps: desktop Home, Scan and Reader leave empty ground below short content; the plain warm ground shows there, accepted rather than filled. Throttled-mobile Lighthouse performance is about 85 on Welcome, 78 on `/` and 83 in the reader; the 3D owl and new features cost a few points.
 
@@ -343,8 +343,8 @@ Friendly, rounded, never pill-everything: 8/12/16/24/28px scale (sm, md, lg, xl,
 ### Dotted Rows (list pattern)
 - `.row-line`: a list row with a 2px dotted `--line` bottom border, none on the last child. Used for word lists, settings rows and other lists; rows stay at least 44px and use `pressable` when tappable.
 
-### Wavy Section Title
-- `.section-title`: inline-block heading in Baloo with a repeating 24x6 wavy sunrise-orange underline (`background-repeat: repeat-x`, bottom left). Replaces boxed headers; decoration only, so state never depends on it.
+### Section Title
+- `.section-title`: a plain Baloo heading with no underline or ornament (the old wavy orange underline was removed: it competed with the single orange accent and read as a link). Rows beneath it are divided by `.row-line`.
 
 ### Tinted Pills
 - `paper-2` fill, no border, no shadow: owl `OwlTag` and `SpeechTag`, Home chips, quiz options (with a white letter badge), scan tiles, the recent-words quiz nudge.
