@@ -79,27 +79,27 @@ typography:
     fontWeight: 800
     lineHeight: 1.2
   body:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.5
   reading:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "1.25rem"
     fontWeight: 400
     lineHeight: "2.25rem"
   label:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "0.8125rem"
     fontWeight: 700
     lineHeight: 1.4
   helper:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "0.9375rem"
     fontWeight: 400
     lineHeight: 1.45
   example:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "1.0625rem"
     fontWeight: 400
     lineHeight: 1.5
@@ -114,12 +114,12 @@ typography:
     fontWeight: 800
     lineHeight: 1
   nav-label-large-text:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "0.5625rem"
     fontWeight: 700
     lineHeight: 1.1
   root-small:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "14px"
     fontWeight: 400
     lineHeight: 1.5
@@ -264,7 +264,8 @@ Warm-white ground and navy ink carry nearly everything; the lilac band is the on
 ## Typography
 
 **Display Font:** Baloo 2 (with ui-rounded, system-ui)
-**Body Font:** Atkinson Hyperlegible (with system-ui)
+**Body Font:** Baloo 2 too (weight 500 by default), so every label, button and sentence of UI shares one rounded, friendly voice.
+**Reading Font:** Atkinson Hyperlegible, used only for the page being read (`.pad-text`, via `--font-reading`), where unambiguous letterforms matter most.
 **Option:** OpenDyslexic replaces both when `body.dyslexia-font` is on, with extra word (0.3em) and letter (0.05em) spacing; headings stop tightening letter-spacing.
 
 **Character:** Round, friendly Baloo for names and titles over a highly legible, unambiguous-letterform body. Fonts are self-hosted so they work offline. Headings use `text-wrap: balance`, short copy `text-wrap: pretty`,.

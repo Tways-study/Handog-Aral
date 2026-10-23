@@ -261,7 +261,9 @@
 /* Not inline: utilities read var(--font-*) at use, so body.dyslexia-font can swap them. */
 @theme {
   --font-heading: var(--font-baloo), ui-rounded, system-ui, sans-serif;
-  --font-body: var(--font-atkinson), system-ui, sans-serif;
+  /* One rounded, friendly voice for all UI text. Only the page being read keeps the extra-legible Atkinson. */
+  --font-body: var(--font-baloo), ui-rounded, system-ui, sans-serif;
+  --font-reading: var(--font-atkinson), system-ui, sans-serif;
   --font-sans: var(--font-body);
 }
 
@@ -284,6 +286,7 @@ html.font-large  { font-size: 20px; --nav-h: 70px; }
 
 body {
   font-family: var(--font-body);
+  font-weight: 500;
   color: var(--foreground);
   background-color: var(--background);
   margin: 0;
@@ -424,6 +427,8 @@ a { text-underline-offset: 4px; }
 .owl-eye { transform-box: fill-box; transform-origin: 50% 55%; animation: var(--owl-blink) 5.6s ease-in-out 1.4s 8 both; }
 @keyframes owl-blink { 0%, 90%, 100% { transform: none; } 94% { transform: scaleY(0.08); } }
 .pad-text {
+  font-family: var(--font-reading);
+  font-weight: 400;
   font-size: var(--pad-text-size);
   line-height: var(--pitch);
   padding-left: var(--pad-gutter);
@@ -574,7 +579,9 @@ html[data-scenery="still"] .material { background-color: var(--paper); -webkit-b
 body.dyslexia-font {
   --font-heading: var(--font-opendyslexic), var(--font-atkinson), system-ui, sans-serif;
   --font-body: var(--font-opendyslexic), var(--font-atkinson), system-ui, sans-serif;
+  --font-reading: var(--font-opendyslexic), var(--font-atkinson), system-ui, sans-serif;
   font-family: var(--font-body);
+  font-weight: 400;
   word-spacing: 0.3em;
   letter-spacing: 0.05em;
 }
