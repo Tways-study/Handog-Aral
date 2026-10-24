@@ -79,27 +79,27 @@ typography:
     fontWeight: 800
     lineHeight: 1.2
   body:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.5
   reading:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "1.25rem"
     fontWeight: 400
     lineHeight: "2.25rem"
   label:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "0.8125rem"
     fontWeight: 700
     lineHeight: 1.4
   helper:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "0.9375rem"
     fontWeight: 400
     lineHeight: 1.45
   example:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "1.0625rem"
     fontWeight: 400
     lineHeight: 1.5
@@ -114,12 +114,12 @@ typography:
     fontWeight: 800
     lineHeight: 1
   nav-label-large-text:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "0.5625rem"
     fontWeight: 700
     lineHeight: 1.1
   root-small:
-    fontFamily: "Atkinson Hyperlegible, system-ui, sans-serif"
+    fontFamily: "Baloo 2, ui-rounded, system-ui, sans-serif"
     fontSize: "14px"
     fontWeight: 400
     lineHeight: 1.5
@@ -257,12 +257,15 @@ Warm-white ground and navy ink carry nearly everything; the lilac band is the on
 
 **The Open-Page Rule.** No cards for lists, reading text or settings. Lists are rows divided by `.row-line` (2px dotted `--line`, none after the last); settings groups are an open section (title plus dotted-divided rows); headings use `.section-title`. Tinted `paper-2` pills (no border, no shadow) are for chips, the owl tag, quiz options, scan tiles and nudges. Real box shapes are reserved for physical objects: the notebook cover, its label, the memory-game cards. Locked stickers keep a dashed empty-slot outline; earned sticker tiles are borderless.
 
+**The Frosted-Chrome Rule.** Chrome that floats over scrolling content (bottom nav, rail, reader bar, word sheet) is `.material`: ~74% paper (90% for the sheet) with `backdrop-filter: saturate(170%) blur(22px)` and a bright inset top edge, never stacked on another translucent surface. It is solid paper under `prefers-reduced-transparency`, `prefers-contrast: more`, forced colors, and `html[data-scenery="still"]` (low-end, save-data, or the child's "Gentle animations" off). Presses scale to 0.97 at once and release on `--ease-spring`; nothing else about the identity (lilac band, owl, orange accent, Baloo) changes.
+
 **The Band-Only Horizon Rule.** The barrio horizon (`BandScene`: far mountains, a nipa hut on a terraced hill, a sun, two clouds, the page ground as the front hill) lives only in the page band (`.page-band`), never on the page ground or a card, and never behind text: the left of the scene is low, and the sun, clouds and hut sit in the right 40%. It replaces the old confetti tile. Motion is the one allowed ambient exception: transform/opacity only, each layer rises once, the clouds drift for about two minutes and settle (nothing loops forever), and it is still under reduced motion, the Settings "Moving scenery" switch, save-data and low-end devices (`html[data-scenery="still"]`, set by `ThemeSync`). Hidden under forced colors.
 
 ## Typography
 
 **Display Font:** Baloo 2 (with ui-rounded, system-ui)
-**Body Font:** Atkinson Hyperlegible (with system-ui)
+**Body Font:** Baloo 2 too (weight 500 by default), so every label, button and sentence of UI shares one rounded, friendly voice.
+**Reading Font:** Atkinson Hyperlegible, used only for the page being read (`.pad-text`, via `--font-reading`), where unambiguous letterforms matter most.
 **Option:** OpenDyslexic replaces both when `body.dyslexia-font` is on, with extra word (0.3em) and letter (0.05em) spacing; headings stop tightening letter-spacing.
 
 **Character:** Round, friendly Baloo for names and titles over a highly legible, unambiguous-letterform body. Fonts are self-hosted so they work offline. Headings use `text-wrap: balance`, short copy `text-wrap: pretty`,.

@@ -397,7 +397,7 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
       <section className="flex min-w-0 flex-1 flex-col">
         <header
           ref={headerRef}
-          className="sticky top-0 z-30 flex items-center gap-2.5 border-b-[1.5px] border-line bg-paper px-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2.5 lg:static lg:px-8 lg:py-4"
+          className="sticky top-0 z-30 flex items-center gap-2.5 material border-b border-line px-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2.5 lg:static lg:px-8 lg:py-4"
         >
           {!isDesktop && (
             <Button asChild variant="ghost" size="icon">

@@ -289,7 +289,7 @@ export default function HomeScreen() {
                 </ul>
               ) : (
                 <div className="pad-line pb-4 [line-height:1.5]">
-                  <p className="text-[1.0625rem] font-semibold">{t.home.emptyTitle}</p>
+                  <p className="font-heading text-[1.0625rem] font-semibold">{t.home.emptyTitle}</p>
                   <p className="text-ink-2">{t.home.emptyBody}</p>
                 </div>
               )}
