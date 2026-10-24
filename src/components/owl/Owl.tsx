@@ -1,7 +1,7 @@
 "use client";
 
 import { softDynamic } from "@/lib/softDynamic";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import Mascot from "@/components/Mascot";
 import { cn } from "@/lib/utils";
 import { gsap, motionAllowed } from "@/lib/motion";
@@ -12,6 +12,7 @@ import {
   subscribeOwlCapability,
 } from "@/lib/owl/capability";
 import { owl3dLoadGate } from "@/lib/owl/loadGate";
+import { getOwlPoster } from "@/lib/owl/poster";
 import { isSlotOwner, registerOwl, subscribeSlots } from "@/lib/owl/slots";
 import { useSettings, type OwlOutfit } from "@/stores/settings";
 
@@ -43,6 +44,12 @@ export interface OwlProps {
   /** Pass a label only when the owl carries meaning; decorative (aria-hidden) by default. */
   title?: string;
 }
+
+/** Layout effects run before paint: a client-side navigation can show the remembered 3D still on its very first frame. */
+const useBeforePaint = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
+/** How long the 3D canvas takes to fade in; the still (or SVG) underneath stays until it is fully opaque. */
+const FADE_MS = 220;
 
 // The heavy three.js module: its own chunk, fetched only when an Owl actually decides to go 3D.
 const Owl3DCanvas = softDynamic(() => import("./Owl3DCanvas"));
@@ -79,9 +86,10 @@ export default function Owl({
   // The 3D chunk waits for the load gate (after window load, idle, and a calm main thread); the SVG is the owl until then.
   const [gateOpen, setGateOpen] = useState(false);
   const [tapKey, setTapKey] = useState(0);
+  const [posterUrl, setPosterUrl] = useState<string | null>(null);
 
   // Capability (client only). Reduced motion / save-data changes at runtime flip it off again.
-  useEffect(() => {
+  useBeforePaint(() => {
     const check = () => {
       setStaticOk(owl3dAllowed({ owl3d, ignoreVisibility: true, skipWebGL: true }));
       setVisible(document.visibilityState === "visible");
@@ -171,22 +179,37 @@ export default function Owl({
     hopSvg();
   });  
 
+  // The remembered 3D still stands in for the SVG while 3D is allowed, so a new page's owl never flashes the old model.
+  const needPx = Math.round(size * Math.min(typeof window === "undefined" ? 1 : window.devicePixelRatio || 1, 1.5));
+  useBeforePaint(() => {
+    setPosterUrl(staticOk ? getOwlPoster(mood, finalOutfit, needPx) : null);
+  }, [staticOk, mood, finalOutfit, needPx]);
+
   const renderer = slot && ready ? "3d" : "svg";
+  const showPoster = !!posterUrl;
   const box = { width: size, height: size };
 
   const inner = (
     <>
       <span
         ref={svgRef}
-        className={cn("absolute inset-0 block origin-bottom", renderer === "3d" && "invisible")}
+        className={cn(
+          "absolute inset-0 block origin-bottom transition-[visibility] duration-0",
+          // Going 3D: what is underneath (still or SVG) stays until the canvas has fully faded in, so the swap is never a dip.
+          renderer === "3d" ? "invisible delay-[260ms]" : "visible delay-0",
+        )}
         style={{ transformOrigin: "50% 100%" }}
       >
-        <Mascot mood={mood} outfit={finalOutfit} size={size} title={interactive ? undefined : title} />
+        {showPoster ? (
+          <span data-slot="owl-poster" className="block" style={{ width: size, height: size, backgroundImage: `url("${posterUrl}")`, backgroundSize: "contain" }} />
+        ) : (
+          <Mascot mood={mood} outfit={finalOutfit} size={size} title={interactive ? undefined : title} />
+        )}
       </span>
       {slot && (
         <span
-          className="absolute inset-0 block transition-opacity duration-200 ease-out"
-          style={{ opacity: ready ? 1 : 0 }}
+          className="absolute inset-0 block transition-opacity ease-out"
+          style={{ opacity: ready ? 1 : 0, transitionDuration: `${FADE_MS}ms` }}
         >
           <Owl3DCanvas
             size={size}

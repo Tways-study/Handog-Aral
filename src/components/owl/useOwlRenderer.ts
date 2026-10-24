@@ -5,6 +5,7 @@ import type { OwlOutfit } from "@/stores/settings";
 import { buildOwl } from "./owlModel";
 import { createOwlMotion, type OwlMotion } from "./owlMotion";
 import { attachRendererGuard } from "@/lib/owl/rendererGuard";
+import { captureOwlPoster } from "@/lib/owl/poster";
 import { recordOwlFrame } from "@/lib/owl/stats";
 
 export interface UseOwlRendererOptions {
@@ -138,6 +139,8 @@ export function useOwlRenderer(hostRef: RefObject<HTMLDivElement | null>, opts: 
       motion.setMood(o.current.mood, true);
       motion.setOutfit(o.current.outfit, false);
       motion.renderOnce();
+      // Remember how this owl looks (same task as the render, while the drawing buffer is still valid).
+      captureOwlPoster(canvas, o.current.mood, o.current.outfit);
       recordOwlFrame(0);
       o.current.onReady();
 

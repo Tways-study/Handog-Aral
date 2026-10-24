@@ -4,6 +4,9 @@ Version history for Handog Aral, reconstructed from the git log. v2 was the Vite
 
 ## v3 (3.0.0-beta.1)
 
+### 2026-10-24 · Owl no longer flashes the old model
+- Every page mounts its own owl, which started as the flat SVG and swapped to the 3D owl a moment later, so it looked like it kept switching back to the old model. The 3D owl now saves a still of itself (`src/lib/owl/poster.ts`, kept in memory and localStorage, versioned) that stands in from the first paint of later pages and later visits; the live canvas fades in over identical pixels and the still stays until it is fully opaque. Only shown where 3D is allowed; the first ever visit still shows the SVG once.
+
 ### 2026-10-24 · Premium feel (branch `premium-apple-feel`)
 - Frosted chrome (`.material`): bottom nav, desktop rail, reader bar and word sheet are translucent glass with a bright top edge. It falls back to solid paper for reduced transparency, increased contrast, forced colors, low-end or save-data devices and "Gentle animations" off.
 - Springs: presses answer at once (scale .97) and release on a damped spring (`--ease-spring`, a CSS `linear()` curve); the switch thumb uses the same spring; dialogs arrive critically damped (no bounce, as nothing flicked them). Reduced motion keeps short ease-outs.
