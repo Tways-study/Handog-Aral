@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { POSTER_LIMIT, captureOwlPoster, getOwlPoster, putOwlPoster, resetOwlPosters } from "./poster";
+import { POSTER_LIMIT, captureOwlPoster, getOwlPoster, loadBundledOwlPoster, putOwlPoster, resetOwlPosters } from "./poster";
 
 const png = (n = 10) => "data:image/png;base64," + "A".repeat(n);
 
@@ -47,5 +47,23 @@ describe("owl poster", () => {
     const tiny = { width: 40, toDataURL: () => png() } as unknown as HTMLCanvasElement;
     captureOwlPoster(tiny, "think", "none");
     expect(getOwlPoster("think", "none", 40)).toBeNull();
+  });
+});
+
+describe("bundled owl poster", () => {
+  it("serves the idle owl before this device has captured one, and nothing for other looks", async () => {
+    expect(getOwlPoster("idle", "none", 222)).toBeNull();
+    const url = await loadBundledOwlPoster("idle", "none", 222);
+    expect(url).toMatch(/^data:image\/webp;base64,/);
+    expect(await loadBundledOwlPoster("cheer", "none", 222)).toBeNull();
+    expect(await loadBundledOwlPoster("idle", "cap", 222)).toBeNull();
+  });
+
+  it("does not stretch it for a larger owl, and never overwrites a sharper captured still", async () => {
+    expect(await loadBundledOwlPoster("idle", "none", 600)).toBeNull();
+    resetOwlPosters();
+    putOwlPoster("idle", "none", "data:image/png;base64,AAAA", 900);
+    await loadBundledOwlPoster("idle", "none", 100);
+    expect(getOwlPoster("idle", "none", 800)).toBe("data:image/png;base64,AAAA");
   });
 });

@@ -85,6 +85,22 @@ export function captureOwlPoster(canvas: HTMLCanvasElement, mood: string, outfit
   }
 }
 
+/**
+ * The pre-rendered idle owl (scripts/gen-owl-poster.mjs), for a device's very first visit, before it has captured its own
+ * still. Its own small chunk, fetched only by owls that may go 3D; a failed fetch (offline) just leaves the SVG.
+ * Resolves the still for `idle` + no outfit when it is big enough for `neededPx`, else null. Never rejects.
+ */
+export async function loadBundledOwlPoster(mood: string, outfit: string, neededPx: number): Promise<string | null> {
+  if (mood !== "idle" || outfit !== "none") return null;
+  try {
+    const { BUNDLED_POSTER } = await import("./bundledPoster");
+    if (!memory.has(slot(mood, outfit))) memory.set(slot(mood, outfit), { url: BUNDLED_POSTER.url, px: BUNDLED_POSTER.px });
+    return getOwlPoster(mood, outfit, neededPx);
+  } catch {
+    return null;
+  }
+}
+
 /** Test helper. */
 export function resetOwlPosters(): void {
   memory.clear();

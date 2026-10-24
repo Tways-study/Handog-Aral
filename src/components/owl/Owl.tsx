@@ -12,7 +12,7 @@ import {
   subscribeOwlCapability,
 } from "@/lib/owl/capability";
 import { owl3dLoadGate } from "@/lib/owl/loadGate";
-import { getOwlPoster } from "@/lib/owl/poster";
+import { getOwlPoster, loadBundledOwlPoster } from "@/lib/owl/poster";
 import { isSlotOwner, registerOwl, subscribeSlots } from "@/lib/owl/slots";
 import { useSettings, type OwlOutfit } from "@/stores/settings";
 
@@ -182,7 +182,17 @@ export default function Owl({
   // The remembered 3D still stands in for the SVG while 3D is allowed, so a new page's owl never flashes the old model.
   const needPx = Math.round(size * Math.min(typeof window === "undefined" ? 1 : window.devicePixelRatio || 1, 1.5));
   useBeforePaint(() => {
-    setPosterUrl(staticOk ? getOwlPoster(mood, finalOutfit, needPx) : null);
+    const own = staticOk ? getOwlPoster(mood, finalOutfit, needPx) : null;
+    setPosterUrl(own);
+    if (!staticOk || own) return;
+    // Nothing captured yet on this device (its first ever visit): the bundled idle still, if this owl is the plain idle one.
+    let live = true;
+    void loadBundledOwlPoster(mood, finalOutfit, needPx).then((url) => {
+      if (live && url) setPosterUrl(url);
+    });
+    return () => {
+      live = false;
+    };
   }, [staticOk, mood, finalOutfit, needPx]);
 
   const renderer = slot && ready ? "3d" : "svg";
