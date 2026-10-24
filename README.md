@@ -28,20 +28,21 @@ It is a mobile-first PWA with a real desktop layout (side rail and a two-pane re
 
 ## Features
 
-- **Scan or open a page.** Camera, gallery or typed text; six bundled stories.
-- **Tap a word, get it in your language.** The home-language explanation comes first, then the English meaning and an example, with a Listen button.
+- **Scan or open a page.** Camera, gallery or typed text; ten bundled stories (six English, four Filipino). A very long page is cut to one page with a note.
+- **Both directions.** Filipino mode: read English, get Filipino. English mode: read Filipino, get English (Filipino stories, a curated Filipino word list, an AI prompt that switches direction, a Filipino voice). Set per child in Settings; Hiligaynon was removed.
+- **Tap a word, get it in your language.** The home-language explanation comes first, then the word's own definition and an example, with a Listen button.
 - **Works without internet.** Scanning falls back to on-device OCR (Tesseract, self-hosted), words fall back to a curated dictionary, and anything looked up offline is upgraded automatically when the connection returns — the screen says honestly which kind of explanation you are seeing.
 - **Built for dyslexia and small hands.** OpenDyslexic option, font-size scaling, reading colour overlays, speech speed, plain reading text straight on a near-white ground (no textured backgrounds behind words), line height tied to the font size, large touch targets, difficulty shown by shape and label (never colour alone), light and dark themes, reduced-motion support.
-- **Fun and cute, for young readers.** A chubby owl companion (flat SVG first, a lazy three.js version on capable devices) that reacts and wears outfits, 14 collectible stickers, a "Pares" memory game with saved words, and gentle celebrations. Sounds and haptics are optional; reduced motion turns off 3D and confetti.
+- **Fun and cute, for young readers.** A chubby owl companion (a remembered still of the 3D owl from the first paint, a lazy three.js version on capable devices, the flat SVG elsewhere) that blinks, reacts and wears outfits, 14 collectible stickers, a "Pares" memory game with saved words, and gentle celebrations. Sounds and haptics are optional; reduced motion turns off 3D and confetti.
 - **Private by design.** No accounts. Progress stays on the device; the AI key lives on the server, never in the app.
 
 ---
 
 ## Design
 
-The look is the **Sticker Sheet**: an open layout on a near-white ground, a pale lilac band behind each screen title carrying a little confetti, tinted pills instead of bordered cards, dotted-rule lists, and wavy-underlined section titles. Real card shapes are kept for physical things only (the notebook book cover, the memory-game cards). Orange is the one primary action color. The owl follows the reference sheet in `public/mascot/owl-expression-sheet.png`. Headings use Baloo 2, body text Atkinson Hyperlegible, with an OpenDyslexic option.
+The look is the **Sticker Sheet**: an open layout on a near-white ground, a pale lilac band behind each screen title with a small barrio horizon along its foot (hills, a nipa hut, sun and clouds that rise into place once, then rest), tinted pills instead of bordered cards and dotted-rule lists. The bottom nav, rail, reader bar and word sheet are frosted glass over the page, with solid fallbacks. Real card shapes are kept for physical things only (the notebook book cover, the memory-game cards). Orange is the one primary action color. The owl follows the reference sheet in `public/mascot/owl-expression-sheet.png`. All UI text is Baloo 2 (one rounded, friendly voice); only the page being read uses Atkinson Hyperlegible, with an OpenDyslexic option. Motion is gentle, off for reduced motion, save-data, low-end devices and the "Gentle animations" setting.
 
-The rules and tokens live in [`DESIGN.md`](DESIGN.md) (the source of truth is `src/app/globals.css`). Regenerate icons with `node scripts/gen-pwa-icons.mjs` and `node scripts/gen-android-icons.mjs`, social cards with `node scripts/gen-og.mjs`.
+The rules and tokens live in [`DESIGN.md`](DESIGN.md) (the source of truth is `src/app/globals.css`). Regenerate icons with `node scripts/gen-pwa-icons.mjs` and `node scripts/gen-android-icons.mjs`, social cards with `node scripts/gen-og.mjs`, and the bundled first-visit owl still with `node scripts/gen-owl-poster.mjs` (against a running build; do this, and bump `POSTER_VERSION`, whenever the 3D owl changes).
 
 ---
 
@@ -113,10 +114,10 @@ More detail for contributors (and AI assistants) is in [`CLAUDE.md`](CLAUDE.md);
 
 ## Status and known gaps
 
-- The offline dictionary currently holds the ~280 curated entries; a ~2,000-word generated dictionary is planned and needs a native-speaker review before its translations are treated as verified.
-- Filipino and English explanations produced by AI are not human-reviewed, and the owl's lines, sticker names and "Pares" copy are waiting on a native-speaker review (marked `// REVIEW: native speaker` in `src/data/strings/`).
+- The offline dictionaries hold ~280 curated English words (explained in Filipino) and ~200 curated Filipino words (explained in English); a ~2,000-word generated dictionary is planned and needs a native-speaker review before its translations are treated as verified.
+- Filipino and English explanations produced by AI, the four Filipino stories and the Filipino word list are not human-reviewed, and the owl's lines, sticker names and "Pares" copy are waiting on a native-speaker review (marked `// REVIEW: native speaker` in `src/data/strings/`).
 - The AI proxy has not been exercised with a real Gemini key yet, and the Android build has not been tested on a physical device.
-- Performance on very low-end phones is the main open item; the 3D owl turns itself off on slow connections, save-data, low-end devices and reduced motion.
+- Performance on very low-end phones is the main open item (the new frosted glass and horizon animation are untested on real low-end hardware); the 3D owl turns itself off on slow connections, save-data, low-end devices and reduced motion.
 
 ## License
 

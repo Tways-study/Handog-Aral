@@ -1,8 +1,10 @@
 # Changelog
 
-Version history for Handog Aral, reconstructed from the git log. v2 was the Vite app; v3 is the Next.js overhaul, merged to `main` (see `docs/v3-plan.md` for status). `package.json` is `3.0.0-beta.1`.
+Version history for Handog Aral, reconstructed from the git log. v2 was the Vite app; v3 is the Next.js overhaul, merged to `main` (see `docs/v3-plan.md` for status). `package.json` is `3.1.0-beta.1`.
 
-## v3 (3.0.0-beta.1)
+## v3.1 (3.1.0-beta.1)
+
+English and Filipino in both directions, the barrio horizon band, a premium frosted-glass feel, one UI font, an owl that no longer flashes the old model, and an edge-case hardening pass.
 
 ### 2026-10-24 · Hardening
 - **Unpunctuated pages lost their AI explanation:** a scanned list, poem or heading has no sentence end, so the "sentence" sent with a tapped word could be the whole page and the proxy refused it (limit 600). Context is now a window of at most 400 characters around the word.
@@ -37,6 +39,8 @@ Version history for Handog Aral, reconstructed from the git log. v2 was the Vite
 - Hiligaynon is gone (translations were not accurate enough). The language setting is now Filipino or English and doubles as the lookup direction: English words explained in Filipino, or Filipino words explained in English.
 - Four short Filipino stories and a ~200-word curated Filipino dictionary (marked for native-speaker review), a Filipino TTS voice, and an AI prompt that switches direction.
 - Existing installs: stored language becomes Filipino; saved Hiligaynon words are kept and upgraded in the background; Hiligaynon cache and queue rows are dropped (Dexie v2, settings v4).
+
+## v3 (3.0.0-beta.1)
 
 ### 2026-10-22 · Fun and cute round
 - Procedural three.js toon owl (lazy, with a flat SVG fallback and safe refusals on slow, low-end or reduced-motion devices), moods and a wardrobe (glasses, cap, bow).
