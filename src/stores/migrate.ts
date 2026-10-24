@@ -81,7 +81,7 @@ export async function migrateLegacyState(): Promise<boolean> {
   const wasHiligaynon = old.language === "hiligaynon";
 
   useSettings.setState({
-    childName: str(old.childName),
+    childName: str(old.childName).slice(0, 30),
     language,
     fontSize: FONT_SIZES.includes(old.fontSize as never) ? (old.fontSize as (typeof FONT_SIZES)[number]) : "medium",
     dyslexiaFont: old.dyslexiaFont === true,

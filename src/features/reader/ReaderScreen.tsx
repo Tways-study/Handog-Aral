@@ -20,7 +20,7 @@ import { buzz } from "@/lib/haptics";
 import { motionAllowed, useMotion } from "@/lib/motion";
 import { flyToTab, lineDevelop, type LineGroup } from "@/lib/motionReader";
 import { play } from "@/lib/sound";
-import { findSentence, tokenize, type Token } from "@/lib/tokenize";
+import { MAX_PAGE_CHARS, clampPage, findSentence, tokenize, type Token } from "@/lib/tokenize";
 import { speak, speechLang } from "@/lib/tts";
 import { cn } from "@/lib/utils";
 import { forgetWord, learnWord, recordSaveRewards } from "@/lib/vocabulary";
@@ -106,7 +106,9 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
   const handledScan = useRef<unknown>(null);
   const clearStamp = useCallback(() => setStamp(null), [setStamp]);
 
-  const text = book ? book.text : typed || scan.state.text;
+  const rawText = book ? book.text : typed || scan.state.text;
+  // A whole book pasted or scanned would mean thousands of word buttons: keep to a page.
+  const { text, trimmed: pageTrimmed } = useMemo(() => clampPage(rawText), [rawText]);
   const tokens = useMemo(() => tokenize(text), [text]);
   const scanned = !book && !!text;
   const { listening, readingSentence, speakingToken, toggle: toggleListen, halt: stopListening } = useReadAlong({ text, tokens, rate: ttsSpeed, textRef });
@@ -358,6 +360,8 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
                 id="reader-draft"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
+                // Generous, so a pasted chapter is accepted and then cut to a page with a note, instead of silently truncated mid-paste.
+                maxLength={MAX_PAGE_CHARS * 4}
                 placeholder={s.typePlaceholder}
                 rows={8}
                 className="w-full resize-none rounded-lg border-[1.5px] border-line bg-paper p-3 text-xl leading-normal outline-none placeholder:text-ink-2 focus-visible:outline-solid focus-visible:outline-3 focus-visible:outline-ring"
@@ -481,6 +485,11 @@ export default function ReaderScreen({ bookId }: { bookId?: string }) {
                 onWordTap={onWordTap}
               />
             </div>
+            {pageTrimmed && (
+              <p className="mt-3 text-[0.9375rem] text-ink-2" role="note">
+                {s.pageTrimmed}
+              </p>
+            )}
             {scanned && (
               <div className="pad-line mt-4 flex flex-wrap items-center gap-2.5">
                 {scan.state.source && (

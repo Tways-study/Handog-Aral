@@ -19,6 +19,8 @@ const tagalog = {
   stopListen: "Itigil",
   newPage: "Bagong pahina",
   rescan: "I-scan ulit",
+  // REVIEW: native speaker
+  pageTrimmed: "Ang unang bahagi lang ng pahina ang ipinakita para madaling basahin.",
   newText: "Bagong teksto",
   backToBooks: "Bumalik sa mga aklat",
   scanning: "Binabasa ang pahina...",
@@ -77,6 +79,7 @@ const english = {
   stopListen: "Stop",
   newPage: "New page",
   rescan: "Scan again",
+  pageTrimmed: "Only the first part of the page is shown so it stays easy to read.",
   newText: "New text",
   backToBooks: "Back to books",
   scanning: "Reading the page...",

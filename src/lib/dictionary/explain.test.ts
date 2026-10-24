@@ -7,7 +7,7 @@ vi.mock("@/lib/api", () => ({
 }));
 
 import { explainRemote } from "@/lib/api";
-import { explain, normalizeWord, OFFLINE_TEXT } from "./explain";
+import { explain, isLookupable, normalizeWord, OFFLINE_TEXT } from "./explain";
 import { ensureDictionary } from "./seed";
 import { getDb, getCached, dequeueBatch, saveWord, putCached } from "@/stores/db";
 import { startLookupQueue } from "@/lib/queue/processor";
@@ -153,5 +153,32 @@ describe("explain pipeline, English mode (Filipino words)", () => {
     expect(remote).toHaveBeenCalledWith(expect.objectContaining({ language: "english" }), expect.anything());
     expect(r.source).toBe("ai");
     expect((await getCached("kalabaw", "english"))?.source).toBe("ai");
+  });
+});
+
+describe("explain hardening", () => {
+  it("isLookupable matches what the proxy accepts", () => {
+    expect(isLookupable("niño")).toBe(true);
+    expect(isLookupable("ni\u006e\u0303o")).toBe(true);
+    expect(isLookupable("nag-ani")).toBe(true);
+    expect(isLookupable("don't")).toBe(true);
+    expect(isLookupable("")).toBe(false);
+    expect(isLookupable("a".repeat(65))).toBe(false);
+    expect(isLookupable("3rd")).toBe(false);
+  });
+
+  it("a 90-letter run of OCR debris is neither sent, cached nor queued", async () => {
+    const f = mockFetch(() => new Response("{}"));
+    const r = await explain({ word: "x".repeat(90), sentence: "x".repeat(90), language: "tagalog" });
+    expect(r.source).toBe("offline");
+    expect(remote).not.toHaveBeenCalled();
+    expect(f).not.toHaveBeenCalled();
+    expect(await dequeueBatch(5)).toEqual([]);
+  });
+
+  it("never sends more than 600 characters of context", async () => {
+    remote.mockResolvedValue({ ok: true, data: ai });
+    await explain({ word: "zebra", sentence: "z ".repeat(900), language: "tagalog" });
+    expect(remote.mock.calls[0][0].sentence.length).toBeLessThanOrEqual(600);
   });
 });

@@ -157,3 +157,12 @@ describe("GET /api/health", () => {
     expect(res.headers.get("cache-control")).toBe("no-store");
   });
 });
+
+describe("explain request hardening", () => {
+  it("accepts a word written with combining marks and rejects one over 64 characters", async () => {
+    const { ExplainRequestSchema } = await import("@/shared/schemas");
+    expect(ExplainRequestSchema.safeParse({ word: "ni\u006e\u0303o", sentence: "", language: "tagalog" }).success).toBe(true);
+    expect(ExplainRequestSchema.safeParse({ word: "a".repeat(65), sentence: "", language: "tagalog" }).success).toBe(false);
+    expect(ExplainRequestSchema.safeParse({ word: "fox", sentence: "x".repeat(601), language: "tagalog" }).success).toBe(false);
+  });
+});
