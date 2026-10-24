@@ -51,6 +51,11 @@ export function generateLocalTranslation(word: string, english: string, pos: str
   return templates[pos] || templates.default;
 }
 
+/** The proxy only accepts one word of letters (with marks), apostrophes and hyphens, at most 64 characters. */
+export function isLookupable(word: string): boolean {
+  return word.length > 0 && word.length <= 64 && /^[\p{L}\p{M}'’-]+$/u.test(word);
+}
+
 function abortError(): DOMException {
   return new DOMException("Aborted", "AbortError");
 }
@@ -120,8 +125,11 @@ export async function explain(input: ExplainInput, opts: { signal?: AbortSignal 
   const { signal } = opts;
   const { language } = input;
   const word = normalizeWord(input.word);
-  const sentence = input.sentence ?? "";
+  const sentence = (input.sentence ?? "").slice(0, 600);
   throwIfAborted(signal);
+  // Not a word the dictionary or the proxy can take (OCR debris, a 90-letter run): show the honest placeholder and do not
+  // cache it or queue it, since no later retry could ever succeed.
+  if (!isLookupable(word)) return offlinePlaceholder(word || input.word.trim(), language);
 
   // 1. Cache (offline placeholders are provisional, so they never short-circuit).
   const cached = await getCached(word, language);

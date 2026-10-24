@@ -75,3 +75,14 @@ describe("settings v3 -> v4", () => {
     expect(useSettings.getState().language).toBe("english");
   });
 });
+
+describe("settings v4 -> v5", () => {
+  it("clips an over-long child name from older or imported data, and the setter clips too", async () => {
+    const v4 = { childName: "N".repeat(200), language: "tagalog", fontSize: "medium", dyslexiaFont: false, ttsSpeed: 0.8, colorOverlay: "none", theme: "system", onboarded: true };
+    await idbSet(SETTINGS_STORAGE_NAME, JSON.stringify({ state: v4, version: 4 }));
+    await useSettings.persist.rehydrate();
+    expect(useSettings.getState().childName).toHaveLength(30);
+    useSettings.getState().setChildName("M".repeat(99));
+    expect(useSettings.getState().childName).toHaveLength(30);
+  });
+});

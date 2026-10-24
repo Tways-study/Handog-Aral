@@ -28,7 +28,7 @@ export const ExplainRequestSchema = z.object({
     .trim()
     .min(1)
     .max(64)
-    .regex(/^[\p{L}'’-]+$/u, "word must be letters, apostrophes or hyphens"),
+    .regex(/^[\p{L}\p{M}'’-]+$/u, "word must be letters, apostrophes or hyphens"),
   sentence: z.string().trim().max(600).default(""),
   language: LanguageSchema,
 });

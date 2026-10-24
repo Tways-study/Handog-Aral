@@ -66,13 +66,16 @@ export const defaultSettings: SettingsData = {
   scenery: true,
 };
 
+/** Longest child name kept (the inputs allow 24 and 30; this guards imported or older data). */
+export const NAME_MAX = 30;
+
 export const SETTINGS_STORAGE_NAME = "handog-settings";
 
 export const useSettings = create<SettingsState>()(
   persist(
     (set) => ({
       ...defaultSettings,
-      setChildName: (childName) => set({ childName }),
+      setChildName: (childName) => set({ childName: childName.slice(0, NAME_MAX) }),
       setLanguage: (language) => set({ language }),
       setFontSize: (fontSize) => set({ fontSize }),
       setDyslexiaFont: (dyslexiaFont) => set({ dyslexiaFont }),
@@ -90,16 +93,18 @@ export const useSettings = create<SettingsState>()(
     }),
     {
       name: SETTINGS_STORAGE_NAME,
-      version: 4,
+      version: 5,
       // v1 -> v2: a child who already has a name has been through setup.
       // v2 -> v3: owl/sound/haptics preferences arrive with their defaults.
       // v3 -> v4: Hiligaynon is retired; the language is Filipino ("tagalog") or English.
+      // v4 -> v5: an over-long child name (imported or older data) is clipped so the greeting never breaks the layout.
       migrate: (persisted) => {
         const old = (persisted ?? {}) as Partial<SettingsData>;
         return {
           ...defaultSettings,
           ...old,
           language: old.language === "english" ? "english" : "tagalog",
+          childName: typeof old.childName === "string" ? old.childName.slice(0, NAME_MAX) : "",
           onboarded: old.onboarded ?? Boolean(old.childName),
         } as SettingsData;
       },
